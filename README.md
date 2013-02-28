@@ -1,2 +1,4 @@
-ridire
+RIDIRE
 ======
+
+http://www.ridire.it
