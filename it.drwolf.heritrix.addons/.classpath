@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/drwolf/heritrix-3.1.1-SNAPSHOT_bak/lib/json-20090211.jar"/>
+	<classpathentry kind="lib" path="/home/drwolf/heritrix-3.1.1-SNAPSHOT_bak/lib/spring-beans-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/home/drwolf/heritrix-3.1.1-SNAPSHOT_bak/lib/spring-context-2.5.6.jar"/>
+	<classpathentry kind="lib" path="/home/drwolf/heritrix-3.1.1-SNAPSHOT_bak/lib/spring-core-2.5.6.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/heritrix3"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

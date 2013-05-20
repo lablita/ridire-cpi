@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 University of Florence
+ * Copyright 2013 Università degli Studi di Firenze
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
