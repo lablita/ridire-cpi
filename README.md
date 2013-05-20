@@ -1,7 +1,8 @@
-RIDIRE
+RIDIRE Installation Manual
 ======
 
 http://www.ridire.it
+
 
 Java
 ----
