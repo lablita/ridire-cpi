@@ -1,0 +1,166 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+    Liste di Frequenza
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+		<p:dialog modal="true" widgetVar="statusDialog"
+			header="Attendere prego..." resizable="false" draggable="false"
+			closable="false" width="240">
+			<p:graphicImage value="/img/gears2.gif" />
+		</p:dialog>
+
+		<h1>Liste di frequenza</h1>
+		<h2>Domini funzionali</h2>
+		<rich:dataTable value="#{frequencyListManager.getListsFunctional()}"
+			var="lf">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{lf.name}" />
+			</rich:column>
+			<rich:column style="text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Dimensione (byte)" />
+				</f:facet>
+				<h:outputText value="#{lf.size}" />
+			</rich:column>
+			<rich:column style="text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="Scarica" />
+				</f:facet>
+				<s:link view="/cwbfrequencyList2.xhtml">
+					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />
+					<f:param name="freqList" value="#{lf.name}" />
+				</s:link>
+			</rich:column>
+		</rich:dataTable>
+		<h2>Domini semantici</h2>
+		<rich:dataTable value="#{frequencyListManager.getListsSemantic()}"
+			var="lf">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{lf.name}" />
+			</rich:column>
+			<rich:column style="text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Dimensione (byte)" />
+				</f:facet>
+				<h:outputText value="#{lf.size}" />
+			</rich:column>
+			<rich:column style="text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="Scarica" />
+				</f:facet>
+				<s:link view="/cwbfrequencyList2.xhtml">
+					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />
+					<f:param name="freqList" value="#{lf.name}" />
+				</s:link>
+			</rich:column>
+		</rich:dataTable>
+		<h2>Tutti i domini</h2>
+		<rich:dataTable value="#{frequencyListManager.getListsAllDomains()}"
+			var="lf">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{lf.name}" />
+			</rich:column>
+			<rich:column style="text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Dimensione (byte)" />
+				</f:facet>
+				<h:outputText value="#{lf.size}" />
+			</rich:column>
+			<rich:column style="text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="Scarica" />
+				</f:facet>
+				<s:link view="/cwbfrequencyList2.xhtml">
+					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />
+					<f:param name="freqList" value="#{lf.name}" />
+				</s:link>
+			</rich:column>
+		</rich:dataTable>
+		<h2>Tutte le liste di frequenza</h2>
+		<rich:dataTable value="#{frequencyListManager.getListsAll()}" var="lf">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{lf.name}" />
+			</rich:column>
+			<rich:column style="text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Dimensione (byte)" />
+				</f:facet>
+				<h:outputText value="#{lf.size}" />
+			</rich:column>
+			<rich:column style="text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="Scarica" />
+				</f:facet>
+				<s:link view="/cwbfrequencyList2.xhtml">
+					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />
+					<f:param name="freqList" value="#{lf.name}" />
+				</s:link>
+			</rich:column>
+		</rich:dataTable>
+	</ui:define>
+	<ui:define name="rightcol">
+		<p:panel id="tagset" header="Tagset" toggleable="true"
+			collapsed="true" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<pre>ADJ		adjective
+ADJPRO		pronominal adjective
+ADV		adverb (excluding -mente forms)
+ADV:mente	adveb ending in -mente
+ART		article
+CHE		che
+CLI		clitic
+CON		conjunction
+NEG		negation
+NOCAT		non-linguistic element
+NOUN		noun
+NPR		proper noun
+NUM		number
+PREP		preposition
+PRON		pronoun
+PUN		non-sentence-final punctuation mark
+SENT		sentence-final punctuation mark
+VERB		verb
+WH		wh word
+		</pre>
+			</s:div>
+		</p:panel>
+		<p:panel id="lf" header="Formato" toggleable="true" collapsed="false"
+			toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				Le liste di frequenza sono in formato tabellare OpenOffice.org (.ods).
+			</s:div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+

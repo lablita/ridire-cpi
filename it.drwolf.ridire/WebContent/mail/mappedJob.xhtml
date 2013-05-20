@@ -1,0 +1,34 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:mail="http://jboss.com/products/seam/mail">
+	<mail:message>
+		<mail:from name="RIDIRE" address="admin@www.ridire.it" />
+		<mail:to
+			name="#{flagBearer.ownerName} #{flagBearer.ownerSurname}"
+			address="#{flagBearer.emailAddress}" />
+		<mail:subject>Mapping del job #{flagBearer.jobName} terminato</mail:subject>
+		<mail:body>
+			<span style="color: #8db7f3; font-weight: bold; border-bottom: 1px dashed #8db7f3; font-size: 1.2em">Messaggio di amministrazione</span><br />
+			<p>
+				Gentile <em>#{flagBearer.ownerName}
+					#{flagBearer.ownerSurname}</em>,
+			</p>
+			<p>
+				il mapping del job <strong>#{flagBearer.jobName}</strong> &#232; terminato.<br /> 
+				Visita <a
+					href="http://#{flagBearer.hostname}">il sito web RIDIRE</a> e controlla che tutto vada bene, grazie.
+			</p>
+			<p>Cordiali saluti,</p>
+			<p>Il team di RIDIRE
+			<mail:attachment value="/img/logoRidire.gif" contentType="image/gif"
+				status="logoRidire" disposition="inline" />
+			<img src="cid:#{logoRidire.contentId}" width="60" />
+			</p>
+		</mail:body>
+	</mail:message>
+</ui:composition>

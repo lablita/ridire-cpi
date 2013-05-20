@@ -1,0 +1,135 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<h:form>
+			<a4j:poll id="poll" enabled="#{jobManager.pollEnabled}"
+				interval="#{jobManager.pollInterval}" reRender="poll,resourcesData" />
+		</h:form>
+		<h1>Dettaglio Job #{jobManager.job.name}</h1>
+		<br />
+		<s:div id="resourcesData">
+		Stato: <h:outputText value=" #{jobManager.job.jobStage}" />
+			<br />
+		Byte elaborati: <h:outputText value=" #{jobManager.rawBytes}" />
+			<br />
+			<s:fragment rendered="#{jobManager.job.jobStage eq 'FINISHED'}">
+		Byte scritti: <h:outputText value=" #{jobManager.resourcesBytes}" />
+				<br />
+			</s:fragment>
+			<s:fragment rendered="#{jobManager.job.jobStage eq 'RUNNING'}">
+			URI scoperte / in coda / elaborate:  <strong><h:outputText
+					value=" #{jobManager.discoveredURICount} " />/<h:outputText
+					value=" #{jobManager.queuedURICount} " />/<h:outputText
+					value=" #{jobManager.finishedURICount} " /></strong>
+			</s:fragment>
+			<s:fragment rendered="#{jobManager.job.jobStage eq 'FINISHED'}">
+			URI elaborate:  <strong> <h:outputText
+					value=" #{jobManager.finishedURICount}" /></strong>
+				<s:fragment rendered="#{jobManager.job.mappedResources}">
+					<br />
+					Parole: <strong>#{jobWordsCount}</strong>
+				</s:fragment>
+			</s:fragment>
+			<br />
+			Tipi di risorsa salvati:  <strong> <s:fragment
+				rendered="#{not empty jobManager.mimeTypeList}">
+				<h:outputText value="#{jobManager.mimeTypeList}" />
+			</s:fragment><s:fragment rendered="#{empty jobManager.mimeTypeList}">Tutti</s:fragment></strong>
+			<br />
+			Seeds:<br />
+			<h:inputTextarea rows="10" cols="50" label="Seeds"
+				value="#{jobManager.jobSeeds}" disabled="true" />
+			<br />
+			<s:fragment rendered="#{not empty jobManager.job.followedURLPattern}">
+				Pattern risorsa navigata: <strong><h:outputText
+					value=" #{jobManager.job.followedURLPattern}" /></strong>
+				<s:fragment rendered="#{jobManager.job.goodURLsDenied}">
+					<em> Negativo</em>
+				</s:fragment>
+				<br />
+			</s:fragment>
+			<s:fragment
+				rendered="#{not empty jobManager.job.writtenResourceURLPattern}">
+				Pattern risorsa salvata: <strong><h:outputText
+					value=" #{jobManager.job.writtenResourceURLPattern}" /></strong>
+				<s:fragment rendered="#{jobManager.job.writtenURLsDenied}">
+					<em> Negativo</em>
+				</s:fragment>
+				<br />
+			</s:fragment>
+
+			<s:button view="/jobResources.xhtml"
+				disabled="#{not jobManager.job.mappedResources}"
+				value="Risorse scaricate" id="risca" />
+			<rich:componentControl for="wait" attachTo="risca" operation="show"
+				event="onclick" />
+			<s:button view="/jobSchedule.xhtml" value="Schedule" disabled="#{not s:hasRole('Crawler User')}"
+				rendered="#{empty jobManager.job.cronData}" />
+			<s:button view="/jobSchedule.xhtml" value="Cambia schedule" disabled="#{not s:hasRole('Crawler User')}"
+				rendered="#{not empty jobManager.job.cronData}" />
+
+			<h:form>
+				<h:commandButton value="Rielabora risorse"
+					disabled="#{not jobManager.job.mappedResources or not s:hasRole('Crawler User')}"
+					action="#{jobManager.reprocessResources()}" id="reproc"
+					onclick="return window.confirm('Sei sicuro di voler rielaborare le risorse?\nLe risorse mappate attualmente saranno cancellate.\nLe risorse rielaborate saranno disponibili dopo la nuova mappatura.')" />
+				<s:button view="/jobValidationData.xhtml" disabled="#{not s:hasRole('Crawler User')}"
+					value="Dati per validazione"
+					rendered="#{jobManager.job.mappedResources}" />
+				<rich:componentControl for="wait" attachTo="reproc" operation="show"
+					event="onclick" />
+				<br />
+		Aggiorna: <h:selectOneMenu value="#{jobManager.pollInterval}">
+					<a4j:support event="onchange" reRender="poll,refreshButton" />
+					<f:selectItem itemValue="0" itemLabel="Mai" />
+					<f:selectItem itemValue="2000" itemLabel="ogni 2 sec." />
+					<f:selectItem itemValue="5000" itemLabel="ogni 5 sec." />
+					<f:selectItem itemValue="10000" itemLabel="ogni 10 sec." />
+					<f:selectItem itemValue="30000" itemLabel="ogni 30 sec." />
+				</h:selectOneMenu>
+				<h:commandButton value="Aggiorna" id="refreshButton"
+					disabled="#{jobManager.pollEnabled}"
+					action="#{jobManager.refresh()}" />
+				<br />
+				<h:commandButton value="Avvia Job"
+					disabled="#{jobManager.jobRunning or jobManager.jobCompleted or jobManager.jobPaused or not s:hasRole('Crawler User')}"
+					action="#{jobManager.startJob()}" />
+				<h:commandButton value="Riprendi Job"
+					disabled="#{!jobManager.jobPaused or not s:hasRole('Crawler User')}"
+					action="#{jobManager.resumeJob()}" />
+				<h:commandButton value="Metti Job in pausa"
+					disabled="#{!jobManager.jobRunning or jobManager.jobPaused or not s:hasRole('Crawler User')}"
+					action="#{jobManager.pauseJob()}" />
+				<h:commandButton value="Ferma Job"
+					disabled="#{!jobManager.jobRunning or not s:hasRole('Crawler User')}"
+					action="#{jobManager.stopJob()}" />
+				<h:commandButton value="Elimina Job"
+					disabled="#{jobManager.jobRunning or not s:hasRole('Crawler User')}"
+					action="#{jobManager.deleteJob()}"
+					onclick="return window.confirm('Sei sicuro di voler eliminare il job?')" />
+			</h:form>
+			<rich:modalPanel id="wait" autosized="true" width="200" height="120"
+				moveable="false" resizeable="false">
+				<f:facet name="header">
+					<h:outputText value="Operazione in corso" />
+				</f:facet>
+				<h:outputText value="Attendere, per favore..." />
+				<s:div>
+					<h:graphicImage alt="laoder" styleClass="loaderImg" id="loaderImg"
+						value="/img/ajax-loader.gif">
+					</h:graphicImage>
+				</s:div>
+			</rich:modalPanel>
+		</s:div>
+	</ui:define>
+
+</ui:composition>
+

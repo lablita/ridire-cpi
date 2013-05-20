@@ -1,0 +1,26 @@
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd"
+	login-required="true">
+	<begin-conversation join="true" />
+	<param name="sortField" value="#{jobManager.sortField}" />
+	<param name="sortOrder" value="#{jobManager.sortOrder}" />
+	<param name="jobId" value="#{jobManager.jobId}" />
+	<param name="pageSize" value="#{jobManager.pageSize}" />
+	<param name="firstResult" value="#{jobManager.firstResult}" />
+	<param name="filterAnalyzed" value="#{jobManager.filterAnalyzed}" />
+	<param name="filterURLValue" value="#{jobManager.filterURLValue}" />
+	<param name="filterMimeTypeValue" value="#{jobManager.filterMimeTypeValue}" />
+	<param name="semanticMetadatumValue" value="#{jobManager.semanticMetadatumValue}" />
+	<param name="functionalMetadatumValue" value="#{jobManager.functionalMetadatumValue}" />
+	<navigation from-action="#{jobManager.assignMetadata()}">
+		<redirect view-id="/jobResources.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.deleteResourcesWithFewWords()}">
+		<end-conversation before-redirect="true" />
+		<redirect view-id="/jobResources.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.deleteResourcesByLanguage()}">
+		<end-conversation before-redirect="true" />
+		<redirect view-id="/jobResources.xhtml" />
+	</navigation>
+</page>

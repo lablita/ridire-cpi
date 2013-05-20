@@ -1,0 +1,30 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Amministrazione Crawler Engine
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Amministrazione Crawler Engine</h1>
+		<h:form>
+			<h:commandButton
+				disabled="#{crawlerManager.crawlerEngineStatus eq 'running' or s:hasRole('Guest')}"
+				value="Start Heritrix" action="#{crawlerManager.startCrawlerEngine}" />
+			<h:commandButton
+				disabled="#{crawlerManager.crawlerEngineStatus ne 'running' or s:hasRole('Guest')}"
+				value="Stop Heritrix" action="#{crawlerManager.stopCrawlerEngine}" />
+				<br />
+			<h:outputText
+				value="#{crawlerManager.crawlerEngineStatus eq 'running' ? 'Crawler attivo' : 'Crawler spento'}" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

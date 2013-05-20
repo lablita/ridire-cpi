@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+	<rich:modalPanel id="posTextModalPanel" moveable="true"
+		autosized="true" zindex="2000">
+		<f:facet name="header">
+PoS tagging
+</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="/img/cancel.gif" style="cursor:pointer"
+				onclick="Richfaces.hideModalPanel('posTextModalPanel')" />
+		</f:facet>
+		<s:div id="posTextModalDiv" style="height: 300px; overflow: auto;">
+			<rich:dataTable var="_line" value="#{jobManager.posText}">
+				<rich:column>
+					<f:facet name="header">
+								Forma
+								</f:facet>
+					<h:outputText value="#{_line.form}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+								PoS
+								</f:facet>
+					<h:outputText value="#{_line.posTag}" />
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+								Lemma
+								</f:facet>
+					<h:outputText value="#{_line.lemma}" />
+				</rich:column>
+			</rich:dataTable>
+		</s:div>
+	</rich:modalPanel>
+</ui:composition>

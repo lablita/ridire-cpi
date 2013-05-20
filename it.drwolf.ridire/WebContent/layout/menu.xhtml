@@ -1,0 +1,138 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:rich="http://richfaces.ajax4jsf.org/rich"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+	<h:form>
+		<rich:panelMenu selectedChild="#{menuState.selectedMenuItem}"
+			iconExpandedGroup="disc" iconCollapsedGroup="disc"
+			iconExpandedTopGroup="chevronUp" iconGroupTopPosition="right"
+			iconCollapsedTopGroup="chevronDown" iconCollapsedTopPosition="right"
+			iconItem="disc" mode="client">
+			<rich:panelMenuGroup label="RIDIRE" id="ridire"
+				value="#{menuState.menu['ridire']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}" label=""
+					id="ridire_exit" mode="server" rendered="#{identity.loggedIn}">
+					<s:link view="/home.xhtml" action="#{identity.logout}" value="Esci"
+						rendered="#{identity.loggedIn}" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}" label=""
+					id="ridire_changepassword" mode="server"
+					rendered="#{identity.loggedIn}">
+					<s:link view="/changePassword.xhtml" value="Cambio password" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem value="Entra"
+					rendered="#{not identity.loggedIn}">
+					<s:link view="/login.xhtml" value="Entra"
+						rendered="#{not identity.loggedIn}" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}" label=""
+					id="ridire_manageusers" mode="server"
+					rendered="#{s:hasRole('Admin')}">
+					<s:link view="/manageUsers.xhtml" value="Gestione Utenti" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Crawling Area" id="crawlingarea"
+				rendered="#{identity.loggedIn}"
+				value="#{menuState.menu['crawlingarea']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="crawlingarea_admin" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Guest')}">
+					<s:link view="/crawlerEngineAdmin.xhtml"
+						value="Crawler Engine Admin" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="crawlingarea_joblist" mode="server">
+					<s:link view="/listJobs.xhtml" value="Elenco Job"
+						propagation="none" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Reporting Area" id="reportingarea"
+				rendered="#{identity.loggedIn}"
+				value="#{menuState.menu['reportingarea']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="reporting_corpora" mode="server">
+					<s:link view="/resourcesReport.xhtml" value="Statistiche corpora"
+						propagation="none" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Querying Area" id="queryingarea"
+				rendered="#{identity.loggedIn}"
+				value="#{menuState.menu['queryingarea']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="queryingarea_fl" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbfrequencyList2.xhtml" value="Liste di frequenza"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="queryingarea_simpleconc" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbconcordances.xhtml" value="Concordanze"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="queryingarea_patterns" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbpatterns.xhtml" value="Pattern"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="queryingarea_sketch" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbsketch2.xhtml" value="Sketch"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Admin Area" id="adminarea"
+				rendered="#{s:hasRole('Admin')}"
+				value="#{menuState.menu['adminarea']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					rendered="#{s:hasRole('Admin')}" id="admin_area" mode="server">
+					<s:link view="/resourcesAdmin.xhtml"
+						value="Amministrazione Risorse" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}" rendered="false"
+					id="indexing_area" mode="server">
+					<s:link view="/indexAdmin.xhtml" value="Amministrazione Indici"
+						propagation="none" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Utenti" id="users"
+				rendered="#{s:hasRole('Admin')}" value="#{menuState.menu['users']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="usersItem" mode="server">
+					<rich:dataList var="lu" value="#{loggedUsersPool.loggedUsers}">
+						<h:outputText value="#{lu.user.username}" />
+						<br />
+						<s:fragment
+							rendered="#{not empty lu.user.name or not empty lu.user.surname}">
+							<h:outputText value="#{lu.user.name} #{lu.user.surname}" />
+							<br />
+						</s:fragment>
+						<s:fragment rendered="#{not empty lu.user.body}">
+							<h:outputText value="#{lu.user.body}" />
+							<br />
+						</s:fragment>
+						<h:outputText value="#{lu.logTime} " />
+					</rich:dataList>
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Utenti" id="anonUsers"
+				rendered="#{not s:hasRole('Admin')}"
+				value="#{menuState.menu['anonUsers']}">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="anonUsersItem" mode="server">
+					<h:outputText value="Nessun utente loggato"
+						rendered="#{loggedUsersPool.loggedUsers.size lt 1}" />
+					<h:outputText value="Attualmente è loggato un utente"
+						rendered="#{loggedUsersPool.loggedUsers.size eq 1}" />
+					<h:outputText
+						value="Attualmente sono loggati #{loggedUsersPool.loggedUsers.size} utenti"
+						rendered="#{loggedUsersPool.loggedUsers.size gt 1}" />
+				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+		</rich:panelMenu>
+	</h:form>
+</ui:composition>

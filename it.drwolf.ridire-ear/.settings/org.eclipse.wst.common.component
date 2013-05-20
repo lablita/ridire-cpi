@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+<wb-module deploy-name="it.drwolf.ridire-ear">
+        <wb-resource deploy-path="/" source-path="/EarContent"/>
+<dependent-module deploy-path="/" handle="module:/resource/it.drwolf.ridire-ejb/it.drwolf.ridire-ejb">
+<dependency-type>uses</dependency-type>
+</dependent-module>
+<dependent-module deploy-path="/" handle="module:/resource/it.drwolf.ridire/it.drwolf.ridire">
+<dependency-type>uses</dependency-type>
+</dependent-module>
+        <dependent-module archiveName="pdfcleaner.jar" deploy-path="/lib" handle="module:/resource/pdfcleaner/pdfcleaner">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="it.drwolf.ridire.cleaner.jar" deploy-path="/lib" handle="module:/resource/it.drwolf.ridire.cleaner/it.drwolf.ridire.cleaner">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+</wb-module>
+</project-modules>

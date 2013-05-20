@@ -1,0 +1,484 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+   Concordanze semplici
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+		<p:dialog modal="true" widgetVar="statusDialog"
+			header="Attendere prego..." resizable="false" draggable="false"
+			closable="false" width="240">
+			<p:graphicImage value="/img/gears2.gif" />
+		</p:dialog>
+
+		<h1>Concordanze semplici</h1>
+
+		<a4j:form id="searchForm">
+			<s:div rendered="#{cwbConcordancer.fromSketch}">
+				<table>
+					<tr>
+						<td><h:outputText value="Lemma:" /></td>
+						<td><h:outputText value="#{cwbConcordancer.sketchTermHead}"
+								style="font-weight: bold;" /></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="Collocata:" /></td>
+						<td><h:outputText
+								value="#{cwbConcordancer.sketchTermCollocate}"
+								style="font-weight: bold;" /></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="Sketch:" /></td>
+						<td><h:outputText value="#{cwbConcordancer.sketchName}"
+								style="font-weight: bold;" /></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="Dominio" /></td>
+						<td><h:outputText value="#{cwbConcordancer.sketchDomain}"
+								style="font-weight: bold;" /></td>
+					</tr>
+				</table>
+			</s:div>
+			<s:div rendered="#{not cwbConcordancer.fromSketch}">
+				<table>
+					<tr>
+						<td><h:outputText value="Forma:" /></td>
+						<td><h:inputText value="#{cwbConcordancer.forma}" size="15"
+								disabled="#{fromCollocation}" /></td>
+						<td><h:outputText value="Lemma:" /></td>
+						<td><h:inputText value="#{cwbConcordancer.lemma}" size="15"
+								disabled="#{fromCollocation}" /></td>
+						<td><h:outputText value="PoS:" /></td>
+						<td><h:selectOneMenu value="#{cwbConcordancer.easypos}">
+								<s:selectItems var="pos" itemLabel="#{pos}" itemValue="#{pos}"
+									label="#{pos}" value="#{corpusSizeParams.availableEasyposs}" />
+							</h:selectOneMenu></td>
+					</tr>
+					<tr>
+						<td><h:outputText value="PoS estesi:" /></td>
+						<td><h:inputText value="#{cwbConcordancer.pos}" size="15"
+								disabled="#{fromCollocation}" /></td>
+						<td><h:outputText value="Phrase:" /></td>
+						<td colspan="3"><h:inputText
+								value="#{cwbConcordancer.phrase}" size="40"
+								disabled="#{fromCollocation}" /></td>
+					</tr>
+				</table>
+				<h:panelGrid columns="2" style="margin-top: 10px;">
+			Tutti i domini:
+			<h:selectOneRadio value="#{cwbConcordancer.allDomains}">
+						<f:selectItem itemLabel="Sì" itemValue="#{true}" />
+						<f:selectItem itemLabel="No" itemValue="#{false}" />
+						<a4j:support event="onchange" reRender="semDomChoose,funDomChoose"
+							ajaxSingle="true" action="#{cwbConcordancer.resetDomains}" />
+					</h:selectOneRadio>
+				</h:panelGrid>
+				<h:panelGrid columns="2" style="margin-top: 10px;"
+					styleClass="verticalAlignTopTable">
+					<h:panelGrid columns="1">
+						<h:panelGrid columns="2">
+							<h:outputText value="Scegli dominio semantico" />
+							<h:selectManyCheckbox layout="pageDirection" id="semDomChoose"
+								disabled="#{cwbConcordancer.allDomains}"
+								value="#{cwbConcordancer.semanticMetadatum}">
+								<f:selectItems
+									value="#{localResourcesManager.allSemanticMetadataMap}" />
+								<a4j:support event="onclick" reRender="lotOfDomainsWarn"
+									ajaxSingle="true" />
+							</h:selectManyCheckbox>
+						</h:panelGrid>
+						<h:panelGrid columns="2">
+							<h:outputText value="Scegli dominio funzionale" />
+							<h:selectManyCheckbox layout="pageDirection" id="funDomChoose"
+								disabled="#{cwbConcordancer.allDomains}"
+								value="#{cwbConcordancer.functionalMetadatum}">
+								<f:selectItems
+									value="#{localResourcesManager.allFunctionalMetadataMap}" />
+								<a4j:support event="onclick" reRender="lotOfDomainsWarn"
+									ajaxSingle="true" />
+							</h:selectManyCheckbox>
+						</h:panelGrid>
+					</h:panelGrid>
+
+					<s:div id="lotOfDomainsWarn"
+						style="display: #{cwbConcordancer.semanticMetadatum.size + cwbConcordancer.functionalMetadatum.size gt 1 ? 'block; padding: 5px; width: 200px; border: solid black 1px;text-align:justify;' : 'none'};">
+						<h:outputText
+							value="Attenzione! Scegliendo più di un dominio non sarà possibile calcolare le collocate delle concordanze estratte."
+							style="font-style: italic;" />
+					</s:div>
+
+				</h:panelGrid>
+				<s:fragment rendered="false">
+					<br />
+				Visualizza: <h:selectOneRadio
+						value="#{cwbConcordancer.toBeVisualized}">
+						<s:selectItems var="tbv"
+							value="#{cwbConcordancer.availableToBeVisualized}" label="#{tbv}" />
+					</h:selectOneRadio>
+				</s:fragment>
+				<br />
+				<fieldset>
+					<legend>Ordinamento</legend>
+					<h:selectOneRadio id="sortByRadio"
+						value="#{cwbConcordancer.sortBy}"
+						disabled="#{cwbConcordancer.resultsGrouping}">
+						<s:selectItems var="sort"
+							value="#{cwbConcordancer.availableSortings}" label="#{sort}" />
+						<a4j:support event="onchange" reRender="contextLengthSpinner" />
+					</h:selectOneRadio>
+					<br />
+					<h:panelGrid columns="2">
+						<h:outputText value="Contesto per ordinamento:" />
+						<rich:inputNumberSpinner
+							disabled="#{cwbConcordancer.sortBy eq 'Nessun ordine' or cwbConcordancer.resultsGrouping}"
+							id="contextLengthSpinner"
+							value="#{cwbConcordancer.contextLength}" min="1" max="10" />
+					</h:panelGrid>
+				</fieldset>
+				<br />
+				<fieldset>
+					<legend>Raggruppamento a destra</legend>
+					<h:panelGrid columns="6">
+						<h:outputText value="Sì/No " />
+						<h:selectBooleanCheckbox
+							value="#{cwbConcordancer.resultsGrouping}"
+							disabled="#{cwbConcordancer.fromCollocation}">
+							<a4j:support event="onchange"
+								reRender="sortByRadio,contextLengthSpinner,contextGroupingSpinner" />
+						</h:selectBooleanCheckbox>
+						<h:outputText value="N. forme:" />
+						<rich:inputNumberSpinner id="contextGroupingSpinner"
+							disabled="#{not cwbConcordancer.resultsGrouping}"
+							value="#{cwbConcordancer.contextGroupingLength}" min="0" max="10" />
+						<h:outputText value="Raggruppa per" style="margin-left: 10px;" />
+						<h:selectOneRadio value="#{cwbConcordancer.groupBy}">
+							<f:selectItem itemLabel="lemma" itemValue="lemma" />
+							<f:selectItem itemLabel="forma" itemValue="forma" />
+						</h:selectOneRadio>
+					</h:panelGrid>
+				</fieldset>
+				<br />
+			</s:div>
+			<h:commandButton action="#{cwbConcordancer.dummySearch()}"
+				rendered="#{not fromCollocation and not cwbConcordancer.fromSketch}"
+				onclick="statusDialog.show();" value="Cerca" />
+			<h:commandButton action="#{cwbConcordancer.initResults()}"
+				rendered="#{fromCollocation and not cwbConcordancer.fromSketch}"
+				onclick="statusDialog.show();" value="Riordina" />
+			<s:button value="Reset" action="#{cwbConcordancer.reset()}"
+				propagation="none">
+				<f:param name="fromCollocation" value="false" />
+			</s:button>
+			<s:button value="Torna alle collocate" view="/cwbcollocations.xhtml"
+				action="#{cwbConcordancer.reset()}"
+				rendered="#{fromCollocation and not cwbConcordancer.fromSketch}">
+				<f:param name="fromCollocation" value="false" />
+			</s:button>
+			<s:button id="collocatesExtractorButton" value="Estrai collocate"
+				view="/cwbcollocations.xhtml"
+				rendered="#{not fromCollocation and not cwbConcordancer.fromSketch}"
+				reRender="searchForm"
+				disabled="#{cwbConcordancer.resultsSize lt 1 or cwbConcordancer.semanticMetadatum.size gt 1 or cwbConcordancer.functionalMetadatum.size gt 1}">
+				<f:param name="query" value="#{cwbConcordancer.query}" />
+				<f:param name="concordancesResultsSize"
+					value="#{cwbConcordancer.resultsSize}" />
+			</s:button>
+			<s:div id="exportLink" rendered="#{not cwbConcordancer.fromSketch}">
+				<a4j:commandLink value="Genera tabella concordanze"
+					action="#{documentDownloader.getExcelTable()}"
+					style="display: #{(not excelDataGenerator.fileReady and not excelDataGenerator.inProgress)?'inline':'none'}"
+					reRender="exportLink" />
+				<h:outputText value="#{excelDataGenerator.progress} %"
+					style="display: #{(not excelDataGenerator.fileReady and excelDataGenerator.inProgress)?'inline':'none'}" />
+				<a4j:commandLink value="Refresh" reRender="exportLink"
+					style="display: #{(not excelDataGenerator.fileReady and excelDataGenerator.inProgress)?'inline':'none'}" />
+				<h:commandLink value="Scarica tabella"
+					action="#{documentDownloader.exportCSVTable()}"
+					style="display: #{excelDataGenerator.fileReady?'inline':'none'}" />
+			</s:div>
+			<s:div styleClass="tableControl" id="risultati"
+				rendered="#{cwbConcordancer.resultsSize gt 0}">
+				<s:link view="/cwbconcordances.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbConcordancer.previousExists}"
+					action="#{cwbConcordancer.initResults()}"
+					styleClass="#{cwbConcordancer.previousExists?'':'disabled'}"
+					value="#{messages.left}#{messages.left}&#160;Prima&#160;pagina"
+					id="firstPage">
+					<f:param name="firstResult" value="0" />
+					<f:param name="pageSize" value="#{cwbConcordancer.pageSize}" />
+				</s:link>
+				<s:link view="/cwbconcordances.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbConcordancer.previousExists}"
+					action="#{cwbConcordancer.initResults()}"
+					styleClass="#{cwbConcordancer.previousExists?'':'disabled'}"
+					value="#{messages.left}&#160;Precedente" id="previousPage">
+					<f:param name="firstResult"
+						value="#{cwbConcordancer.previousFirstResult}" />
+					<f:param name="pageSize" value="#{cwbConcordancer.pageSize}" />
+				</s:link>
+				<s:link view="/cwbconcordances.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbConcordancer.nextExists}"
+					action="#{cwbConcordancer.initResults()}"
+					styleClass="#{cwbConcordancer.nextExists?'':'disabled'}"
+					value="Prossima&#160;#{messages.right}" id="nextPage">
+					<f:param name="firstResult"
+						value="#{cwbConcordancer.nextFirstResult}" />
+					<f:param name="pageSize" value="#{cwbConcordancer.pageSize}" />
+				</s:link>
+				<s:link view="/cwbconcordances.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbConcordancer.nextExists}"
+					action="#{cwbConcordancer.initResults()}"
+					styleClass="#{cwbConcordancer.nextExists?'':'disabled'}"
+					value="Ultima&#160;pagina&#160;#{messages.right}#{messages.right}"
+					id="lastPage">
+					<f:param name="firstResult"
+						value="#{cwbConcordancer.lastFirstResult}" />
+					<f:param name="pageSize" value="#{cwbConcordancer.pageSize}" />
+				</s:link>
+			</s:div>
+		</a4j:form>
+		<s:fragment rendered="#{cwbConcordancer.resultsSize gt 0}">Risultati:&#160;
+			<strong>#{cwbConcordancer.resultsSize eq 0 ? 0 :
+				cwbConcordancer.firstResult + 1}</strong>&#160;-&#160;<strong>#{((cwbConcordancer.firstResult
+				+ cwbConcordancer.pageSize) lt cwbConcordancer.resultsSize) ?
+				(cwbConcordancer.firstResult +cwbConcordancer.pageSize) :
+				cwbConcordancer.resultsSize}</strong>&#160;di&#160;<strong>#{cwbConcordancer.resultsSize}</strong>
+		</s:fragment>
+		<rich:dataTable var="group" value="#{cwbConcordancer.resultsSimple}"
+			rendered="#{cwbConcordancer.resultsGrouping}" id="groupSearchList">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Num." />
+				</f:facet>
+				<h:panelGrid columns="3">
+					<a4j:form id="searchedTextGroup">
+						<h:commandLink value="+ " style="text-decoration: none;"
+							rendered="#{not group.groupExpanded and group.groupSize gt 1}"
+							action="#{cwbConcordancer.expandGroup(group)}" />
+						<h:commandLink value="- " style="text-decoration: none;"
+							rendered="#{group.groupExpanded and group.groupSize gt 1}"
+							action="#{cwbConcordancer.collapseGroup(group)}" />
+					</a4j:form>
+					<h:outputText style="font-weight: bold;" value="#{group.groupSize}" />
+					<s:span>
+						<h:outputText
+							value="#{group.groupSize / cwbConcordancer.groupResultsSize * 100}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>
+						<h:outputText value="%" />
+					</s:span>
+				</h:panelGrid>
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Sx" />
+				</f:facet>
+				<h:outputText value="#{group.leftContext}" />
+			</rich:column>
+			<rich:column styleClass="centerText" style="white-space: nowrap;">
+				<f:facet name="header">
+					<h:outputText value="Testo" />
+				</f:facet>
+				<a4j:form id="searchedText">
+					<a4j:commandLink id="showLongText"
+						action="#{cwbConcordancer.retrieveLongContext(group)}"
+						oncomplete="Richfaces.showModalPanel('longContextTextModalPanel',{width:550, top:200});"
+						reRender="longContextTextModalDiv">
+						<h:outputText value="#{group.searchedText}" />
+					</a4j:commandLink>
+				</a4j:form>
+			</rich:column>
+			<rich:column style="white-space: nowrap;">
+				<f:facet name="header">
+					<h:outputText value="Dx" />
+				</f:facet>
+				<h:outputText value="#{group.rightContext}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{group.domain}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="URL" />
+				</f:facet>
+				<a href="#{group.url}" target="_blank"> <s:graphicImage
+						value="/img/globe--arrow.png" />
+				</a>
+			</rich:column>
+			<rich:subTable var="item" value="#{group.members}"
+				rendered="#{group.groupExpanded}">
+				<rich:column>
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: right;">
+					<h:outputText value="#{item.leftContext}" />
+				</rich:column>
+				<rich:column styleClass="centerText" style="white-space: nowrap;">
+					<a4j:form id="searchedTextG">
+						<a4j:commandLink id="showLongTextG"
+							action="#{cwbConcordancer.retrieveLongContext(item)}"
+							oncomplete="Richfaces.showModalPanel('longContextTextModalPanel',{width:550, top:200});"
+							reRender="longContextTextModalDiv">
+							<h:outputText value="#{item.searchedText}" />
+						</a4j:commandLink>
+					</a4j:form>
+				</rich:column>
+				<rich:column style="white-space: nowrap;">
+					<h:outputText value="#{item.rightContext}" styleClass="leftText" />
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: left;">
+					<h:outputText value="#{item.domain}" styleClass="leftText" />
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: center;">
+					<a href="#{group.url}" target="_blank"> <s:graphicImage
+							value="/img/globe--arrow.png" />
+					</a>
+				</rich:column>
+			</rich:subTable>
+		</rich:dataTable>
+
+
+		<rich:dataTable var="item" value="#{cwbConcordancer.resultsSimple}"
+			rendered="#{not cwbConcordancer.resultsGrouping}"
+			id="cwbConcordancerList">
+			<rich:column style="white-space: nowrap; text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Sx" />
+				</f:facet>
+				<h:outputText value="#{item.leftContext}" />
+			</rich:column>
+			<rich:column styleClass="centerText" style="white-space: nowrap;">
+				<a4j:form id="searchedText">
+					<a4j:commandLink id="showLongText"
+						action="#{cwbConcordancer.retrieveLongContext(item)}"
+						oncomplete="Richfaces.showModalPanel('longContextTextModalPanel',{width:550, top:200});"
+						reRender="longContextTextModalDiv">
+						<h:outputText value="#{item.searchedText}" />
+					</a4j:commandLink>
+				</a4j:form>
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dx" />
+				</f:facet>
+				<h:outputText value="#{item.rightContext}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{item.domain}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="URL" />
+				</f:facet>
+				<a href="#{item.url}" target="_blank"> <s:graphicImage
+						value="/img/globe--arrow.png" />
+				</a>
+			</rich:column>
+		</rich:dataTable>
+		<ui:include src="/longContextTextModalPanel.xhtml" />
+	</ui:define>
+	<ui:define name="rightcol">
+		<p:panel id="tagset" header="Tagset" toggleable="true"
+			collapsed="false" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<pre>ADJ		adjective
+ADJPRO		pronominal adjective
+ADV		adverb (excluding -mente forms)
+ADV:mente	adveb ending in -mente
+ART		article
+CHE		che
+CLI		clitic
+CON		conjunction
+NEG		negation
+NOCAT		non-linguistic element
+NOUN		noun
+NPR		proper noun
+NUM		number
+PREP		preposition
+PRON		pronoun
+PUN		non-sentence-final punctuation mark
+SENT		sentence-final punctuation mark
+VERB		verb
+WH		wh word
+		</pre>
+			</s:div>
+		</p:panel>
+		<p:panel id="exttagset" header="Tagset esteso" toggleable="true"
+			collapsed="true" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<pre>ADJ		adjective
+ADV		adverb (excluding -mente forms)
+ADV:mente	adveb ending in -mente
+ART		article
+ARTPRE		preposition + article
+AUX:fin		finite form of auxiliary
+AUX:fin:cli	finite form of auxiliary with clitic
+AUX:geru	gerundive form of auxiliary
+AUX:geru:cli	gerundive form of auxiliary with clitic
+AUX:infi	infinitival form of auxiliary
+AUX:infi:cli	infinitival form of auxiliary with clitic
+AUX:ppast	past participle of auxiliary
+AUX:ppre	present participle of auxiliary
+CHE		che
+CLI		clitic
+CON		conjunction
+DET:demo	demonstrative determiner
+DET:indef	indefinite determiner
+DET:num		numeral determiner
+DET:poss	possessive determiner
+DET:wh		wh determiner
+NEG		negation
+NOCAT		non-linguistic element
+NOUN		noun
+NPR		proper noun
+NUM		number
+PRE		preposition
+PRO:demo	demonstrative pronoun
+PRO:indef	indefinite pronoun
+PRO:num		numeral pronoun
+PRO:pers	personal pronoun
+PRO:poss	possessive pronoun
+PUN		non-sentence-final punctuation mark
+SENT		sentence-final punctuation mark
+VER2:fin	finite form of modal/causal verb
+VER2:fin:cli	finite form of modal/causal verb with clitic
+VER2:geru	gerundive form of modal/causal verb
+VER2:geru:cli	gerundive form of modal/causal verb with clitic
+VER2:infi	infinitival form of modal/causal verb
+VER2:infi:cli	infinitival form of modal/causal verb with clitic
+VER2:ppast	past participle of modal/causal verb
+VER2:ppre	present participle of modal/causal verb
+VER:fin		finite form of verb
+VER:fin:cli	finite form of verb with clitic
+VER:geru	gerundive form of verb
+VER:geru:cli	gerundive form of verb with clitic
+VER:infi	infinitival form of verb
+VER:infi:cli	infinitival form of verb with clitic
+VER:ppast	past participle of verb
+VER:ppast:cli	past participle of verb with clitic
+VER:ppre	present participle of verb
+WH		wh word
+		</pre>
+			</s:div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+

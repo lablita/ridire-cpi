@@ -1,0 +1,329 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Risorse da validare 
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Risorse da validare del Job #{jobManager.job.name}</h1>
+		<a4j:form id="risorseForm">
+			<br />
+			<s:fragment rendered="#{jobManager.job.validationStatus eq 0}">
+		Job da validare<br />
+				<s:button value="Ottieni risorse"
+					action="#{jobManager.selectValidationResources(jobManager.job.id)}"
+					id="selectResourcesButton" propagation="end"/>
+				<rich:componentControl for="wait" attachTo="selectResourcesButton"
+					operation="show" event="onclick" />
+			</s:fragment>
+			<s:fragment rendered="#{not (jobManager.job.validationStatus eq 0)}">
+				<s:decorate id="crawledResourcesListDecorate">
+					<div class="results" id="crawledResourcesListDiv">
+						<h:outputText value="Nessuna risorsa."
+							rendered="#{empty jobValidationResources}" />
+					</div>
+					<s:div rendered="#{not empty jobValidationResources}"
+						id="numbering">
+						<h2>
+							<h:outputText
+								value="Da validare: #{jobManager.totalSelectedResourcesNumber - jobManager.validatedResourcesNumber}"
+								rendered="#{(jobManager.totalSelectedResourcesNumber - jobManager.validatedResourcesNumber) ne 0}" />
+							<h:outputText
+								value="Job #{jobManager.job.validationStatus eq 2 ? 'valido' : 'non valido'}"
+								rendered="#{(jobManager.totalSelectedResourcesNumber - jobManager.validatedResourcesNumber) eq 0}" />
+						</h2>
+						<h3>Dati di validazione&#160;<h:outputText style="color: red;" value="non&#160;" rendered="#{jobManager.validationToBeSaved}"/>salvati</h3>
+						<fieldset>
+							<legend>Validazione</legend>
+							<table border="0">
+								<tr>
+									<td valign="top"><strong>Soglia:</strong></td>
+									<td><h:inputText
+											value="#{jobManager.job.validationThreshold}" /></td>
+									<td><em>Percentuale di risorse non valide oltre la
+											quale il job è considerato non valido.</em></td>
+								</tr>
+								<tr>
+									<td valign="top"><strong>Note:</strong></td>
+									<td colspan="2"><h:inputTextarea cols="50" rows="6"
+											value="#{jobManager.job.validationNotes}" /></td>
+								</tr>
+							</table>
+							<h:commandButton value="Salva"
+								action="#{jobManager.saveValidationThreshold}" />
+						</fieldset>
+						<s:div id="tabDesc">Risultati:&#160;<strong>#{jobManager.totalResults
+								eq 0 ? 0 : jobManager.firstResult + 1}</strong>&#160;-&#160;<strong>#{((jobManager.firstResult
+								+ jobManager.pageSize) lt jobManager.totalResults) ?
+								(jobManager.firstResult +jobManager.pageSize) :
+								jobManager.totalResults}</strong>&#160;di&#160;<strong>#{jobManager.totalResults}
+							</strong> Risultati per pagina:&#160;
+					<h:selectOneMenu defaultLabel="#{jobManager.pageSize}"
+								value="#{jobManager.pageSize}">
+								<f:selectItem itemValue="2" />
+								<f:selectItem itemValue="5" />
+								<f:selectItem itemValue="10" />
+								<f:selectItem itemValue="30" />
+								<f:selectItem itemValue="50" />
+								<a4j:support event="onchange"
+									action="#{jobManager.resetValidationFactory()}"
+									reRender="tabDesc,crawledResourcesList,risultati" />
+							</h:selectOneMenu>
+						</s:div>
+					</s:div>
+					<s:div>
+						<h:selectBooleanCheckbox value="#{jobManager.filterValidated}">
+							<a4j:support event="onclick"
+								action="#{jobManager.resetValidationFactory()}"
+								reRender="tabDesc,crawledResourcesList,crawledResourcesListDecorate" />
+						</h:selectBooleanCheckbox> Mostra solo le risorse da validare
+					</s:div>
+					<rich:dataTable id="crawledResourcesList" var="_risorsa"
+						value="#{jobValidationResources}"
+						reRender="scHidden, sc2, numbering">
+						<rich:column label="URL" styleClass="shortURLColumn">
+							<f:facet name="header">
+								URL<h:panelGroup>
+									<h:outputText value="URL" />
+									<br />
+									<h:inputText onclick="Event.stop(event);"
+										value="#{jobManager.filterURLValue}" id="inputURL">
+										<a4j:support event="onkeyup" ignoreDupResponses="true"
+											requestDelay="700"
+											action="#{jobManager.resetValidationFactory()}"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputURL" />
+									</h:inputText>
+									<ui:include src="/layout/customValidationSort.xhtml">
+										<ui:param name="sortField" value="url" />
+										<ui:param name="nullableField" value="" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<a href="#{_risorsa.url}" target="_blank"
+								style="white-space: nowrap; overflow: hidden;">#{_risorsa.url.length()>50?_risorsa.url.substring(0,50):_risorsa.url}...</a>
+						</rich:column>
+						<rich:column label="Parole" style="text-align: right;">
+							<f:facet name="header">
+								Parole<h:panelGroup>
+									<h:outputText value="Parole" />
+									<ui:include src="/layout/customValidationSort.xhtml">
+										<ui:param name="sortField" value="wordsNumber" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<a4j:commandLink id="showCleanedText"
+								action="#{jobManager.retrieveCleanedText(_risorsa)}"
+								oncomplete="Richfaces.showModalPanel('cleanedTextModalPanel',{width:550, top:200});"
+								reRender="cleanedTextModalDiv">
+								<h:outputText style="text-align: right;"
+									value="#{_risorsa.wordsNumber}" />
+							</a4j:commandLink>
+						</rich:column>
+						<rich:column label="Lingua" style="text-align: center;">
+							<f:facet name="header">
+								Lingua<h:panelGroup>
+									<h:outputText value="Lingua" />
+									<ui:include src="/layout/customValidationSort.xhtml">
+										<ui:param name="sortField" value="language" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>#{_risorsa.language} 
+							<s:fragment rendered="#{not empty _risorsa.language}">
+								<img
+									src="#{request.contextPath}/img/language/#{_risorsa.language}.png"
+									alt="#{_risorsa.language}" title="#{_risorsa.language}" />
+							</s:fragment>
+						</rich:column>
+						<rich:column label="MimeType">
+							<f:facet name="header">
+								MimeType<h:panelGroup>
+									<h:outputText value="MimeType" />
+									<br />
+									<h:inputText onclick="Event.stop(event);"
+										value="#{jobManager.filterMimeTypeValue}" id="inputMT">
+										<a4j:support event="onkeyup" ignoreDupResponses="true"
+											action="#{jobManager.resetFactory()}" requestDelay="700"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputMT" />
+									</h:inputText>
+									<ui:include src="/layout/customValidationSort.xhtml">
+										<ui:param name="sortField" value="contentType" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="#{_risorsa.contentType}" />
+						</rich:column>
+						<rich:column label="Valida">
+							<f:facet name="header">
+								Valida<h:panelGroup>
+									<h:outputText value="Valida" />
+									<ui:include src="/layout/customValidationSort.xhtml">
+										<ui:param name="sortField" value="validationStatus" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<a4j:region id="validationMenuRegion">
+								<rich:dropDownMenu id="validationMenu"
+									styleClass="validationMenu">
+									<f:facet name="label">
+										<s:span>
+											<h:graphicImage value="/img/tick-button.png"
+												rendered="#{_risorsa.validationStatus eq 1}"
+												alt="Risorsa valida" title="Risorsa valida" styleClass="pic" />
+											<h:outputText value="Valida"
+												rendered="#{_risorsa.validationStatus eq 1}" />
+
+											<h:graphicImage value="/img/cross-button.png"
+												rendered="#{_risorsa.validationStatus eq 2}"
+												alt="Risorsa non valida" title="Risorsa non valida"
+												styleClass="pic" />
+											<h:outputText value="Non valida"
+												rendered="#{_risorsa.validationStatus eq 2}" />
+
+											<h:graphicImage value="/img/question-button.png"
+												rendered="#{_risorsa.validationStatus eq 0}"
+												alt="Risorsa da validare" title="Risorsa da validare"
+												styleClass="pic" />
+											<h:outputText value="Da validare"
+												rendered="#{_risorsa.validationStatus eq 0}" />
+										</s:span>
+									</f:facet>
+									<rich:menuItem submitMode="ajax"
+										rendered="#{_risorsa.validationStatus ne 1}"
+										action="#{jobManager.setValidation(_risorsa, 1)}"
+										reRender="validationMenu,numbering" icon="/img/tick-button.png"
+										value="Valida Risorsa" />
+									<rich:menuItem submitMode="ajax" id="makeResourcesInvalid"
+										rendered="#{_risorsa.validationStatus ne 2}"
+										action="#{jobManager.setValidation(_risorsa, 2)}"
+										reRender="validationMenu,numbering" icon="/img/cross-button.png"
+										value="Invalida Risorsa" />
+									<rich:menuItem submitMode="ajax"
+										rendered="#{_risorsa.validationStatus ne 0}"
+										action="#{jobManager.setValidation(_risorsa, 0)}"
+										reRender="validationMenu,numbering" icon="/img/question-button.png"
+										value="Risorsa da validare" />
+								</rich:dropDownMenu>
+							</a4j:region>
+							<a4j:status onstart="#{rich:component('wait')}.show()"
+								onstop="#{rich:component('wait')}.hide()"
+								for="validationMenuRegion" />
+						</rich:column>
+					</rich:dataTable>
+					<s:div styleClass="tableControl" id="risultati">
+						<s:link view="/jobValidationTable.xhtml" propagation="none"
+							disabled="#{not jobManager.previousExists}"
+							styleClass="#{jobManager.previousExists?'':'disabled'}"
+							value="#{messages.left}#{messages.left}&#160;Prima&#160;pagina"
+							id="firstPage">
+							<f:param name="firstResult" value="0" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+						</s:link>
+						<s:link view="/jobValidationTable.xhtml" propagation="none"
+							disabled="#{not jobManager.previousExists}"
+							styleClass="#{jobManager.previousExists?'':'disabled'}"
+							value="#{messages.left}&#160;Precedente" id="previousPage">
+							<f:param name="firstResult"
+								value="#{jobManager.previousFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+						</s:link>
+						<s:link view="/jobValidationTable.xhtml" propagation="none"
+							disabled="#{not jobManager.nextExists}"
+							styleClass="#{jobManager.nextExists?'':'disabled'}"
+							value="Prossima&#160;#{messages.right}" id="nextPage">
+							<f:param name="firstResult" value="#{jobManager.nextFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+						</s:link>
+						<s:link view="/jobValidationTable.xhtml" propagation="none"
+							disabled="#{not jobManager.nextExists}"
+							styleClass="#{jobManager.nextExists?'':'disabled'}"
+							value="Ultima&#160;pagina&#160;#{messages.right}#{messages.right}"
+							id="lastPage">
+							<f:param name="firstResult" value="#{jobManager.lastFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+						</s:link>
+					</s:div>
+				</s:decorate>
+			</s:fragment>
+			<div style="clear: both">&nbsp;</div>
+			<h:commandButton action="#{jobManager.applyValidationData()}"
+				value="Applica cambiamenti"
+				onclick="#{rich:component('wait')}.show()">
+				<a4j:support event="onsubmit" oncomplete="#{rich:component('wait')}.hide()" />
+			</h:commandButton>
+			<s:button rendered="#{jobManager.job.validationStatus ne 0}"
+				action="#{jobManager.resetValidationData()}"
+				value="Elimina validazione"
+				onclick="if (!window.confirm('Sei sicuro di voler eliminare la validazione?')) return false;">
+				<f:param name="jobId" value="#{jobManager.jobId}" />
+			</s:button>
+
+			<br />
+			<s:button view="/jobDetail.xhtml" value="Dettaglio Job"
+				propagation="none">
+				<f:param name="jobId" value="#{jobManager.jobId}" />
+			</s:button>
+			<s:button view="/jobValidationData.xhtml"
+				value="Dati per validazione" propagation="none">
+				<f:param name="jobId" value="#{jobManager.jobId}" />
+			</s:button>
+		</a4j:form>
+		<rich:modalPanel id="wait" autosized="true" width="200" height="120"
+			moveable="false" resizeable="false">
+			<f:facet name="header">
+				<h:outputText value="Operazione in corso" />
+			</f:facet>
+			<h:outputText value="Attendere, per favore..." />
+			<s:div>
+				<h:graphicImage alt="loader" styleClass="loaderImg" id="loaderImg"
+					value="/img/ajax-loader.gif">
+				</h:graphicImage>
+			</s:div>
+		</rich:modalPanel>
+		<ui:include src="/cleanedTextModalPanel.xhtml" />
+		<ui:include src="/posTextModalPanel.xhtml" />
+	</ui:define>
+</ui:composition>
+

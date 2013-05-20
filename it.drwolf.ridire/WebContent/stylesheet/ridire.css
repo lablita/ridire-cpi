@@ -1,0 +1,207 @@
+#coldx {
+	width: 22%;
+	float: left;
+	margin-left: 1em;
+	margin-right: 1em;
+}
+
+#colsx {
+	width: 20%;
+	float: left;
+}
+
+#colcenter {
+	width: 50%;
+	float: left;
+	margin-left: 2em;
+}
+
+#ft {
+	clear: both;
+}
+
+.TODO {
+	font-family: monospace;
+	font-size: 1.3em;
+	background-color: red;
+	color: white;
+}
+
+.header {
+	font-size: 2em;
+	font-weight: bold;
+	color: #8db7f3;
+	margin: 6px;
+}
+
+.crawlerUser {
+	background-color: #eeeeee;
+}
+
+textarea[disabled] {
+	background-color: #e1e1ff;
+	background-image: none;
+}
+
+.tableControl {
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	text-align: left;
+}
+
+.tableControl a {
+	font-weight: bold;
+	border: 1px solid;
+	text-decoration: none;
+	padding: 3px;
+	margin: 3px;
+}
+
+.tableControl a:hover {
+	color: white !important;
+	background-color: #8db7f3;
+	margin: 3px;
+}
+
+.tableControl .disabled {
+	border: 1px solid #c0c0c0;
+	color: #c0c0c0;
+}
+
+.tableControl a.disabled:hover {
+	color: #c0c0c0 !important;
+	background-color: white;
+}
+
+input[type=submit][disabled],input[type=button][disabled] {
+	background: #e6e6e6;
+	cursor: default;
+}
+
+.leftText {
+	text-align: left;
+}
+
+.centerText {
+	text-align: center;
+}
+
+.rightText {
+	text-align: right;
+}
+
+/* remove feedburner image */
+#creditfooter {
+	display: none;
+}
+
+.noItemIcon .rich-pmenu-item-icon {
+	display: none;
+}
+
+.feedburnerFeedBlock .headline {
+	font-weight: bold;
+}
+
+.feedburnerFeedBlock div {
+	padding-top: 2px;
+	margin: 0px;
+}
+
+.feedburnerFeedBlock div a {
+	text-decoration: none;
+}
+
+.feedburnerFeedBlock ul {
+	padding: 0px 0px 0px 28px;
+}
+
+.feedburnerFeedBlock li p {
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 5px 0px;
+}
+
+.feedburnerFeedBlock ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+	list-style-image: url('/it.drwolf.ridire/img/bullet_news.png');
+}
+
+.feedburnerFeedBlock li {
+	background-image: url('/it.drwolf.ridire/img/bullet_news.png');
+	background-repeat: no-repeat;
+	background-position: 11px 5px;
+	padding-left: 32px;
+}
+
+.validationDataTable {
+	font-size: 1.4em;
+	border: 1px solid #8db7f3;;
+	text-align: center;
+	padding: 5px;
+}
+
+.validationDataTable th {
+	background-color: #eeeeee;
+	margin: 0px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.validationDataTableAn {
+	font-size: 1.4em;
+	border: 1px solid #8db7f3;;
+	text-align: center;
+	padding: 5px;
+}
+
+.validationDataTableAn th {
+	background-color: #ffdddd;
+	margin: 0px;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+.emptyTH {
+	background-color: #ffffff ! important;
+}
+
+.validationDataHeader {
+	margin: 0px;
+	padding: 0px;
+}
+
+.searchedText {
+	color: black;
+	font-weight: normal;
+	font-size: 5em;
+	padding-left: 0.6em;
+	padding-right: 0.6em;
+	background-color: #e1e1ff;
+}
+
+.shortURLColumn a span {
+	width: 160px;
+	white-space: nowrap;
+	overflow: hidden;
+	display: block;
+}
+
+input[type="reset"] {
+	background-image:
+		url("/it.drwolf.ridire/a4j/g/3_3_1.GAorg.richfaces.renderkit.html.GradientA/DATB/eAH7!!3Tj2v7mAAZZAV3");
+	border: 1px solid #BED6F8;
+	color: #000000;
+	font-weight: bold;
+	padding: 1px 4px;
+	cursor: pointer;
+	font-size: 10px;
+	margin: 5px 5px 5px 0;
+}
+
+.verticalAlignTopTable td {
+	vertical-align: top;
+}
+}

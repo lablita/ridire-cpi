@@ -1,0 +1,44 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:a4j="http://richfaces.org/a4j">
+	<table cellpadding="0" cellspacing="0" border="0">
+		<tr>
+			<td valign="middle" width="20%"><h:outputText value="#{count}."
+					style="margin-right: 2px; font-weight: bold; color: #0078d0;" /></td>
+			<td valign="top" align="left" width="#{rId eq -1?'99%':'40%'}"><h:selectOneMenu
+					value="#{pdata.textType}">
+					<f:selectItem itemLabel="Forma" itemValue="FORMA" />
+					<f:selectItem itemLabel="PoS" itemValue="POS" />
+					<f:selectItem itemLabel="PoS estesi" itemValue="POS ESTESI" />
+					<f:selectItem itemLabel="Lemma" itemValue="LEMMA" />
+					<a4j:support event="onchange" reRender="inputData"
+						ajaxSingle="true" />
+				</h:selectOneMenu></td>
+			<s:fragment rendered="#{rId ne -1}">
+				<td valign="top" align="right" width="39%"><h:selectBooleanCheckbox
+						value="#{pdata.exactDistance}" /></td>
+				<td><rich:inputNumberSpinner minValue="0" maxValue="5"
+						inputSize="1" style="float: right;" enableManualInput="false"
+						value="#{pdata.distance}" /></td>
+			</s:fragment>
+			<td width="100%"><rich:spacer height="17px" /></td>
+		</tr>
+		<tr>
+			<td colspan="4"><s:span id="inputData">
+					<h:inputText size="22" value="#{pdata.text}"
+						rendered="#{pdata.textType ne 'POS'}" />
+					<h:selectOneMenu value="#{pdata.text}"
+						rendered="#{pdata.textType eq 'POS'}">
+						<s:selectItems var="pos" itemLabel="#{pos}" itemValue="#{pos}"
+							label="#{pos}" value="#{corpusSizeParams.availableEasyposs}" />
+					</h:selectOneMenu>
+				</s:span></td>
+		</tr>
+	</table>
+</ui:component>

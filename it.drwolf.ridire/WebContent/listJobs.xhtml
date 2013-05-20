@@ -1,0 +1,218 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Elenco Job
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Elenco Job</h1>
+		<h:form>
+			<h:commandButton disabled="#{s:hasRole('Guest')}"
+				value="Crea nuovo Job" action="#{jobManager.canCreateJob()}" />
+			<rich:dataTable id="jobsList" var="_job" value="#{jobs}"
+				rendered="#{not empty jobs}" reRender="sc" rows="20">
+				<rich:column sortable="true" sortBy="#{_job.name}"
+					filterMethod="#{jobManager.filterNames}" label="Nome">
+					<f:facet name="header">
+						Nome<h:panelGroup>
+							<h:outputText value="Nome" />
+							<br />
+							<h:inputText onclick="Event.stop(event);"
+								value="#{jobManager.filterNameValue}" id="inputName">
+								<a4j:support event="onkeyup" ignoreDupResponses="true"
+									requestDelay="700" reRender="jobsList" focus="inputName" />
+							</h:inputText>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{_job.name}" />
+				</rich:column>
+				<rich:column sortable="true" sortBy="#{_job.jobStage}"
+					filterMethod="#{jobManager.filterStatus}" label="Stato">
+					<f:facet name="header">
+						Stato<h:panelGroup>
+							<h:outputText value="Stato" />
+							<br />
+							<h:selectOneMenu onclick="Event.stop(event);"
+								styleClass="rich-filter-input"
+								value="#{jobManager.filterStatusValue}" id="inputStatus">
+								<f:selectItems value="#{jobManager.allStatusMap}" />
+								<a4j:support event="onchange" ignoreDupResponses="true"
+									requestDelay="500" reRender="jobsList" focus="inputStatus" />
+							</h:selectOneMenu>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{_job.jobStage}" />
+				</rich:column>
+				<rich:column sortable="true" sortBy="#{_job.mappedResources}"
+					filterMethod="#{jobManager.filterResStatus}" label="Risorse">
+					<f:facet name="header">
+						Risorse<h:panelGroup>
+							<h:outputText value="Risorse" />
+							<br />
+							<h:selectOneMenu onclick="Event.stop(event);"
+								styleClass="rich-filter-input"
+								value="#{jobManager.filterResStatusValue}" id="inputResStatus">
+								<f:selectItems value="#{jobManager.allResStatusMap}" />
+								<a4j:support event="onchange" ignoreDupResponses="true"
+									requestDelay="500" reRender="jobsList" focus="inputResStatus" />
+							</h:selectOneMenu>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="Da mappare"
+						rendered="#{not _job.mappedResources and jobManager.noCrawledResources(_job.id)}" />
+					<h:outputText value="Mappatura in corso"
+						rendered="#{not _job.mappedResources and not jobManager.noCrawledResources(_job.id)}" />
+					<h:outputText value="Mappate" rendered="#{_job.mappedResources}" />
+				</rich:column>
+				<rich:column sortable="true"
+					filterMethod="#{jobManager.filterUsers}"
+					sortBy="#{_job.crawlerUser.username}" label="Crawler user">
+					<f:facet name="header">
+						Crawler user<h:panelGroup>
+							<h:outputText value="Crawler user" />
+							<br />
+							<h:inputText onclick="Event.stop(event);"
+								value="#{jobManager.filterUserValue}" id="inputUser">
+								<a4j:support event="onkeyup" ignoreDupResponses="true"
+									requestDelay="700" reRender="jobsList" focus="inputUser" />
+							</h:inputText>
+						</h:panelGroup>
+					</f:facet>
+					<h:outputText value="#{_job.crawlerUser.username}" />
+				</rich:column>
+				<rich:column style="text-align: center;" label="Validazione">
+					<f:facet name="header">
+						Validazione
+					</f:facet>
+					<s:link view="/jobValidationTable.xhtml" propagation="none"
+						rendered="#{_job.validationStatus eq 0}">
+						<s:graphicImage value="/img/status-offline.png" alt="Da validare"
+							title="Da validare" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+					<s:link view="/jobValidationTable.xhtml"  propagation="none"
+						rendered="#{_job.validationStatus eq 1}">
+						<s:graphicImage value="/img/status-away.png"
+							alt="Validazione in corso" title="Validazione in corso" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+					<s:link view="/jobValidationTable.xhtml"  propagation="none"
+						rendered="#{_job.validationStatus eq 2}">
+						<s:graphicImage value="/img/status.png" alt="Job valido"
+							title="Job valido" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+					<s:link view="/jobValidationTable.xhtml"  propagation="none"
+						rendered="#{_job.validationStatus eq 3}">
+						<s:graphicImage value="/img/status-busy.png" alt="Job non valido"
+							title="Job non valido" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+					<s:graphicImage value="/img/gear__exclamation.png" 
+						alt="Selezione risorse in corso"
+						rendered="#{_job.validationStatus eq 4}"
+						title="Selezione risorse in corso" />
+				</rich:column>
+				<rich:column style="text-align: center;" label="Risorse lavorate">
+					<f:facet name="header">
+						Risorse<br />lavorate
+					</f:facet>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) eq 0}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-000.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) lt 2000 and jobManager.getAnalyzedResourcesPercentage(_job) gt 0}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-020.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) lt 4000 and jobManager.getAnalyzedResourcesPercentage(_job) ge 2000}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-040.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) lt 6000 and jobManager.getAnalyzedResourcesPercentage(_job) ge 4000}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-060.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) lt 8000 and jobManager.getAnalyzedResourcesPercentage(_job) ge 6000}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-080.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) lt 10000 and jobManager.getAnalyzedResourcesPercentage(_job) ge 8000}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-100.png"
+								alt="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%"
+								title="#{jobManager.getAnalyzedResourcesPercentage(_job)/100.0}%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+					<s:fragment
+						rendered="#{jobManager.getAnalyzedResourcesPercentage(_job) eq 10000}">
+						<s:link view="/jobResources.xhtml"  propagation="none">
+							<s:graphicImage value="/img/gpm-primary-charged.png" alt="100%"
+								title="100%" />
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:link>
+					</s:fragment>
+				</rich:column>
+				<rich:column>
+					<f:facet name="header">
+						Dettaglio
+							</f:facet>
+					<s:link view="/jobDetail.xhtml" value=""  propagation="none">
+						<img style="text-align: left;"
+							src="#{request.contextPath}/img/document--arrow.png" alt="Vai"
+							title="Vai" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+					<h:outputText value=" " />
+					<s:link view="/jobSchedule.xhtml"  propagation="none">
+						<img style="text-align: left;"
+							src="#{request.contextPath}/img/calendar-blue.png"
+							alt="#{empty _job.cronData?'Schedule':'Cambia schedule'}"
+							title="#{empty _job.cronData?'Schedule':'Cambia schedule'}" />
+						<f:param name="jobId" value="#{_job.id}" />
+					</s:link>
+				</rich:column>
+			</rich:dataTable>
+			<rich:datascroller align="center" for="jobsList" maxPages="20"
+				id="sc" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

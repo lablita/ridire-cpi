@@ -1,0 +1,247 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+  Sketch
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Sketch</h1>
+		<h:form>
+			<s:div id="lemmi">
+				<h:panelGrid columns="4">
+					<h:outputText value="Lemma: " />
+					<h:inputText value="#{sketchRetriever.lemma}" />
+					<h:outputText value="PoS: " />
+					<h:selectOneMenu value="#{sketchRetriever.pos}">
+						<f:selectItem itemValue="nome" />
+						<f:selectItem itemValue="verbo" />
+						<f:selectItem itemValue="aggettivo" />
+						<f:selectItem itemValue="avverbio" />
+						<a4j:support event="onchange" reRender="sketchChooser" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</s:div>
+			<h:panelGrid columns="2">
+				<h:outputText value="Scegli sketch: " />
+				<h:selectOneMenu value="#{sketchRetriever.sketchToExtract}"
+					id="sketchChooser">
+					<f:selectItems var="sk" itemLabel="#{sk}"
+						value="#{sketchRetriever.sketchesSI}" />
+				</h:selectOneMenu>
+			</h:panelGrid>
+			<h:panelGrid columns="2" style="margin-top: 10px;">
+				<h:outputText value="Scegli un dominio:" />
+				<h:selectOneMenu value="#{sketchRetriever.domain}">
+					<f:selectItems value="#{localResourcesManager.getAllMetadata()}"
+						var="d" itemLabel="#{d}" />
+				</h:selectOneMenu>
+			</h:panelGrid>
+			<h:commandButton action="#{sketchRetriever.getSketchesFromIndex1()}"
+				value="Calcola sketch" />
+			<h:commandButton action="#{sketchRetriever.getSketchesFromIndex2()}"
+				value="Calcola sketch 2" />
+			<br />
+			<h:outputText rendered="#{sketchRetriever.noResults}"
+				value="Nessun risultato (i lemmi con frequenza minore di 500 non sono stati computati)." />
+			<a4j:repeat value="#{sketchRetriever.sketchTablesFirst}"
+				rendered="#{not empty sketchRetriever.sketchTablesFirst}"
+				var="sketchTable">
+				<rich:dataTable
+					rendered="#{not sketchTable.sketchName.startsWith('NONE')}"
+					value="#{sketchTable.rows}" var="r"
+					style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column>
+								<h:outputText value="#{sketchTable.sketchName}" />
+							</rich:column>
+							<rich:column colspan="2">
+								<h:outputText value="#{sketchTable.globalFrequency}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					<rich:column>
+						<s:link value="#{r.item}" view="/cwbconcordances.xhtml"
+							disabled="false"
+							action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+							<f:param name="fromSketch" value="true" />
+							<f:param name="sketchTermHead" value="#{sketchRetriever.lemma}" />
+							<f:param name="sketchTermCollocate" value="#{r.item}" />
+							<f:param name="sketchName" value="#{sketchTable.sketchName}" />
+							<f:param name="sketchPoS" value="#{sketchRetriever.pos}" />
+							<f:param name="sketchDomain" value="#{sketchRetriever.domain}" />
+						</s:link>
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.frequency}" />
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.score}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>
+					</rich:column>
+				</rich:dataTable>
+				<s:fragment rendered="#{sketchTable.sketchName.startsWith('NONE')}">
+					<div
+						style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
+				</s:fragment>
+			</a4j:repeat>
+			<div
+				style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
+			<a4j:repeat value="#{sketchRetriever.sketchTablesSecond}"
+				rendered="#{not empty sketchRetriever.sketchTablesSecond}"
+				var="sketchTable">
+				<rich:dataTable
+					rendered="#{not sketchTable.sketchName.startsWith('NONE')}"
+					value="#{sketchTable.rows}" var="r"
+					style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column>
+								<h:outputText value="#{sketchTable.sketchName}" />
+							</rich:column>
+							<rich:column colspan="2">
+								<h:outputText value="#{sketchTable.globalFrequency}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					<rich:column>
+						<s:link value="#{r.item}" view="/cwbconcordances.xhtml"
+							disabled="false"
+							action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+							<f:param name="fromSketch" value="true" />
+							<f:param name="sketchTermHead" value="#{sketchRetriever.lemma}" />
+							<f:param name="sketchTermCollocate" value="#{r.item}" />
+							<f:param name="sketchName" value="#{sketchTable.sketchName}" />
+							<f:param name="sketchPoS" value="#{sketchRetriever.pos}" />
+							<f:param name="sketchDomain" value="#{sketchRetriever.domain}" />
+						</s:link>
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.frequency}" />
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.score}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>
+					</rich:column>
+				</rich:dataTable>
+				<s:fragment rendered="#{sketchTable.sketchName.startsWith('NONE')}">
+					<div
+						style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
+				</s:fragment>
+			</a4j:repeat>
+			<div
+				style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
+			<a4j:repeat value="#{sketchRetriever.sketchTablesThird}"
+				rendered="#{not empty sketchRetriever.sketchTablesThird}"
+				var="sketchTable">
+				<rich:dataTable
+					rendered="#{not sketchTable.sketchName.startsWith('NONE')}"
+					value="#{sketchTable.rows}" var="r"
+					style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px;">
+					<f:facet name="header">
+						<rich:columnGroup>
+							<rich:column>
+								<h:outputText value="#{sketchTable.sketchName}" />
+							</rich:column>
+							<rich:column colspan="2">
+								<h:outputText value="#{sketchTable.globalFrequency}" />
+							</rich:column>
+						</rich:columnGroup>
+					</f:facet>
+					<rich:column>
+						<s:link value="#{r.item}" view="/cwbconcordances.xhtml"
+							disabled="false"
+							action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+							<f:param name="fromSketch" value="true" />
+							<f:param name="sketchTermHead" value="#{sketchRetriever.lemma}" />
+							<f:param name="sketchTermCollocate" value="#{r.item}" />
+							<f:param name="sketchName" value="#{sketchTable.sketchName}" />
+							<f:param name="sketchPoS" value="#{sketchRetriever.pos}" />
+							<f:param name="sketchDomain" value="#{sketchRetriever.domain}" />
+						</s:link>
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.frequency}" />
+					</rich:column>
+					<rich:column style="text-align: right;">
+						<h:outputText value="#{r.score}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>
+					</rich:column>
+				</rich:dataTable>
+				<s:fragment
+					rendered="#{(sketchTable.position) % 4 eq 0 or sketchTable.sketchName.startsWith('NONE')}">
+					<div
+						style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
+				</s:fragment>
+			</a4j:repeat>
+		</h:form>
+		<rich:spacer height="40" />
+	</ui:define>
+	<ui:define name="rightcol">
+		<p:panel id="tagset" header="Legenda" toggleable="true"
+			collapsed="false" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<ul>
+					<strong>Relazione Nome / Verbo</strong>
+					<li><em>postV_N</em>: dato un verbo ritorna i nomi che lo
+						seguono (presumibilmente gli oggetti diretti o indiretti)</li>
+					<li><em>preV_N</em>: dato un verbo ritorna i nomi che lo
+						precedono (presumibilmente i soggetti)</li>
+					<li><em>preN_V</em>: dato un nome ritorna i verbi che lo
+						precedono (di cui presumibilmente è oggetto o oggetto indiretto)</li>
+					<li><em>postN_V</em>: dato un nome ritorna i verbi che lo
+						seguono (di cui è soggetto)</li>
+				</ul>
+				<ul>
+					<strong>Legami preposizionali instaurati da un lemma</strong>
+					<li><em>pp_%s</em>: dato un lemma (nome, verbo, aggettivo)
+						identifica le modificazioni preposizionali che instaura</li>
+				</ul>
+				<ul>
+					<strong>Relazioni di modificazione tra nomi</strong>
+					<li><em>n_modifies</em>: dato un nome ritorna i nomi che lo
+						precedono direttamente o separati da aggettivo o nome (e lo
+						modificano)</li>
+					<li><em>n_modifier</em>: dato un nome ritorna i nomi che lo
+						seguono direttamente o separati da aggettivo o nome (ciò modifica
+						il nome)</li>
+				</ul>
+				<ul>
+					<strong>Relazione Nome Aggettivo</strong>
+					<li><em>NofA</em>: dato un aggettivo ritorna i nomi che lo
+						precedono o seguono</li>
+					<li><em>AofN</em>: dato un nome ritorna gli aggettivi che lo
+						precedono o seguono</li>
+				</ul>
+				<ul>
+					<strong>Relazione Verbo Avverbio</strong>
+					<li><em>postV_ADV</em>: dato un verbo ritorna gli avverbi che
+						lo seguono</li>
+					<li><em>preADV_V</em>: dato un avverbio ritorna i verbi che lo
+						precedono</li>
+				</ul>
+				<ul>
+					<strong>Selezioni preferenziali nella congiunzione tra
+						lemmi</strong>
+					<li><em>e_o</em>: Dato un lemma di qualsiasi PoS ritorna i
+						lemmi di uguale PoS che collocano con questo in relazione di
+						congiunzione o digiunzione</li>
+				</ul>
+			</s:div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+

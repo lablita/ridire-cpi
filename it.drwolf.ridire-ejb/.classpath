@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="it/drwolf/ridire/entity/ProcessingPhase.java|it/drwolf/ridire/session/interfaces/ICrawlerManager.java|it/drwolf/ridire/cleaners/ReadabilityCleaner.java|it/drwolf/ridire/cleaners/AlchemyCleaner.java|it/drwolf/ridire/cleaners/NCleaner.java|it/drwolf/ridire/sandbox/SandboxIndexSearcher.java|it/drwolf/ridire/index/HighFreqTerms.java|it/drwolf/ridire/index/FrequencyList2InProgr.java|precisionrecall/Choicer.java|precisionrecall/Comparator.java|precisionrecall/FreqList.java|precisionrecall/Main.java|precisionrecall/Tester.java|it/drwolf/ridire/session/async/callable/CorpusCreator.java|it/drwolf/ridire/session/async/callable/CorpusDeleter.java|it/drwolf/ridire/session/async/callable/IndexingCommand.java|it/drwolf/ridire/session/async/callable/IndexingResult.java|it/drwolf/ridire/session/async/callable/JobIndexer.java|it/drwolf/ridire/session/async/callable/JobResourcesRemover.java|it/drwolf/ridire/session/async/callable/JobToCorpusAdder.java|it/drwolf/ridire/session/async/callable/JobToCorpusAdder2.java|it/drwolf/ridire/session/async/callable/PerlemmaFLRemover.java|it/drwolf/ridire/session/async/callable/PerlemmaIndexer.java|it/drwolf/ridire/session/async/callable/SingleResourceIndexer.java|it/drwolf/ridire/session/async/callable/SingleResourceRemover.java|it/drwolf/ridire/session/async/callable/SingleResourceUpdater.java|it/drwolf/ridire/session/async/AsyncIndexer.java|it/drwolf/ridire/session/async/IndexerService.java|it/drwolf/ridire/index/RIDIREAnalyzer.java|it/drwolf/ridire/index/ContextsIndexManager.java|it/drwolf/ridire/index/ContextSearch.java|it/drwolf/ridire/index/ExtContextSearch.java|it/drwolf/ridire/index/FrequencyList2.java|it/drwolf/ridire/index/ContextAnalyzer.java|it/drwolf/ridire/index/ContextIndexer.java|it/drwolf/ridire/index/pattern/PatternSearcher.java|it/drwolf/ridire/index/grouping/PatternGroupCollector.java|it/drwolf/ridire/index/grouping/PivotGroupCollector.java|it/drwolf/ridire/index/cwb/exception/CqiClError.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorCorpusAccess.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorInternal.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorNoSuchAttribute.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorOutOfMemory.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorOutOfRange.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorRegex.java|it/drwolf/ridire/index/cwb/exception/CqiClErrorWrongAttributeType.java|it/drwolf/ridire/index/cwb/exception/CqiClientException.java|it/drwolf/ridire/index/cwb/exception/CqiCqpError.java|it/drwolf/ridire/index/cwb/exception/CqiCqpErrorErrorGeneral.java|it/drwolf/ridire/index/cwb/exception/CqiCqpErrorInvalidField.java|it/drwolf/ridire/index/cwb/exception/CqiCqpErrorNoSuchCorpus.java|it/drwolf/ridire/index/cwb/exception/CqiCqpErrorOutOfRange.java|it/drwolf/ridire/index/cwb/exception/CqiCqpErrorSyntax.java|it/drwolf/ridire/index/cwb/exception/CqiErrorConnectRefused.java|it/drwolf/ridire/index/cwb/exception/CqiErrorGeneralError.java|it/drwolf/ridire/index/cwb/exception/CqiErrorSyntaxError.java|it/drwolf/ridire/index/cwb/exception/CqiErrorUserAbort.java|it/drwolf/ridire/index/cwb/exception/CqiServerError.java|it/drwolf/ridire/index/cwb/exception/InvalidCqpIdException.java|it/drwolf/ridire/index/cwb/exception/UnexpectedAnswerException.java|it/drwolf/ridire/index/collocations/CollocationExtractor.java|it/drwolf/ridire/index/collocations/CollocationIndexer.java|it/drwolf/ridire/index/collocations/CollocationResult.java|it/drwolf/ridire/index/collocations/CollocationScorer.java|it/drwolf/ridire/index/collocations/CollocationSearcher.java|it/drwolf/ridire/index/collocations/CollocationsManager.java|it/drwolf/ridire/session/async/IndexMerger.java|it/drwolf/ridire/util/async/FrequencyListGenerator.java|it/drwolf/ridire/util/async/FrequencyListDataGenerator.java|it/drwolf/ridire/index/grouping/AbstractGroupCollector.java|it/drwolf/ridire/index/cwb/CqiSpec.java|it/drwolf/ridire/index/grouping/ContextGroupCollector.java|it/drwolf/ridire/index/grouping/Group.java|it/drwolf/ridire/index/grouping/PhraseGroupCollector.java|it/drwolf/ridire/index/pattern/SearchedTextPatternResult.java|it/drwolf/ridire/entity/index/Context.java|it/drwolf/ridire/entity/index/ContextItem.java|it/drwolf/ridire/entity/index/SupportIndexingTerm.java" kind="src" path="ejbModule"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/antlr-runtime.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/drools-compiler.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/drools-core.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/fastutil-5.0.7.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/jboss-el.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/jboss-seam.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/jbpm-jpdl.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/richfaces-api.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/jaxrs-api.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/resteasy-jaxrs.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-2.0.2.jar" sourcepath="/Heritrix/commons/src/main/java"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/quartz.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire/WebContent/WEB-INF/lib/richfaces-ui.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/tika-core-0.6.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/tika-parsers-0.6.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-lang-2.4.jar" sourcepath="/home/drwolf/.m2/repository/commons-lang/commons-lang/2.4/commons-lang-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/sac-1.3.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/nekohtml-1.9.14.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-httpclient-3.1.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/stax-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/cngram.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.jboss.ide.eclipse.as.core.server.runtime.runtimeTarget/JBoss 5.1 Runtime"/>
+	<classpathentry kind="lib" path="/home/drwolf/jboss-5.1.0.GA/lib/endorsed/serializer.jar"/>
+	<classpathentry kind="lib" path="/home/drwolf/jboss-5.1.0.GA/lib/endorsed/xalan.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.java"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/pdfcleaner"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/primefaces-1.1.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/ostermillerutils_1_07_00.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/heritrix-engine-3.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/jsch-0.1.45.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/it.drwolf.ridire.cleaner"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/poi-3.7-20101029.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/poi-scratchpad-3.7-20101029.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-io-2.2.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/lucene-core-3.5.0.jar" sourcepath="/home/drwolf/.m2/repository/org/apache/lucene/lucene-core/3.5.0/lucene-core-3.5.0-sources.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/lucene-grouping-3.5.0.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/lucene-queries-3.5.0.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-exec-1.1.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-math3-3.0.jar"/>
+	<classpathentry kind="lib" path="/it.drwolf.ridire-ear/EarContent/lib/commons-compress-1.4.1.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

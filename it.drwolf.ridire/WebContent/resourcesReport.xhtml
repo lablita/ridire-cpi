@@ -1,0 +1,254 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<s:div>
+			<h1>Riepilogo Risorse Complessivo</h1>
+			<rich:tabPanel width="80%" switchType="ajax">
+				<rich:tab label="Tutti">
+					<rich:dataTable
+						value="#{resourcesReporterData.all[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+						var="d">
+						<rich:column>
+							<f:facet name="header">Dom. funzionale</f:facet>
+							<h:outputText value="#{d.domFunzionale}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Dom. semantico</f:facet>
+							<h:outputText value="#{d.domSemantico}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole</f:facet>
+							<h:outputText value="#{d.words}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole job validi</f:facet>
+							<h:outputText value="#{d.wordsValid}" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:columnGroup>
+								<rich:column colspan="2">
+									<h:outputText value="Totale" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.allTotal[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.allTotalValid[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+							</rich:columnGroup>
+						</f:facet>
+					</rich:dataTable>
+				</rich:tab>
+				<rich:tab label="Dom. funzionale">
+					<rich:dataTable
+						value="#{resourcesReporterData.functional[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+						var="d">
+						<rich:column>
+							<f:facet name="header">Dom. funzionale</f:facet>
+							<h:outputText value="#{d.domFunzionale}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole</f:facet>
+							<h:outputText value="#{d.words}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole job validi</f:facet>
+							<h:outputText value="#{d.wordsValid}" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:columnGroup>
+								<rich:column>
+									<h:outputText value="Totale" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.functionalTotal[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.functionalTotalValid[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+							</rich:columnGroup>
+						</f:facet>
+					</rich:dataTable>
+				</rich:tab>
+				<rich:tab label="Dom. semantico">
+					<rich:dataTable
+						value="#{resourcesReporterData.semantic[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+						var="d">
+						<rich:column>
+							<f:facet name="header">Dom. semantico</f:facet>
+							<h:outputText value="#{d.domSemantico}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole</f:facet>
+							<h:outputText value="#{d.words}" />
+						</rich:column>
+						<rich:column>
+							<f:facet name="header">Parole job validi</f:facet>
+							<h:outputText value="#{d.words}" />
+						</rich:column>
+						<f:facet name="footer">
+							<rich:columnGroup>
+								<rich:column>
+									<h:outputText value="Totale" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.semanticTotal[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+								<rich:column>
+									<h:outputText
+										value="#{resourcesReporterData.semanticTotalValid[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}" />
+								</rich:column>
+							</rich:columnGroup>
+						</f:facet>
+					</rich:dataTable>
+				</rich:tab>
+			</rich:tabPanel>
+		</s:div>
+		<rich:spacer height="15" />
+		<h1>Riepilogo per Utente</h1>
+		<rich:tabPanel width="80%" switchType="ajax">
+			<rich:tab label="Job totali">
+				<rich:dataTable
+					value="#{resourcesReporterData.totalJobs[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+					var="udr">
+					<rich:column>
+						<f:facet name="header">N. Job</f:facet>
+						<h:outputText value="#{udr.values.get(0)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Da validare</f:facet>
+						<h:outputText value="#{udr.values.get(1)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">In corso di validazione</f:facet>
+						<h:outputText value="#{udr.values.get(2)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Validi</f:facet>
+						<h:outputText value="#{udr.values.get(3)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Non validi</f:facet>
+						<h:outputText value="#{udr.values.get(4)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">User</f:facet>
+						<h:outputText value="#{udr.username}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Nome</f:facet>
+						<h:outputText value="#{udr.nome}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Cognome</f:facet>
+						<h:outputText value="#{udr.cognome}" />
+					</rich:column>
+				</rich:dataTable>
+			</rich:tab>
+			<rich:tab label="Job mappati">
+				<rich:dataTable
+					value="#{resourcesReporterData.mappedJobs[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+					var="udr">
+					<rich:column>
+						<f:facet name="header">N. Job</f:facet>
+						<h:outputText value="#{udr.values.get(0)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">User</f:facet>
+						<h:outputText value="#{udr.username}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Nome</f:facet>
+						<h:outputText value="#{udr.nome}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Cognome</f:facet>
+						<h:outputText value="#{udr.cognome}" />
+					</rich:column>
+				</rich:dataTable>
+			</rich:tab>
+			<rich:tab label="Non avviati">
+				<rich:dataTable
+					value="#{resourcesReporterData.notStartedJobs[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+					var="udr">
+					<rich:column>
+						<f:facet name="header">N. Job</f:facet>
+						<h:outputText value="#{udr.values.get(0)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">User</f:facet>
+						<h:outputText value="#{udr.username}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Nome</f:facet>
+						<h:outputText value="#{udr.nome}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Cognome</f:facet>
+						<h:outputText value="#{udr.cognome}" />
+					</rich:column>
+				</rich:dataTable>
+			</rich:tab>
+			<rich:tab label="Non mappati">
+				<rich:dataTable
+					value="#{resourcesReporterData.notMappedJobs[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+					var="udr">
+					<rich:column>
+						<f:facet name="header">N. Job</f:facet>
+						<h:outputText value="#{udr.values.get(0)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">User</f:facet>
+						<h:outputText value="#{udr.username}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Nome</f:facet>
+						<h:outputText value="#{udr.nome}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Cognome</f:facet>
+						<h:outputText value="#{udr.cognome}" />
+					</rich:column>
+				</rich:dataTable>
+			</rich:tab>
+			<rich:tab label="N. parole">
+				<rich:dataTable
+					value="#{resourcesReporterData.wordsNumber[identity.hasRole('Admin') ? 'all' : identity.credentials.username]}"
+					var="udr">
+					<rich:column>
+						<f:facet name="header">Parole</f:facet>
+						<h:outputText value="#{udr.values.get(0)}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">User</f:facet>
+						<h:outputText value="#{udr.username}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Nome</f:facet>
+						<h:outputText value="#{udr.nome}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">Cognome</f:facet>
+						<h:outputText value="#{udr.cognome}" />
+					</rich:column>
+				</rich:dataTable>
+			</rich:tab>
+		</rich:tabPanel>
+
+	</ui:define>
+
+</ui:composition>
+

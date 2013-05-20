@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages login-view-id="/login.xhtml" no-conversation-view-id="/home.xhtml"
+	xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd">
+	<page view-id="*">
+		<navigation>
+			<rule if-outcome="home">
+				<redirect view-id="/home.xhtml" />
+			</rule>
+		</navigation>
+	</page>
+	<exception class="org.jboss.seam.framework.EntityNotFoundException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">Record not found</message>
+		</redirect>
+	</exception>
+	<exception class="javax.persistence.EntityNotFoundException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">Record not found</message>
+		</redirect>
+	</exception>
+	<exception class="javax.persistence.EntityExistsException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">Duplicate record</message>
+		</redirect>
+	</exception>
+	<exception class="javax.persistence.OptimisticLockException">
+		<end-conversation />
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">Another user changed the same data, please try again</message>
+		</redirect>
+	</exception>
+	<exception class="org.jboss.seam.security.AuthorizationException">
+		<redirect view-id="/error.xhtml">
+			<message severity="error">You don't have permission to access this resource</message>
+		</redirect>
+	</exception>
+	<exception class="org.jboss.seam.security.NotLoggedInException">
+		<redirect view-id="/login.xhtml">
+			<message severity="warn">#{messages['org.jboss.seam.NotLoggedIn']}</message>
+		</redirect>
+	</exception>
+	<exception class="javax.faces.application.ViewExpiredException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">Your session has timed out, please try again</message>
+		</redirect>
+	</exception>
+	<exception class="it.drwolf.ridire.util.exceptions.HeritrixException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">#{messages.HeritrixErrorException}</message>
+		</redirect>
+	</exception>
+	<exception
+		class="it.drwolf.ridire.util.exceptions.HeritrixNotStartingException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">#{messages.HeritrixNotStartingException}</message>
+		</redirect>
+	</exception>
+	<exception class="it.drwolf.ridire.util.exceptions.CrawlingFileException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">#{messages.CrawlingFileException}</message>
+		</redirect>
+	</exception>
+	<exception class="it.drwolf.ridire.util.exceptions.FileHandlingException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">#{messages.MimeTypeException}</message>
+		</redirect>
+	</exception>
+	<exception class="it.drwolf.ridire.util.exceptions.FileHandlingException">
+		<redirect view-id="/error.xhtml">
+			<message severity="warn">#{it.drwolf.ridire.util.exceptions.FileHandlingException.message}</message>
+		</redirect>
+	</exception>
+	<exception class="org.jboss.seam.ConcurrentRequestTimeoutException"
+		log-level="trace">
+		<http-error error-code="503" />
+	</exception>
+	<exception>
+		<redirect view-id="/error.xhtml">
+			<message severity="error">Unexpected error, please try again</message>
+		</redirect>
+	</exception>
+	<exception class="org.jboss.seam.ConcurrentRequestTimeoutException">
+		<end-conversation before-redirect="true" />
+		<redirect>
+			<message severity="WARN">Risorse momentaneamente occupate, riprovare tra qualche istante</message>
+		</redirect>
+	</exception>
+	<exception class="org.jboss.seam.core.LockTimeoutException">
+		<end-conversation before-redirect="true" />
+		<redirect>
+			<message severity="WARN">Risorse momentaneamente occupate, riprovare tra qualche istante</message>
+		</redirect>
+	</exception>
+</pages>

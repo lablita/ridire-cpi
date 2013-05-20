@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+	<s:link
+		rendered="#{jobManager.sortField eq sortField and jobManager.sortOrder eq 'up'}" action="#{jobManager.resetValidationFactory()}">
+		<s:graphicImage value="/img/sortup.gif" alt="sortup" />
+		<f:param name="sortField" value="#{sortField}" />
+		<f:param name="sortOrder" value="down" />
+	</s:link>
+	<s:link
+		rendered="#{jobManager.sortField eq sortField and jobManager.sortOrder eq 'down'}" action="#{jobManager.resetValidationFactory()}">
+		<s:graphicImage value="/img/sortdown.gif" alt="sortdown" />
+		<f:param name="sortField" value="#{sortField}" />
+		<f:param name="sortOrder" value="up" />
+	</s:link>
+	<s:link rendered="#{jobManager.sortField ne sortField}" action="#{jobManager.resetValidationFactory()}">
+		<s:graphicImage value="/img/nosort.gif" alt="no sort" />
+		<f:param name="sortField" value="#{sortField}" />
+		<f:param name="sortOrder" value="up" />
+	</s:link>
+</ui:composition>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<page xmlns="http://jboss.com/products/seam/pages"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd" login-required="true">
+	<begin-conversation join="true" />
+	<param name="pageSize" value="#{cwbConcordancer.pageSize}" />
+	<param name="firstResult" value="#{cwbConcordancer.firstResult}" />
+	<param name="forma" value="#{cwbConcordancer.forma}" />
+	<param name="lemma" value="#{cwbConcordancer.lemma}" />
+	<param name="pos" value="#{cwbConcordancer.pos}" />
+	<param name="phrase" value="#{cwbConcordancer.phrase}" />
+	<param name="resultsGrouping" value="#{cwbConcordancer.resultsGrouping}" />
+	<param name="toBeVisualized" value="#{cwbConcordancer.toBeVisualized}" />
+	<param name="sortBy" value="#{cwbConcordancer.sortBy}" />
+	<param name="sortOrder" value="#{cwbConcordancer.sortOrder}" />
+	<param name="contextLength" value="#{cwbConcordancer.contextLength}" />
+	<param name="contextGroupingLength" value="#{cwbConcordancer.contextGroupingLength}" />
+	<param name="corporaNamesString" value="#{cwbConcordancer.corporaNamesString}" />
+	<param name="query" value="#{cwbConcordancer.query}" />
+	<param name="distanceLeft" value="#{cwbConcordancer.distanceLeft}" />
+	<param name="distanceRight" value="#{cwbConcordancer.distanceRight}" />
+	<param name="term" value="#{cwbConcordancer.collocateTerm}" />
+	<param name="termCategory" value="#{cwbConcordancer.collocationBasedOn}" />
+	<param name="fromCollocation" value="#{cwbConcordancer.fromCollocation}" />
+	<param name="fromSketch" value="#{cwbConcordancer.fromSketch}" />
+	<param name="sketchTermHead" value="#{cwbConcordancer.sketchTermHead}" />
+	<param name="sketchTermCollocate" value="#{cwbConcordancer.sketchTermCollocate}" />
+	<param name="sketchName" value="#{cwbConcordancer.sketchName}" />
+	<param name="sketchPoS" value="#{cwbConcordancer.sketchPoS}" />
+	<param name="sketchDomain" value="#{cwbConcordancer.sketchDomain}" />
+	<param name="resultsFromCollocationExtracted" value="#{cwbConcordancer.resultsFromCollocationExtracted}"/>
+	<action execute="#{cwbConcordancer.initResultsFromCollocation}"
+		if="#{not resultsFromCollocationExtracted}" />
+	<action execute="#{cwbConcordancer.initResultsFromSketch}" if="#{not resultsFromSketchExtracted}" />
+</page>

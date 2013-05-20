@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:s="http://jboss.com/products/seam/taglib">
+<f:view contentType="application/xhtml+xml"/>
+<head>
+<p:resources />
+<a:loadScript src="resource://jquery.js" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>RIDIRE</title>
+<link rel="shortcut icon" href="#{request.contextPath}/favicon.ico" />
+<a:loadStyle src="resource:///it/drwolf/ridire/stylesheet/theme.xcss" />
+<a:loadStyle src="/stylesheet/theme.css" />
+<a:loadStyle src="/stylesheet/ridire.css" />
+<script type="text/javascript">
+	//<![CDATA[         
+	function checkAll(field) {
+		if (!(field.length)) {
+			field.checked = true;
+		} else {
+			for ( var i = 0; i < field.length; i++) {
+				field[i].checked = true;
+			}
+		}
+	}
+
+	function uncheckAll(field) {
+		if (!(field.length)) {
+			field.checked = false;
+		} else {
+			for ( var i = 0; i < field.length; i++) {
+				field[i].checked = false;
+			}
+		}
+	}
+
+	function invertAll(field) {
+		if (!(field.length)) {
+			field.checked = !field.checked;
+		} else {
+			for ( var i = 0; i < field.length; i++) {
+				field[i].checked = !field[i].checked;
+			}
+		}
+	}
+	//]]>
+</script>
+
+<ui:insert name="head" />
+</head>
+
+<body>
+	<div id="container">
+		<div id="hd">
+			<ui:include src="/layout/header.xhtml" />
+		</div>
+		<div id="bd">
+			<div id="colsx">
+				<ui:include src="/layout/menu.xhtml" />
+			</div>
+			<div id="colcenter">
+				<h:messages id="messages" globalOnly="true" styleClass="message"
+					errorClass="errormsg" infoClass="infomsg" warnClass="warnmsg"
+					rendered="#{showGlobalMessages != 'false'}" />
+				<ui:insert name="body" />
+			</div>
+			<div class="coldx">
+				<!-- PUT SECONDARY COLUMN CODE HERE -->
+			</div>
+		</div>
+		<div id="ft">
+			<ui:include src="/layout/footer.xhtml" />
+		</div>
+	</div>
+</body>
+</html>

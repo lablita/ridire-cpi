@@ -1,0 +1,15 @@
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd"
+	login-required="true">
+	<begin-conversation join="true"/>
+	<navigation from-action="#{jobManager.canCreateJob()}">
+		<rule if-outcome="OK">
+			<redirect view-id="/makeJobSelectProfile.xhtml" />
+		</rule>
+		<rule if-outcome="NOK">
+			<redirect>
+				<message severity="WARN">Non puoi creare altri job. Hai superato il limite di spazio su disco.</message>
+			</redirect>
+		</rule>
+	</navigation>
+</page>

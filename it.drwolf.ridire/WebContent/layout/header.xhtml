@@ -1,0 +1,16 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:h="http://java.sun.com/jsf/html" class="header">
+<table width="100%">
+	<tbody>
+		<tr>
+			<td valign="top" align="left"><h:graphicImage style="float: left;" width="60"
+				value="/img/logoRidire.gif" alt="Logo RIDIRE" title="Logo RIDIRE">
+			</h:graphicImage></td>
+			<td valign="top" align="right"><h:outputText
+				value=" Utente: #{identity.username}  "
+				rendered="#{identity.loggedIn}" /></td>
+		</tr>
+	</tbody>
+</table>
+</div>

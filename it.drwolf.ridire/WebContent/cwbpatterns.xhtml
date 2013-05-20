@@ -1,0 +1,370 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+    Pattern
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+		<p:dialog modal="true" widgetVar="statusDialog"
+			header="Attendere prego..." resizable="false" draggable="false"
+			closable="false" width="240">
+			<p:graphicImage value="/img/gears2.gif" />
+		</p:dialog>
+
+		<h1>Pattern</h1>
+		<h:form id="patternForm">
+			<table cellspacing="4">
+				<tr>
+					<a4j:repeat var="pd" value="#{cwbPatternSearcher.patternDatas}"
+						rowKeyVar="rowIdx">
+						<td><a4j:include viewId="/layout/pattern.xhtml">
+								<ui:param name="pdata" value="#{pd}" />
+								<ui:param name="count" value="#{rowIdx+1}" />
+								<ui:param name="rId"
+									value="#{rowIdx-cwbPatternSearcher.patternDatas.size()}" />
+							</a4j:include></td>
+					</a4j:repeat>
+					<td><a4j:commandLink value=" "
+							action="#{cwbPatternSearcher.addPatternData}"
+							reRender="patternForm">
+							<h:graphicImage value="/img/plus-white.png" alt="Aggiungi"
+								title="Rimuovi" />
+						</a4j:commandLink> <br /> <a4j:commandLink value=" "
+							action="#{cwbPatternSearcher.removePatternData}"
+							reRender="patternForm">
+							<h:graphicImage value="/img/minus-white.png" alt="Rimuovi"
+								title="Rimuovi" />
+						</a4j:commandLink></td>
+				</tr>
+			</table>
+			<h:panelGrid columns="2" style="margin-top: 10px;">
+			Tutti i domini:
+			<h:selectOneRadio value="#{cwbPatternSearcher.allDomains}">
+					<f:selectItem itemLabel="Sì" itemValue="#{true}" />
+					<f:selectItem itemLabel="No" itemValue="#{false}" />
+					<a4j:support event="onchange" reRender="semDomChoose,funDomChoose"
+						ajaxSingle="true" action="#{cwbPatternSearcher.resetDomains}" />
+				</h:selectOneRadio>
+			</h:panelGrid>
+			<h:panelGrid columns="2" style="margin-top: 10px;">
+				<h:outputText value="Scegli dominio semantico" />
+				<h:selectManyCheckbox layout="pageDirection" id="semDomChoose"
+					disabled="#{cwbPatternSearcher.allDomains}"
+					value="#{cwbPatternSearcher.semanticMetadatum}">
+					<f:selectItems
+						value="#{localResourcesManager.allSemanticMetadataMap}" />
+				</h:selectManyCheckbox>
+			</h:panelGrid>
+			<h:panelGrid columns="2" style="margin-top: 10px;">
+				<h:outputText value="Scegli dominio funzionale" />
+				<h:selectManyCheckbox layout="pageDirection" id="funDomChoose"
+					disabled="#{cwbPatternSearcher.allDomains}"
+					value="#{cwbPatternSearcher.functionalMetadatum}">
+					<f:selectItems
+						value="#{localResourcesManager.allFunctionalMetadataMap}" />
+				</h:selectManyCheckbox>
+			</h:panelGrid>
+			<fieldset>
+				<legend>Raggruppamento a destra</legend>
+				<h:panelGrid columns="6">
+					<h:outputText value="Sì/No " />
+					<h:selectBooleanCheckbox
+						value="#{cwbPatternSearcher.resultsGrouping}">
+						<a4j:support event="onchange" reRender="contextGroupingSpinner" />
+					</h:selectBooleanCheckbox>
+					<h:outputText value="N. forme:" />
+					<rich:inputNumberSpinner id="contextGroupingSpinner"
+						disabled="#{not cwbPatternSearcher.resultsGrouping}"
+						value="#{cwbPatternSearcher.contextGroupingLength}" min="0"
+						max="10" />
+					<h:outputText value="Raggruppa per" style="margin-left: 10px;" />
+					<h:selectOneRadio value="#{cwbPatternSearcher.groupBy}">
+						<f:selectItem itemLabel="lemma" itemValue="lemma" />
+						<f:selectItem itemLabel="forma" itemValue="forma" />
+					</h:selectOneRadio>
+				</h:panelGrid>
+			</fieldset>
+			<h:commandButton action="#{cwbPatternSearcher.initResults()}"
+				onclick="statusDialog.show();" value="Cerca" />
+			<s:div styleClass="tableControl" id="risultati"
+				rendered="#{cwbPatternSearcher.resultsSize gt 0}">
+				<s:link view="/cwbpatterns.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbPatternSearcher.previousExists}"
+					action="#{cwbPatternSearcher.initResults()}"
+					styleClass="#{cwbPatternSearcher.previousExists?'':'disabled'}"
+					value="#{messages.left}#{messages.left}&#160;Prima&#160;pagina"
+					id="firstPage">
+					<f:param name="firstResult" value="0" />
+					<f:param name="pageSize" value="#{cwbPatternSearcher.pageSize}" />
+				</s:link>
+				<s:link view="/cwbpatterns.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbPatternSearcher.previousExists}"
+					action="#{cwbPatternSearcher.initResults()}"
+					styleClass="#{cwbPatternSearcher.previousExists?'':'disabled'}"
+					value="#{messages.left}&#160;Precedente" id="previousPage">
+					<f:param name="firstResult"
+						value="#{cwbPatternSearcher.previousFirstResult}" />
+					<f:param name="pageSize" value="#{cwbPatternSearcher.pageSize}" />
+				</s:link>
+				<s:link view="/cwbpatterns.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbPatternSearcher.nextExists}"
+					action="#{cwbPatternSearcher.initResults()}"
+					styleClass="#{cwbPatternSearcher.nextExists?'':'disabled'}"
+					value="Prossima&#160;#{messages.right}" id="nextPage">
+					<f:param name="firstResult"
+						value="#{cwbPatternSearcher.nextFirstResult}" />
+					<f:param name="pageSize" value="#{cwbPatternSearcher.pageSize}" />
+				</s:link>
+				<s:link view="/cwbpatterns.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbPatternSearcher.nextExists}"
+					action="#{cwbPatternSearcher.initResults()}"
+					styleClass="#{cwbPatternSearcher.nextExists?'':'disabled'}"
+					value="Ultima&#160;pagina&#160;#{messages.right}#{messages.right}"
+					id="lastPage">
+					<f:param name="firstResult"
+						value="#{cwbPatternSearcher.lastFirstResult}" />
+					<f:param name="pageSize" value="#{cwbPatternSearcher.pageSize}" />
+				</s:link>
+			</s:div>
+		</h:form>
+		<s:fragment rendered="#{cwbPatternSearcher.resultsSize gt 0}">Risultati:&#160;
+			<strong>#{cwbPatternSearcher.resultsSize eq 0 ? 0 :
+				cwbPatternSearcher.firstResult + 1}</strong>&#160;-&#160;<strong>#{((cwbPatternSearcher.firstResult
+				+ cwbPatternSearcher.pageSize) lt cwbPatternSearcher.resultsSize) ?
+				(cwbPatternSearcher.firstResult +cwbPatternSearcher.pageSize) :
+				cwbPatternSearcher.resultsSize}</strong>&#160;di&#160;<strong>#{cwbPatternSearcher.resultsSize}</strong>
+		</s:fragment>
+
+		<rich:dataTable var="item" value="#{cwbPatternSearcher.resultsSimple}"
+			rendered="#{not cwbPatternSearcher.resultsGrouping}">
+			<rich:column style="white-space: nowrap; text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Sx" />
+				</f:facet>
+				<h:outputText value="#{item.leftContext}" />
+			</rich:column>
+			<rich:column styleClass="centerText" style="white-space: nowrap;">
+				<a4j:form id="searchedText">
+					<a4j:commandLink id="showLongText"
+						action="#{cwbPatternSearcher.retrieveLongContext(item)}"
+						oncomplete="Richfaces.showModalPanel('longContextTextModalPanelGroup',{width:550, top:200});"
+						reRender="longContextTextModalGroupDiv">
+						<h:outputText value="#{item.searchedText}" />
+					</a4j:commandLink>
+				</a4j:form>
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dx" />
+				</f:facet>
+				<h:outputText value="#{item.rightContext}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{item.domain}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="URL" />
+				</f:facet>
+				<a href="#{item.url}" target="_blank"> <s:graphicImage
+						value="/img/globe--arrow.png" />
+				</a>
+			</rich:column>
+		</rich:dataTable>
+		<rich:dataTable var="group"
+			value="#{cwbPatternSearcher.resultsSimple}"
+			rendered="#{cwbPatternSearcher.resultsGrouping}">
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Num." />
+				</f:facet>
+				<h:panelGrid columns="3">
+					<a4j:form id="searchedTextGroup">
+						<h:commandLink value="+ " style="text-decoration: none;"
+							rendered="#{not group.groupExpanded and group.groupSize gt 1}"
+							action="#{cwbPatternSearcher.expandGroup(group)}" />
+						<h:commandLink value="- " style="text-decoration: none;"
+							rendered="#{group.groupExpanded and group.groupSize gt 1}"
+							action="#{cwbPatternSearcher.collapseGroup(group)}" />
+					</a4j:form>
+					<h:outputText style="font-weight: bold;" value="#{group.groupSize}" />
+					<s:span>
+						<h:outputText
+							value="#{group.groupSize / cwbPatternSearcher.groupResultsSize * 100}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>
+						<h:outputText value="%" />
+					</s:span>
+				</h:panelGrid>
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Sx" />
+				</f:facet>
+				<h:outputText value="#{group.leftContext}" />
+			</rich:column>
+			<rich:column styleClass="centerText" style="white-space: nowrap;">
+				<a4j:form id="searchedText">
+					<a4j:commandLink id="showLongTextG"
+						action="#{cwbPatternSearcher.retrieveLongContext(group)}"
+						oncomplete="Richfaces.showModalPanel('longContextTextModalPanelGroup',{width:550, top:200});"
+						reRender="longContextTextModalGroupDiv">
+						<h:outputText value="#{group.searchedText}" />
+					</a4j:commandLink>
+				</a4j:form>
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dx" />
+				</f:facet>
+				<h:outputText value="#{group.rightContext}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: left;">
+				<f:facet name="header">
+					<h:outputText value="Dominio" />
+				</f:facet>
+				<h:outputText value="#{group.domain}" styleClass="leftText" />
+			</rich:column>
+			<rich:column style="white-space: nowrap; text-align: center;">
+				<f:facet name="header">
+					<h:outputText value="URL" />
+				</f:facet>
+				<a href="#{group.url}" target="_blank"> <s:graphicImage
+						value="/img/globe--arrow.png" />
+				</a>
+			</rich:column>
+			<rich:subTable var="item" value="#{group.members}"
+				rendered="#{group.groupExpanded}">
+				<rich:column>
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: right;">
+					<h:outputText value="#{item.leftContext}" />
+				</rich:column>
+				<rich:column styleClass="centerText" style="white-space: nowrap;">
+					<a4j:form id="searchedText">
+						<a4j:commandLink id="showLongTextG"
+							action="#{cwbPatternSearcher.retrieveLongContext(item)}"
+							oncomplete="Richfaces.showModalPanel('longContextTextModalPanelGroup',{width:550, top:200});"
+							reRender="longContextTextModalGroupDiv">
+							<h:outputText value="#{item.searchedText}" />
+						</a4j:commandLink>
+					</a4j:form>
+				</rich:column>
+				<rich:column style="white-space: nowrap;">
+					<h:outputText value="#{item.rightContext}" styleClass="leftText" />
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: left;">
+					<h:outputText value="#{item.domain}" styleClass="leftText" />
+				</rich:column>
+				<rich:column style="white-space: nowrap; text-align: center;">
+					<a href="#{group.url}" target="_blank"> <s:graphicImage
+							value="/img/globe--arrow.png" />
+					</a>
+				</rich:column>
+			</rich:subTable>
+		</rich:dataTable>
+		<ui:include src="/longContextTextModalPanelGroup.xhtml" />
+	</ui:define>
+	<ui:define name="rightcol">
+		<p:panel id="tagset" header="Tagset" toggleable="true"
+			collapsed="false" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<pre>ADJ		adjective
+ADJPRO		pronominal adjective
+ADV		adverb (excluding -mente forms)
+ADV:mente	adveb ending in -mente
+ART		article
+CHE		che
+CLI		clitic
+CON		conjunction
+NEG		negation
+NOCAT		non-linguistic element
+NOUN		noun
+NPR		proper noun
+NUM		number
+PREP		preposition
+PRON		pronoun
+PUN		non-sentence-final punctuation mark
+SENT		sentence-final punctuation mark
+VERB		verb
+WH		wh word
+		</pre>
+			</s:div>
+		</p:panel>
+		<p:panel id="exttagset" header="Tagset esteso" toggleable="true"
+			collapsed="true" toggleSpeed="200">
+			<s:div style="overflow: auto;">
+				<pre>ADJ		adjective
+ADV		adverb (excluding -mente forms)
+ADV:mente	adveb ending in -mente
+ART		article
+ARTPRE		preposition + article
+AUX:fin		finite form of auxiliary
+AUX:fin:cli	finite form of auxiliary with clitic
+AUX:geru	gerundive form of auxiliary
+AUX:geru:cli	gerundive form of auxiliary with clitic
+AUX:infi	infinitival form of auxiliary
+AUX:infi:cli	infinitival form of auxiliary with clitic
+AUX:ppast	past participle of auxiliary
+AUX:ppre	present participle of auxiliary
+CHE		che
+CLI		clitic
+CON		conjunction
+DET:demo	demonstrative determiner
+DET:indef	indefinite determiner
+DET:num		numeral determiner
+DET:poss	possessive determiner
+DET:wh		wh determiner
+NEG		negation
+NOCAT		non-linguistic element
+NOUN		noun
+NPR		proper noun
+NUM		number
+PRE		preposition
+PRO:demo	demonstrative pronoun
+PRO:indef	indefinite pronoun
+PRO:num		numeral pronoun
+PRO:pers	personal pronoun
+PRO:poss	possessive pronoun
+PUN		non-sentence-final punctuation mark
+SENT		sentence-final punctuation mark
+VER2:fin	finite form of modal/causal verb
+VER2:fin:cli	finite form of modal/causal verb with clitic
+VER2:geru	gerundive form of modal/causal verb
+VER2:geru:cli	gerundive form of modal/causal verb with clitic
+VER2:infi	infinitival form of modal/causal verb
+VER2:infi:cli	infinitival form of modal/causal verb with clitic
+VER2:ppast	past participle of modal/causal verb
+VER2:ppre	present participle of modal/causal verb
+VER:fin		finite form of verb
+VER:fin:cli	finite form of verb with clitic
+VER:geru	gerundive form of verb
+VER:geru:cli	gerundive form of verb with clitic
+VER:infi	infinitival form of verb
+VER:infi:cli	infinitival form of verb with clitic
+VER:ppast	past participle of verb
+VER:ppast:cli	past participle of verb with clitic
+VER:ppre	present participle of verb
+WH		wh word
+		</pre>
+			</s:div>
+		</p:panel>
+	</ui:define>
+</ui:composition>
+

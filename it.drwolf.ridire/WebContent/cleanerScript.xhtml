@@ -1,0 +1,45 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+   Job cleaning script
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Job cleaning script: #{jobManager.job.name}</h1>
+		<h:form>
+			<h:inputTextarea value="#{jobManager.job.cleaningScript}" rows="30"
+				cols="80" />
+			<br />
+			<h:commandButton value="Salva script"
+				action="#{jobManager.saveJob()}" />
+			<p:dataTable value="#{jobManager.resourcesSample()}" var="cr">
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="URL" />
+					</f:facet>
+					<h:outputText value="#{cr.url}" />
+				</p:column>
+				<p:column>
+					<f:facet name="header">
+						<h:outputText value="Test" />
+					</f:facet>
+					<a4j:commandButton action="#{jobManager.testScript(cr)}"
+						oncomplete="Richfaces.showModalPanel('beforeAndAfterModalPanel',{width:550, top:200});"
+						reRender="beforeAndAfterModalPanel" value="Test" />
+				</p:column>
+			</p:dataTable>
+		</h:form>
+		<ui:include src="/panels/beforeAndAfterScript.xhtml" />
+	</ui:define>
+
+</ui:composition>
+

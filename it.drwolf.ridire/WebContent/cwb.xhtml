@@ -1,0 +1,40 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<h1>CWB</h1>
+		<a4j:form>
+			<h:outputText value="Orig. dir: " />
+			<h:inputText value="#{cwbCorpusBuilder.origDir}" />
+			<h:outputText value="Dest. dir: " />
+			<h:inputText value="#{cwbCorpusBuilder.destDir}" />
+			<br />
+			<h:outputText value="Jobs list: " />
+			<h:inputTextarea value="#{cwbCorpusBuilder.jobsList}" />
+			<br />
+			<h:commandButton action="#{cwbCorpusBuilder.buildCorpusFromJobNames}"
+				value="Crea corpus da lista job" />
+			<h:commandButton action="#{cwbCorpusBuilder.buildCorpus}"
+				value="Crea corpus" />
+			<h:commandButton action="#{cwbCorpusBuilder.reverseVRTFiles}"
+				value="Inverti VRT" />
+			<br />
+			<ui:remove>
+				<h:inputText value="#{cwbCorpusBuilder.n}" />
+				<h:commandButton action="#{cwbCorpusBuilder.calculateN()}"
+					value="Calcola numero LF" />
+				<h:outputText value="#{cwbCorpusBuilder.lfNumber}" />
+			</ui:remove>
+		</a4j:form>
+	</ui:define>
+
+</ui:composition>
+

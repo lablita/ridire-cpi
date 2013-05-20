@@ -1,0 +1,25 @@
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd"
+	login-required="true">
+	<restrict>#{s:hasRole('Crawler User')}</restrict>
+	<action execute="#{profile.getProfileName()}" />
+	<navigation from-action="#{profile.getProfileName()}">
+		<rule if="#{profile.profileName eq null}">
+			<end-conversation before-redirect="true" />
+			<redirect view-id="/listJobs.xhtml" />
+		</rule>
+	</navigation>
+	<navigation from-action="#{profile.createJob()}">
+		<rule if-outcome="ko">
+			<redirect view-id="/makeJobProfileData.xhtml" />
+		</rule>
+		<rule if-outcome="error">
+			<redirect view-id="/error.xhtml" />
+		</rule>
+		<rule if-outcome="ok">
+			<redirect view-id="/jobDetail.xhtml">
+				<param name="jobId" value="#{profile.createdJobId}" />
+			</redirect>
+		</rule>
+	</navigation>
+</page>

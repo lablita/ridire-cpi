@@ -1,0 +1,338 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+
+
+	<ui:define name="title">
+    Gestione Utenti
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Gestione Utenti</h1>
+
+		<br />
+		<h:form>
+			<a4j:region>
+				<rich:dataTable value="#{usersManager.usersWithoutSupervisor}"
+					var="user" rows="20" rowKeyVar="row" id="usersTable">
+					<f:facet name="header">
+						<h:outputText value="Utenti" />
+					</f:facet>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Username" />
+						</f:facet>
+						<h:outputText value="#{user.username}" id="username" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Nome" />
+						</f:facet>
+						<h:outputText value="#{user.name}" id="name" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Cognome" />
+						</f:facet>
+						<h:outputText value="#{user.surname}" id="surname" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Email" />
+						</f:facet>
+						<h:outputText value="#{user.email}" id="email" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Ente" />
+						</f:facet>
+						<h:outputText value="#{user.body}" id="body" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Quota" />
+						</f:facet>
+						<h:outputText value="#{user.quota}" id="quota" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Ruoli" />
+						</f:facet>
+						<rich:dataList id="roles" var="role" value="#{user.rolesList}">
+							<h:outputText value="#{role.description}" />
+						</rich:dataList>
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+							<h:outputText value="Supervisore" />
+						</f:facet>
+						<h:outputText rendered="#{user.supervisor ne null}"
+							value="#{user.supervisor.username}" id="supervisor" />
+						<h:outputText rendered="#{user.supervisor eq null}" value="-" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+                        Azioni
+                </f:facet>
+						<a4j:commandLink ajaxSingle="true" id="editlink"
+							oncomplete="#{rich:component('editPanel')}.show()"
+							value="Modifica">
+							<f:setPropertyActionListener value="#{user}"
+								target="#{usersManager.currentItem}" />
+						</a4j:commandLink>
+						<rich:toolTip for="editlink" value="Modifica" />
+						<br />
+						<a4j:commandLink ajaxSingle="true" id="deletelink"
+							reRender="usersTable" value="Elimina"
+							action="#{usersManager.deleteUser(user)}" />
+						<rich:toolTip for="deletelink" value="Elimina" />
+					</rich:column>
+					<c:set var="usersWithSupervisorList"
+						value="#{user.assignedUsersList}" />
+					<rich:subTable value="#{usersWithSupervisorList}"
+						var="userWithSupervisor" rowClasses="crawlerUser"
+						rendered="#{not empty usersWithSupervisorList}">
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.username}"
+								id="username" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.name}" id="name" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.surname}" id="surname" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.email}" id="email" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.body}" id="body" />
+						</rich:column>
+						<rich:column>
+							<h:outputText value="#{userWithSupervisor.quota}" id="quota" />
+						</rich:column>
+						<rich:column>
+							<rich:dataList id="roles" var="role"
+								value="#{userWithSupervisor.rolesList}">
+								<h:outputText value="#{role.description}" />
+							</rich:dataList>
+						</rich:column>
+						<rich:column>
+							<h:outputText rendered="#{userWithSupervisor.supervisor ne null}"
+								value="#{userWithSupervisor.supervisor.username}"
+								id="supervisorUWS" />
+
+						</rich:column>
+						<rich:column>
+							<a4j:commandLink ajaxSingle="true" id="editlink"
+								oncomplete="#{rich:component('editPanel')}.show()"
+								value="Modifica">
+								<f:setPropertyActionListener value="#{userWithSupervisor}"
+									target="#{usersManager.currentItem}" />
+							</a4j:commandLink>
+							<rich:toolTip for="editlink" value="Modifica" />
+							<br />
+							<a4j:commandLink ajaxSingle="true" id="deletelink"
+								reRender="usersTable" value="Elimina"
+								action="#{usersManager.deleteUser(userWithSupervisor)}" />
+							<rich:toolTip for="deletelink" value="Elimina" />
+						</rich:column>
+					</rich:subTable>
+					<f:facet name="footer">
+						<rich:datascroller renderIfSinglePage="false" maxPages="5" />
+					</f:facet>
+				</rich:dataTable>
+				<a4j:commandLink ajaxSingle="true" id="editlink"
+					oncomplete="#{rich:component('newUserPanel')}.show()"
+					value="Nuovo utente">
+				</a4j:commandLink>
+
+			</a4j:region>
+
+		</h:form>
+
+		<rich:modalPanel id="editPanel" autosized="true" width="500">
+			<f:facet name="header">
+				<h:outputText value="Modifica utente" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<s:link propagation="none" id="closeLink2"
+						onclick="#{rich:component('editPanel')}.close()">
+						<h:graphicImage value="/img/cancel.png" id="hidelink4"
+							styleClass="hidelink" />
+					</s:link>
+				</h:panelGroup>
+			</f:facet>
+			<h:form>
+
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true">
+						<h:panelGrid>
+							<s:decorate id="UsernameFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Username</ui:define>
+								<h:inputText value="#{usersManager.currentItem.username}"
+									validator="standardCharsValidator" required="true" />
+							</s:decorate>
+							<s:decorate id="PasswordFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Password</ui:define>
+								<h:inputText value="#{usersManager.currentItem.password}"
+									validator="standardCharsValidator" required="true" />
+							</s:decorate>
+							<s:decorate id="nomeFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Nome</ui:define>
+								<h:inputText value="#{usersManager.currentItem.name}" />
+							</s:decorate>
+							<s:decorate id="CognomeFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Cognome</ui:define>
+								<h:inputText value="#{usersManager.currentItem.surname}" />
+							</s:decorate>
+							<s:decorate id="EmailFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Email</ui:define>
+								<h:inputText value="#{usersManager.currentItem.email}"
+									required="false" />
+							</s:decorate>
+							<s:decorate id="EnteFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Ente</ui:define>
+								<h:inputText value="#{usersManager.currentItem.body}" />
+							</s:decorate>
+							<s:decorate id="QuotaFieldE" template="layout/edit.xhtml">
+								<ui:define name="label">Quota</ui:define>
+								<h:inputText value="#{usersManager.currentItem.quota}" />
+							</s:decorate>
+							<h:outputText value="Ruoli" />
+							<h:selectManyCheckbox id="chkbox"
+								value="#{usersManager.currentItem.rolesList}">
+								<s:selectItems value="#{usersManager.allRoles}" var="r"
+									label="#{r.description}" />
+								<s:convertEntity />
+								<a4j:support event="onchange" reRender="supervisoreField"
+									ajaxSingle="true" limitToList="true" />
+							</h:selectManyCheckbox>
+							<s:div id="supervisoreField">
+								<s:decorate template="layout/edit.xhtml">
+									<ui:define name="label">Supervisore</ui:define>
+									<h:selectOneMenu value="#{usersManager.currentItem.supervisor}"
+										required="#{not usersManager.currentItem.hasRole('Admin') and not usersManager.currentItem.hasRole('Crawler Supervisor') and usersManager.currentItem.hasRole('Crawler User') }"
+										disabled="#{usersManager.currentItem.hasRole('Admin') or usersManager.currentItem.hasRole('Crawler Supervisor')}"
+										rendered="#{ not usersManager.currentItem.hasRole('Admin') and not usersManager.currentItem.hasRole('Crawler Supervisor')}">
+										<s:selectItems value="#{usersManager.allSupervisors}"
+											var="superv" label="#{superv.username}"
+											noSelectionLabel="-----" />
+										<s:convertEntity />
+									</h:selectOneMenu>
+								</s:decorate>
+							</s:div>
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<a4j:commandButton value="Salva" action="#{usersManager.store}"
+						reRender="usersTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('editPanel')}.hide();" />
+				</h:panelGrid>
+
+
+			</h:form>
+		</rich:modalPanel>
+		<rich:modalPanel id="newUserPanel" autosized="true" width="500">
+			<f:facet name="header">
+				<h:outputText value="Nuovo utente" />
+			</f:facet>
+			<f:facet name="controls">
+				<h:panelGroup>
+					<h:graphicImage value="/img/cancel.png" id="hidelink3"
+						styleClass="hidelink" />
+					<rich:componentControl for="newUserPanel" attachTo="hidelink3"
+						operation="hide" event="onclick" />
+				</h:panelGroup>
+			</f:facet>
+			<h:form id="newUserForm">
+
+
+				<h:panelGrid columns="1">
+					<a4j:outputPanel ajaxRendered="true" id="newUserOutputPanel">
+						<h:panelGrid>
+							<s:decorate id="UsernameField" template="layout/edit.xhtml">
+								<ui:define name="label">Username</ui:define>
+								<h:inputText value="#{usersManager.currentItem.username}"
+									validator="standardCharsValidator" required="true" />
+							</s:decorate>
+							<s:decorate id="PasswordField" template="layout/edit.xhtml">
+								<ui:define name="label">Password</ui:define>
+								<h:inputText value="#{usersManager.currentItem.password}"
+									validator="standardCharsValidator" required="true" />
+							</s:decorate>
+							<s:decorate id="nomeField" template="layout/edit.xhtml">
+								<ui:define name="label">Nome</ui:define>
+								<h:inputText value="#{usersManager.currentItem.name}" />
+							</s:decorate>
+							<s:decorate id="CognomeField" template="layout/edit.xhtml">
+								<ui:define name="label">Cognome</ui:define>
+								<h:inputText value="#{usersManager.currentItem.surname}" />
+							</s:decorate>
+							<s:decorate id="EmailField" template="layout/edit.xhtml">
+								<ui:define name="label">Email</ui:define>
+								<h:inputText value="#{usersManager.currentItem.email}"
+									required="false" />
+							</s:decorate>
+							<s:decorate id="EnteField" template="layout/edit.xhtml">
+								<ui:define name="label">Ente</ui:define>
+								<h:inputText value="#{usersManager.currentItem.body}" />
+							</s:decorate>
+							<s:decorate id="QuotaField" template="layout/edit.xhtml">
+								<ui:define name="label">Quota</ui:define>
+								<h:inputText value="#{usersManager.currentItem.quota}" />
+							</s:decorate>
+							<h:outputText value="Ruoli" />
+							<h:selectManyCheckbox id="chkbox"
+								value="#{usersManager.currentItem.rolesList}">
+								<s:selectItems value="#{usersManager.allRoles}" var="r"
+									label="#{r.description}" />
+								<s:convertEntity />
+								<a4j:support event="onchange" reRender="supervisoreField"
+									ajaxSingle="true" limitToList="true" />
+							</h:selectManyCheckbox>
+							<s:div id="supervisoreField">
+								<s:decorate template="layout/edit.xhtml">
+									<ui:define name="label">Supervisore</ui:define>
+									<h:selectOneMenu value="#{usersManager.currentItem.supervisor}"
+										required="#{not usersManager.currentItem.hasRole('Admin') and not usersManager.currentItem.hasRole('Crawler Supervisor') and usersManager.currentItem.hasRole('Crawler User') }"
+										disabled="#{usersManager.currentItem.hasRole('Admin') or usersManager.currentItem.hasRole('Crawler Supervisor')}"
+										rendered="#{ not usersManager.currentItem.hasRole('Admin') and not usersManager.currentItem.hasRole('Crawler Supervisor')}">
+										<s:selectItems value="#{usersManager.allSupervisors}"
+											var="superv" label="#{superv.username}"
+											noSelectionLabel="-----" />
+										<s:convertEntity />
+									</h:selectOneMenu>
+								</s:decorate>
+							</s:div>
+						</h:panelGrid>
+
+					</a4j:outputPanel>
+					<a4j:commandButton value="Salva" action="#{usersManager.save}"
+						reRender="usersTable"
+						oncomplete="if (#{facesContext.maximumSeverity==null}) #{rich:component('newUserPanel')}.hide();" />
+				</h:panelGrid>
+			</h:form>
+		</rich:modalPanel>
+		<a4j:status onstart="#{rich:component('wait')}.show()"
+			onstop="#{rich:component('wait')}.hide()" />
+		<rich:modalPanel id="wait" autosized="true" width="200" height="120"
+			moveable="false" resizeable="false">
+			<f:facet name="header">
+				<h:outputText value="Elaborazione in corso" />
+			</f:facet>
+			<h:outputText value="Si prega di attendere..." />
+		</rich:modalPanel>
+	</ui:define>
+
+</ui:composition>
+

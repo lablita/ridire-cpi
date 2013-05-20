@@ -1,0 +1,21 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j">
+	<rich:modalPanel id="cleanedTextModalPanel" moveable="true"
+		autosized="true" zindex="2000">
+		<f:facet name="header">
+Testo estratto
+</f:facet>
+		<f:facet name="controls">
+			<h:graphicImage value="/img/cancel.gif" style="cursor:pointer"
+				onclick="Richfaces.hideModalPanel('cleanedTextModalPanel')" />
+		</f:facet>
+		<s:div id="cleanedTextModalDiv" style="height: 300px; overflow: auto;">
+			<h:outputText value="#{jobManager.cleanedText}" />
+		</s:div>
+	</rich:modalPanel>
+</ui:composition>

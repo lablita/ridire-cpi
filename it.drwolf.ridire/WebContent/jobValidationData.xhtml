@@ -1,0 +1,298 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<h1>Dati per la validazione del Job #{jobManager.job.name}</h1>
+		<table class="validationDataTable">
+			<thead class="validationDataHeader">
+				<tr>
+					<th colspan="8">Risorse</th>
+				</tr>
+				<tr>
+					<th>Totali</th>
+					<th colspan="2">0-100</th>
+					<th colspan="2">101-1000</th>
+					<th>1001-5000</th>
+					<th>5001-10000</th>
+					<th>&gt;10001</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>#{jobValidationData['res-tot']}</td>
+					<td colspan="2">#{jobValidationData['res0-100']} (<h:outputText
+							value="#{jobValidationData['res0-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="2">#{jobValidationData['res101-1000']} (<h:outputText
+							value="#{jobValidationData['res101-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res1001-5000']} (<h:outputText
+							value="#{jobValidationData['res1001-5000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res5001-10000']} (<h:outputText
+							value="#{jobValidationData['res5001-10000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res10000+']} (<h:outputText
+							value="#{jobValidationData['res10000+p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+				</tr>
+				<tr>
+					<th class="emptyTH"></th>
+					<th>0-50</th>
+					<th>51-100</th>
+					<th>101-500</th>
+					<th>501-1000</th>
+					<th colspan="3" class="emptyTH"></th>
+				</tr>
+				<tr>
+					<td></td>
+					<td>#{jobValidationData['res0-50']} (<h:outputText
+							value="#{jobValidationData['res0-50p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res51-100']} (<h:outputText
+							value="#{jobValidationData['res51-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res101-500']} (<h:outputText
+							value="#{jobValidationData['res101-500p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['res501-1000']} (<h:outputText
+							value="#{jobValidationData['res501-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="3"></td>
+				</tr>
+			</tbody>
+		</table>
+		<rich:spacer height="10" />
+		<table class="validationDataTable">
+			<thead class="validationDataHeader">
+				<tr>
+					<th colspan="8">Parole</th>
+				</tr>
+				<tr>
+					<th>Totali</th>
+					<th colspan="2">0-100</th>
+					<th colspan="2">101-1000</th>
+					<th>1001-5000</th>
+					<th>5001-10000</th>
+					<th>&gt;10001</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>#{jobValidationData['words-tot']}</td>
+					<td colspan="2">#{jobValidationData['words0-100']} (<h:outputText
+							value="#{jobValidationData['words0-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="2">#{jobValidationData['words101-1000']} (<h:outputText
+							value="#{jobValidationData['words101-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words1001-5000']} (<h:outputText
+							value="#{jobValidationData['words1001-5000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words5001-10000']} (<h:outputText
+							value="#{jobValidationData['words5001-10000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words10000+']} (<h:outputText
+							value="#{jobValidationData['words10000+p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+				</tr>
+				<tr>
+					<th class="emptyTH"></th>
+					<th>0-50</th>
+					<th>51-100</th>
+					<th>101-500</th>
+					<th>501-1000</th>
+					<th colspan="3" class="emptyTH"></th>
+				</tr>
+				<tr>
+					<td></td>
+					<td>#{jobValidationData['words0-50']} (<h:outputText
+							value="#{jobValidationData['words0-50p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words51-100']} (<h:outputText
+							value="#{jobValidationData['words51-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words101-500']} (<h:outputText
+							value="#{jobValidationData['words101-500p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['words501-1000']} (<h:outputText
+							value="#{jobValidationData['words501-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="3"></td>
+				</tr>
+			</tbody>
+		</table>
+		<rich:spacer height="10" />
+		<table class="validationDataTableAn">
+			<thead class="validationDataHeader">
+				<tr>
+					<th colspan="8">Risorse non cancellate</th>
+				</tr>
+				<tr>
+					<th>Totali</th>
+					<th colspan="2">0-100</th>
+					<th colspan="2">101-1000</th>
+					<th>1001-5000</th>
+					<th>5001-10000</th>
+					<th>&gt;10001</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>#{jobValidationData['nd-res-tot']}</td>
+					<td colspan="2">#{jobValidationData['nd-res0-100']} (<h:outputText
+							value="#{jobValidationData['nd-res0-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="2">#{jobValidationData['nd-res101-1000']} (<h:outputText
+							value="#{jobValidationData['nd-res101-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res1001-5000']} (<h:outputText
+							value="#{jobValidationData['nd-res1001-5000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res5001-10000']} (<h:outputText
+							value="#{jobValidationData['nd-res5001-10000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res10000+']} (<h:outputText
+							value="#{jobValidationData['nd-res10000+p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+				</tr>
+				<tr>
+					<th class="emptyTH"></th>
+					<th>0-50</th>
+					<th>51-100</th>
+					<th>101-500</th>
+					<th>501-1000</th>
+					<th colspan="3" class="emptyTH"></th>
+				</tr>
+				<tr>
+					<td></td>
+					<td>#{jobValidationData['nd-res0-50']} (<h:outputText
+							value="#{jobValidationData['nd-res0-50p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res51-100']} (<h:outputText
+							value="#{jobValidationData['nd-res51-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res101-500']} (<h:outputText
+							value="#{jobValidationData['nd-res101-500p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-res501-1000']} (<h:outputText
+							value="#{jobValidationData['nd-res501-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="3"></td>
+				</tr>
+			</tbody>
+		</table>
+		<rich:spacer height="10" />
+		<table class="validationDataTableAn">
+			<thead class="validationDataHeader">
+				<tr>
+					<th colspan="8">Parole non cancellate</th>
+				</tr>
+				<tr>
+					<th>Totali</th>
+					<th colspan="2">0-100</th>
+					<th colspan="2">101-1000</th>
+					<th>1001-5000</th>
+					<th>5001-10000</th>
+					<th>&gt;10001</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>#{jobValidationData['nd-words-tot']}</td>
+					<td colspan="2">#{jobValidationData['nd-words0-100']} (<h:outputText
+							value="#{jobValidationData['nd-words0-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="2">#{jobValidationData['nd-words101-1000']} (<h:outputText
+							value="#{jobValidationData['nd-words101-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words1001-5000']} (<h:outputText
+							value="#{jobValidationData['nd-words1001-5000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words5001-10000']} (<h:outputText
+							value="#{jobValidationData['nd-words5001-10000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words10000+']} (<h:outputText
+							value="#{jobValidationData['nd-words10000+p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+				</tr>
+				<tr>
+					<th class="emptyTH"></th>
+					<th>0-50</th>
+					<th>51-100</th>
+					<th>101-500</th>
+					<th>501-1000</th>
+					<th colspan="3" class="emptyTH"></th>
+				</tr>
+				<tr>
+					<td></td>
+					<td>#{jobValidationData['nd-words0-50']} (<h:outputText
+							value="#{jobValidationData['nd-words0-50p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words51-100']} (<h:outputText
+							value="#{jobValidationData['nd-words51-100p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words101-500']} (<h:outputText
+							value="#{jobValidationData['nd-words101-500p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td>#{jobValidationData['nd-words501-1000']} (<h:outputText
+							value="#{jobValidationData['nd-words501-1000p']}">
+							<f:convertNumber maxFractionDigits="2" />
+						</h:outputText>%)</td>
+					<td colspan="3"></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<s:button value="Torna al dettaglio Job" view="/jobDetail.xhtml">
+			<f:param name="jobId" value="#{jobManager.jobId}" />
+		</s:button>
+		<s:button value="Validazione Job" view="/jobValidationTable.xhtml"
+			disabled="#{jobManager.job.validationStatus eq 4}">
+			<f:param name="jobId" value="#{jobManager.jobId}" />
+		</s:button>
+	</ui:define>
+</ui:composition>
+

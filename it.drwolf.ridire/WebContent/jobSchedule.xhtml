@@ -1,0 +1,61 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Ripetizioni Job
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Ripetizioni Job #{jobManager.job.name}</h1>
+		<br />
+		<h:form><s:div>Periodicità:&#160; 
+			<h:selectOneMenu layout="pageDirection"
+				value="#{jobManager.job.periodicity}">
+				<f:selectItem itemLabel="Mai" itemValue="never" />
+				<f:selectItem itemLabel="Una volta" itemValue="once" />
+				<f:selectItem itemLabel="Periodico" itemValue="periodic" />
+				<a4j:support event="onchange" reRender="periodicityDiv" />
+			</h:selectOneMenu><br />
+			</s:div>
+			<s:div id="periodicityDiv">
+				<s:fragment rendered="#{jobManager.job.periodicity eq 'never'}">
+			Il job non deve essere ripetuto. 
+			</s:fragment>
+				<s:fragment
+					rendered="#{jobManager.job.periodicity eq 'once' or jobManager.job.periodicity eq 'periodic'}">
+					Data di inizio: <rich:calendar value="#{jobManager.job.firstDate}" popup="false"
+						 datePattern="dd/MM/yyyy HH:mm"
+						showApplyButton="true" cellWidth="24px" cellHeight="22px"
+						style="width:200px" />
+				</s:fragment>
+				<s:fragment rendered="#{jobManager.job.periodicity eq 'periodic'}">
+				Data di fine: <rich:calendar value="#{jobManager.job.endDate}" popup="false"
+						 datePattern="dd/MM/yyyy HH:mm"
+						showApplyButton="true" cellWidth="24px" cellHeight="22px"
+						style="width:200px" />
+			Si ripete: <h:selectOneMenu value="#{jobManager.job.periodFrequency}">
+			<f:selectItem itemLabel="ogni minuto" itemValue="dummy1" />
+			<f:selectItem itemLabel="ogni 2 minuti" itemValue="dummy2" />
+			<f:selectItem itemLabel="ogni 5 minuti" itemValue="dummy5" />
+						<f:selectItem itemLabel="ogni giorno" itemValue="daily" />
+						<f:selectItem itemLabel="ogni settimana" itemValue="weekly" />
+						<f:selectItem itemLabel="ogni mese" itemValue="monthly" />
+						<f:selectItem itemLabel="ogni anno" itemValue="yearly" />
+					</h:selectOneMenu>
+				</s:fragment>
+			</s:div>
+			<h:commandButton value="Salva periodicità" disabled="#{s:hasRole('Guest')}"
+				action="#{jobManager.savePeriodicity()}">
+			</h:commandButton>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

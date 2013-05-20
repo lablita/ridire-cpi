@@ -1,0 +1,76 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="body">
+		<h1>Amministrazione Risorse</h1>
+		<h:form>
+			<h:inputText value="#{resourcesAdmin.testEmail}" />
+			<h:commandButton action="#{resourcesAdmin.testEmail()}"
+				value="Email test" />
+			<br />
+			<h:commandButton
+				value="#{flagBearer.mappingSuspended?'Riprendi mapping':'Sospendi mapping'}"
+				action="#{flagBearer.toggleMappingSuspended()}" />
+			<br />
+			<h:commandButton value="PerlemmaFL"
+				rendered="#{flagBearer.perlemmaFLStopped}"
+				action="#{resourcesAdmin.indexPerlemmaForAllDocs()}" />
+			<h:commandButton value="Stop PerlemmaFL"
+				rendered="#{not flagBearer.perlemmaFLStopped}"
+				action="#{resourcesAdmin.stopPerlemmaFL()}" />
+			<h:commandButton
+				action="#{resourcesAdmin.removePerlemmaForAllDocs()}"
+				value="Remove PerlemmaFL" />
+			<h:commandButton value="Riconta parole di tutti i job"
+				action="#{resourcesAdmin.countWordsForAllJobs()}" />
+			<h:commandButton value="Controlla indicizzazione di tutti i job"
+				action="#{resourcesAdmin.checkIfJobsAreIndexed()}" />
+			<s:fragment rendered="false">
+				<rich:dataTable id="jobsList" var="_job" value="#{jobs}"
+					rendered="#{not empty jobs}">
+					<rich:column sortable="true" sortBy="#{_job.name}" label="Nome">
+						<f:facet name="header">
+						Nome
+					</f:facet>
+						<h:outputText value="#{_job.name}" />
+					</rich:column>
+					<rich:column sortable="true" label="Parole">
+						<f:facet name="header">
+						Parole
+					</f:facet>
+						<h:outputText value="#{_job.wordsNumber}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+						Azione
+					</f:facet>
+						<h:commandButton value="Riconta parole"
+							action="#{resourcesAdmin.countWords(_job)}" />
+						<s:button view="/cleanerScript.xhtml" value="Script">
+							<f:param name="jobId" value="#{_job.id}" />
+						</s:button>
+						<h:commandButton action="#{resourcesAdmin.cleanJob(_job)}"
+							value="Clean"
+							disabled="#{flagBearer.isJobUnderCleaning(_job.id)}" />
+					</rich:column>
+					<rich:column>
+						<rich:progressBar
+							rendered="#{flagBearer.isJobUnderCleaning(_job.id)}"
+							interval="2000" value="#{asyncCleaner.percentageInt}"
+							minValue="-1" maxValue="100"
+							label="#{asyncCleaner.percentageInt} %" />
+					</rich:column>
+				</rich:dataTable>
+			</s:fragment>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

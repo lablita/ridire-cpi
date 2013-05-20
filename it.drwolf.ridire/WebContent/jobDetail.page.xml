@@ -1,0 +1,39 @@
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd"
+	login-required="true">
+	<begin-conversation join="true"/>
+	<param name="jobId" value="#{jobManager.jobId}" />
+	<navigation from-action="#{jobManager.refresh()}">
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.deleteJob()}">
+      <rule if-outcome="error">
+		<end-conversation before-redirect="true" />
+   			<redirect view-id="/error.xhtml"/>
+   	  </rule>   	  
+      <rule if-outcome="ok">
+		<end-conversation before-redirect="true" />
+   			<redirect view-id="/listJobs.xhtml"/>
+   	  </rule>		
+	</navigation>
+	<navigation from-action="#{jobManager.pauseJob()}">
+		<end-conversation  before-redirect="true"  />
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.resumeJob()}">
+		<end-conversation  before-redirect="true" />
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.startJob()}">
+		<end-conversation  before-redirect="true" />
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.stopJob()}">
+		<end-conversation  before-redirect="true" />
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+	<navigation from-action="#{jobManager.reprocessResources()}">
+		<end-conversation before-redirect="true"/>
+		<redirect view-id="/jobDetail.xhtml" />
+	</navigation>
+</page>

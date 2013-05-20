@@ -1,0 +1,29 @@
+<page xmlns="http://jboss.com/products/seam/pages" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://jboss.com/products/seam/pages http://jboss.com/products/seam/pages-2.1.xsd"
+	login-required="true">
+	<begin-conversation join="true" />
+	<param name="sortField" value="#{jobManager.sortField}" />
+	<param name="sortOrder" value="#{jobManager.sortOrder}" />
+	<param name="jobId" value="#{jobManager.jobId}" />
+	<param name="pageSize" value="#{jobManager.pageSize}" />
+	<param name="firstResult" value="#{jobManager.firstResult}" />
+	<param name="filterAnalyzed" value="#{jobManager.filterAnalyzed}" />
+	<param name="filterURLValue" value="#{jobManager.filterURLValue}" />
+	<param name="filterMimeTypeValue" value="#{jobManager.filterMimeTypeValue}" />
+	<navigation from-action="#{jobManager.saveValidationThreshold}">
+		<redirect include-page-params="true">
+			<param name="jobId" value="#{jobManager.jobId}" />
+		</redirect>
+	</navigation>
+	<navigation
+		from-action="#{jobManager.selectValidationResources(jobManager.job.id)}">
+		<redirect view-id="/jobDetail.xhtml">
+			<param name="jobId" value="#{jobManager.jobId}" />
+		</redirect>
+	</navigation>
+	<navigation from-action="#{jobManager.applyValidationData()}">
+		<redirect>
+			<param name="jobId" value="#{jobManager.jobId}" />
+		</redirect>
+	</navigation>
+</page>

@@ -1,0 +1,209 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Elenco Risorse Locali
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Elenco Risorse Locali</h1>
+		<h:form id="risorseLocaliForm">
+			<s:decorate id="resTable">
+				<div class="results" id="localResourcesListDiv"><h:outputText
+					value="Nessuna risorsa locale." rendered="#{empty lrList}" /></div>
+				<s:div style="display: none;">
+					<rich:datascroller pageIndexVar="pgIdx" pagesVar="pgs"
+						align="center" for="lrListTable" maxPages="20" id="scHidden"
+						reRender="sc2" />
+				</s:div>
+				<s:div rendered="#{not empty lrList}" id="numbering">Risultati: <strong>#{(pgIdx
+					- 1)*20 +1}</strong> - <strong>#{((pgIdx*20) lt lrList.size) ?
+					(pgIdx*20) : lrList.size}</strong> di <strong>#{lrList.size}</strong>
+						&#160;<a4j:commandLink
+						onclick="javascript:checkAll(document.risorseLocaliForm);">Seleziona
+						tutto</a4j:commandLink> / 
+						<a4j:commandLink
+						onclick="javascript:uncheckAll(document.risorseLocaliForm);"> Deseleziona
+						tutto</a4j:commandLink> / 
+						<a4j:commandLink
+						onclick="javascript:invertAll(document.risorseLocaliForm);"> Inverti
+						selezione</a4j:commandLink>
+				</s:div>
+				<rich:dataTable id="lrListTable" var="_lr" rows="20"
+					value="#{lrList}" rendered="#{not empty lrList}"
+					reRender="scHidden, sc2, numbering">
+					<rich:column>
+						<h:selectBooleanCheckbox id="checkedBox" value="#{_lr.checked}">
+							<a4j:support event="onchange" reRender="checkedBox" />
+						</h:selectBooleanCheckbox>
+					</rich:column>
+					<rich:column sortable="true" sortBy="#{_lr.origFileName}"
+						label="Filename"
+						filterMethod="#{localResourcesManager.filterFileNames}">
+						<f:facet name="header">
+						Filename<h:panelGroup>
+								<h:outputText value="Filename" />
+								<br />
+								<h:inputText onclick="Event.stop(event);"
+									value="#{localResourcesManager.filterFileNameValue}"
+									id="inputFN">
+									<a4j:support event="onkeyup" ignoreDupResponses="true"
+										requestDelay="700" reRender="lrListTable" focus="inputFN" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:commandLink action="#{documentDownloader.download(_lr)}"
+							value="#{_lr.origFileName}" />
+					</rich:column>
+					<rich:column sortable="true" sortBy="#{_lr.crawlerUser.username}"
+						label="Utente" filterMethod="#{localResourcesManager.filterUsers}">
+						<f:facet name="header">
+						Utente<h:panelGroup>
+								<h:outputText value="Utente" />
+								<br />
+								<h:inputText onclick="Event.stop(event);" value="#{localResourcesManager.filterUserValue}"
+									id="inputUser">
+									<a4j:support event="onkeyup" ignoreDupResponses="true"
+										requestDelay="700" reRender="lrListTable" focus="inputUser" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText value="#{_lr.crawlerUser.username}" />
+					</rich:column>
+					<rich:column sortable="true"
+						filterMethod="#{localResourcesManager.filterMimeTypes}"
+						sortBy="#{_lr.contentType}" label="MimeType">
+						<f:facet name="header">
+						MimeType<h:panelGroup>
+								<h:outputText value="MimeType" />
+								<br />
+								<h:inputText onclick="Event.stop(event);"
+									value="#{localResourcesManager.filterMimeTypeValue}"
+									id="inputMT">
+									<a4j:support event="onkeyup" ignoreDupResponses="true"
+										requestDelay="700" reRender="lrListTable" focus="inputMT" />
+								</h:inputText>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText value="#{_lr.contentType}" />
+					</rich:column>
+					<rich:column sortable="true"
+						filterMethod="#{localResourcesManager.filterSemanticMetadatum}"
+						sortBy="#{_lr.semanticMetadatum.description}"
+						label="Dom. semantico">
+						<f:facet name="header">
+						Dom. semantico<h:panelGroup>
+								<h:outputText value="Dom. semantico" />
+								<br />
+								<h:selectOneMenu onclick="Event.stop(event);"
+									styleClass="rich-filter-input"
+									value="#{localResourcesManager.semanticMetadatumValue}"
+									id="inputDS">
+									<f:selectItems
+										value="#{localResourcesManager.allSemanticMetadataMap}" />
+									<a4j:support event="onchange" ignoreDupResponses="true"
+										requestDelay="500" reRender="lrListTable" focus="inputDS" />
+								</h:selectOneMenu>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText value="#{_lr.semanticMetadatum.description}" />
+					</rich:column>
+					<rich:column sortable="true"
+						filterMethod="#{localResourcesManager.filterFunctionalMetadatum}"
+						sortBy="#{_lr.functionalMetadatum.description}"
+						label="Dom. funzionale">
+						<f:facet name="header">
+						Dom. funzionale<h:panelGroup>
+								<h:outputText value="Dom. funzionale" />
+								<br />
+								<h:selectOneMenu onclick="Event.stop(event);"
+									styleClass="rich-filter-input"
+									value="#{localResourcesManager.functionalMetadatumValue}"
+									id="inputDF">
+									<f:selectItems
+										value="#{localResourcesManager.allFunctionalMetadataMap}" />
+									<a4j:support event="onchange" ignoreDupResponses="true"
+										requestDelay="500" reRender="lrListTable" focus="inputDF" />
+								</h:selectOneMenu>
+							</h:panelGroup>
+						</f:facet>
+						<h:outputText value="#{_lr.functionalMetadatum.description}" />
+					</rich:column>
+					<rich:column>
+						<f:facet name="header">
+								Cancellata
+							</f:facet>
+						<s:fragment rendered="#{_lr.deleted}">
+							<h:outputText value="Cancellata" />
+							<a4j:commandLink id="makeResourcesPresent"
+								action="#{localResourcesManager.toggleDeleted(_lr)}"
+								reRender="resTable">
+								    Ripristina
+							</a4j:commandLink>
+						</s:fragment>
+						<s:fragment rendered="#{not _lr.deleted}">
+							<h:outputText value="Presente" />
+							<a4j:commandLink id="makeResourcesDeleted"
+								action="#{localResourcesManager.toggleDeleted(_lr)}"
+								reRender="resTable">
+								    Cancella
+							</a4j:commandLink>
+						</s:fragment>
+						<a4j:commandLink id="deleteResource"
+							action="#{localResourcesManager.delete(_lr)}" reRender="resTable">
+								    Elimina
+							</a4j:commandLink>
+					</rich:column>
+				</rich:dataTable>
+				<rich:datascroller align="center" for="lrListTable" maxPages="20"
+					id="sc2" reRender="scHidden, numbering" />
+				<fieldset><legend>Metadati</legend> <s:div>
+					<s:decorate id="semanticDomainField" template="layout/edit.xhtml">
+						<ui:define name="label">Dominio semantico:</ui:define>
+						<h:selectOneMenu
+							value="#{localResourcesManager.semanticMetadatum}">
+							<f:selectItems
+								value="#{localResourcesManager.allSemanticMetadataMap}" />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate id="functionalDomainField" template="layout/edit.xhtml">
+						<ui:define name="label">Dominio funzionale:</ui:define>
+						<h:selectOneMenu
+							value="#{localResourcesManager.functionalMetadatum}">
+							<f:selectItems
+								value="#{localResourcesManager.allFunctionalMetadataMap}" />
+						</h:selectOneMenu>
+					</s:decorate>
+				</s:div>
+				<div style="clear: both">&nbsp;</div>
+				<h:commandButton value="Assegna metadato"
+					action="#{localResourcesManager.assignMetadata()}" /></fieldset>
+				<br />
+				Upload risorse locali	
+				<rich:fileUpload
+					fileUploadListener="#{localResourcesManager.listener}"
+					cancelEntryControlLabel="Elimina" maxFilesQuantity="5" id="upload"
+					createTempFiles="true" maxRequestSize="1000000"
+					immediateUpload="false" autoclear="true"
+					acceptedTypes="doc, html, pdf, rtf, txt" allowFlash="true"
+					addControlLabel="Aggiungi..." clearAllControlLabel="Pulisci tutto"
+					clearControlLabel="Pulisci" stopEntryControlLabel="Ferma invio"
+					uploadControlLabel="Invia">
+					<f:facet name="label">
+						<h:outputText value="{_KB}kB su {KB}kB inviati --- {mm}:{ss}" />
+					</f:facet>
+					<a4j:support event="onuploadcomplete" reRender="resTable" />
+				</rich:fileUpload>
+			</s:decorate>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

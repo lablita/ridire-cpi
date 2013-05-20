@@ -1,0 +1,456 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Risorse scaricate 
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Risorse scaricate dal Job #{jobManager.job.name}</h1>
+		<h:form id="risorseForm">
+			<br />
+			<s:fragment rendered="#{not jobManager.job.mappedResources}">
+		Le risorse scaricate non sono state mappate sul DB<br />
+				<br />
+			</s:fragment>
+			<s:fragment rendered="#{jobManager.job.mappedResources}">
+				<h:outputText value="La disponibilità è relativa al " />
+				<h:outputText value="#{jobManager.lastUpdate}">
+					<s:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+				</h:outputText>
+				<s:decorate id="crawledResourcesListDecorate">
+					<div class="results" id="crawledResourcesListDiv">
+						<h:outputText value="Nessuna risorsa."
+							rendered="#{empty jobCrawledResources}" />
+					</div>
+					<s:div rendered="#{not empty jobCrawledResources}" id="numbering">
+						<s:div id="tabDesc">Risultati:&#160;<strong>#{jobManager.totalResults
+								eq 0 ? 0 : jobManager.firstResult + 1}</strong>&#160;-&#160;<strong>#{((jobManager.firstResult
+								+ jobManager.pageSize) lt jobManager.totalResults) ?
+								(jobManager.firstResult +jobManager.pageSize) :
+								jobManager.totalResults}</strong>&#160;di&#160;<strong>#{jobManager.totalResults}
+							</strong> Risultati per pagina:&#160;
+					<h:selectOneMenu defaultLabel="#{jobManager.pageSize}"
+								value="#{jobManager.pageSize}">
+								<f:selectItem itemValue="2" />
+								<f:selectItem itemValue="5" />
+								<f:selectItem itemValue="10" />
+								<f:selectItem itemValue="30" />
+								<f:selectItem itemValue="50" />
+								<a4j:support event="onchange"
+									action="#{jobManager.resetFactory()}"
+									reRender="tabDesc,crawledResourcesList,risultati" />
+							</h:selectOneMenu>
+						</s:div>
+
+						<a href="javascript:checkAll(document.risorseForm);">
+							Seleziona&#160;tutti&#160;nella&#160;pagina</a>&#160;/
+						<a href="javascript:uncheckAll(document.risorseForm);">
+							Deseleziona&#160;tutti&#160;nella&#160;pagina</a>&#160;/
+						<a href="javascript:invertAll(document.risorseForm);">
+							Inverti&#160;selezione&#160;nella&#160;pagina&#160;</a>
+						<br />
+						<a4j:region id="tuttiRegion">
+							<a4j:commandLink action="#{jobManager.checkAll()}"
+								reRender="crawledResourcesList" value="Seleziona&#160;tutti"
+								id="SelTutti" />&#160;/&#160;
+							<a4j:commandLink action="#{jobManager.checkNothing()}"
+								reRender="crawledResourcesList" value="Deseleziona&#160;tutti "
+								id="deselTutti" />
+						</a4j:region>
+						<s:div>
+							<a4j:region>
+								<h:commandLink action="#{jobManager.deleteAllInPage()}"
+									reRender="tabDesc,crawledResourcesList"
+									onclick="return window.confirm('Sei sicuro di voler cancellare tutte le risorse di questa pagina?')"
+									value="Cancella tutti nella pagina" />
+							</a4j:region>
+						</s:div>
+						<a4j:status onstart="#{rich:component('wait')}.show()"
+							onstop="#{rich:component('wait')}.hide()" for="tuttiRegion" />
+					</s:div>
+					<s:div>
+						<h:selectBooleanCheckbox value="#{jobManager.filterAnalyzed}">
+							<a4j:support event="onclick"
+								action="#{jobManager.resetFactory()}"
+								reRender="tabDesc,crawledResourcesList,crawledResourcesListDecorate" />
+						</h:selectBooleanCheckbox> Mostra solo le risorse da analizzare
+					</s:div>
+					<rich:dataTable id="crawledResourcesList" var="_risorsa"
+						value="#{jobCrawledResources}" reRender="scHidden, sc2, numbering">
+						<rich:column>
+							<h:selectBooleanCheckbox id="checkedBox"
+								value="#{_risorsa.checked}" />
+						</rich:column>
+						<rich:column label="URL">
+							<f:facet name="header">
+								URL<h:panelGroup>
+									<h:outputText value="URL" />
+									<br />
+									<h:inputText onclick="Event.stop(event);"
+										value="#{jobManager.filterURLValue}" id="inputURL">
+										<a4j:support event="onkeyup" ignoreDupResponses="true"
+											requestDelay="700" action="#{jobManager.resetFactory()}"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputURL" />
+									</h:inputText>
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="url" />
+										<ui:param name="nullableField" value="" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<a href="#{_risorsa.url}" target="_blank">#{_risorsa.url}</a>
+						</rich:column>
+						<rich:column label="Parole" style="text-align: right;">
+							<f:facet name="header">
+								Parole<h:panelGroup>
+									<h:outputText value="Parole" />
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="wordsNumber" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<table width="100%">
+								<tr>
+									<td valign="bottom" align="left"><s:fragment
+											rendered="#{not empty _risorsa.cleaner}">
+											<img style="text-align: left;"
+												src="#{request.contextPath}/img/#{_risorsa.cleaner}_logo.png"
+												alt="Testo estratto con #{_risorsa.cleaner}"
+												title="Testo estratto con #{_risorsa.cleaner}" />
+										</s:fragment> <s:fragment rendered="#{empty _risorsa.cleaner}">&nbsp;</s:fragment>
+									</td>
+									<td><a4j:commandLink id="showCleanedText"
+											action="#{jobManager.retrieveCleanedText(_risorsa)}"
+											oncomplete="Richfaces.showModalPanel('cleanedTextModalPanel',{width:550, top:200});"
+											reRender="cleanedTextModalDiv">
+											<h:outputText style="text-align: right;"
+												value="#{_risorsa.wordsNumber}" />
+										</a4j:commandLink></td>
+								</tr>
+							</table>
+						</rich:column>
+						<rich:column label="PoS" style="text-align: center;">
+							<f:facet name="header">
+								PoS<h:panelGroup>
+									<h:outputText value="PoS" />
+								</h:panelGroup>
+							</f:facet>
+							<a4j:commandLink id="showPoSText"
+								rendered="#{_risorsa.language eq 'it'}"
+								action="#{jobManager.retrievePoSText(_risorsa)}"
+								oncomplete="Richfaces.showModalPanel('posTextModalPanel',{width:250, top:200});"
+								reRender="posTextModalDiv">
+								<img style="text-align: left;"
+									src="#{request.contextPath}/img/tag_blue.png"
+									alt="Mostra PoS tagging" title="Mostra PoS tagging" />
+							</a4j:commandLink>
+						</rich:column>
+						<rich:column label="Lingua" style="text-align: center;">
+							<f:facet name="header">
+								Lingua<h:panelGroup>
+									<h:outputText value="Lingua" />
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="language" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>#{_risorsa.language} 
+							<s:fragment rendered="#{not empty _risorsa.language}">
+								<img
+									src="#{request.contextPath}/img/language/#{_risorsa.language}.png"
+									alt="#{_risorsa.language}" title="#{_risorsa.language}" />
+							</s:fragment>
+						</rich:column>
+						<rich:column label="MimeType">
+							<f:facet name="header">
+								MimeType<h:panelGroup>
+									<h:outputText value="MimeType" />
+									<br />
+									<h:inputText onclick="Event.stop(event);"
+										value="#{jobManager.filterMimeTypeValue}" id="inputMT">
+										<a4j:support event="onkeyup" ignoreDupResponses="true"
+											action="#{jobManager.resetFactory()}" requestDelay="700"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputMT" />
+									</h:inputText>
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="contentType" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="#{_risorsa.contentType}" />
+						</rich:column>
+						<rich:column label="Dom. semantico">
+							<f:facet name="header">
+								Dom. semantico<h:panelGroup>
+									<h:outputText value="Dom. semantico" />
+									<br />
+									<h:selectOneMenu onclick="Event.stop(event);"
+										styleClass="rich-filter-input"
+										value="#{jobManager.semanticMetadatumValue}" id="inputDS">
+										<f:selectItems
+											value="#{localResourcesManager.allSemanticMetadataMapPlusNull}" />
+										<a4j:support event="onchange" ignoreDupResponses="true"
+											action="#{jobManager.resetFactory()}" requestDelay="500"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputDS" />
+									</h:selectOneMenu>
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField"
+											value="semanticMetadatum.description" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="#{_risorsa.semanticMetadatum.description}" />
+						</rich:column>
+						<rich:column label="Dom. funzionale">
+							<f:facet name="header">
+								Dom. funzionale<h:panelGroup>
+									<h:outputText value="Dom. funzionale" />
+									<br />
+									<h:selectOneMenu onclick="Event.stop(event);"
+										styleClass="rich-filter-input"
+										value="#{jobManager.functionalMetadatumValue}" id="inputDF">
+										<f:selectItems
+											value="#{localResourcesManager.allFunctionalMetadataMapPlusNull}" />
+										<a4j:support event="onchange" ignoreDupResponses="true"
+											action="#{jobManager.resetFactory()}" requestDelay="500"
+											reRender="crawledResourcesList,risultati,numbering"
+											focus="inputDF" />
+									</h:selectOneMenu>
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField"
+											value="functionalMetadatum.description" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="#{_risorsa.functionalMetadatum.description}" />
+						</rich:column>
+						<rich:column label="Disp." style="text-align: center;">
+							<f:facet name="header">
+								Disp.<h:panelGroup>
+									<h:outputText value="Disp." />
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="noMoreAvailable" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<h:outputText value="Sì"
+								rendered="#{not _risorsa.noMoreAvailable}" />
+							<h:outputText value="No" rendered="#{_risorsa.noMoreAvailable}" />
+						</rich:column>
+						<rich:column label="Canc." style="text-align: center;">
+							<f:facet name="header">
+								Canc.<h:panelGroup>
+									<h:outputText value="Canc." />
+									<ui:include src="/layout/customSort.xhtml">
+										<ui:param name="sortField" value="deleted" />
+									</ui:include>
+								</h:panelGroup>
+							</f:facet>
+							<s:fragment rendered="#{_risorsa.deleted}">
+
+								<a4j:commandLink id="makeResourcesPresent" disabled="#{not s:hasRole('Crawler User')}"
+									action="#{jobManager.toggleDeleted(_risorsa)}"
+									reRender="crawledResourcesList">
+									<img src="#{request.contextPath}/img/arrow-turn-180-left.png"
+										alt="Ripristina risorsa" title="Ripristina risorsa" />
+								</a4j:commandLink>
+							</s:fragment>
+							<s:fragment rendered="#{not _risorsa.deleted}">
+								<a4j:commandLink id="makeResourcesDeleted" disabled="#{not s:hasRole('Crawler User')}"
+									action="#{jobManager.toggleDeleted(_risorsa)}"
+									reRender="crawledResourcesList"
+									rendered="#{not s:hasRole('Guest')}">
+									<img src="#{request.contextPath}/img/bin-metal.png"
+										alt="Cancella risorsa" title="Cancella risorsa" />
+								</a4j:commandLink>
+								<s:fragment rendered="#{s:hasRole('Guest')}">
+									<img src="#{request.contextPath}/img/bin-metal.png"
+										alt="Cancella risorsa" title="Cancella risorsa" />
+								</s:fragment>
+							</s:fragment>
+						</rich:column>
+					</rich:dataTable>
+					<s:div styleClass="tableControl" id="risultati">
+						<s:link view="/jobResources.xhtml" propagation="none"
+							disabled="#{not jobManager.previousExists}"
+							styleClass="#{jobManager.previousExists?'':'disabled'}"
+							value="#{messages.left}#{messages.left}&#160;Prima&#160;pagina"
+							id="firstPage">
+							<f:param name="firstResult" value="0" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+							<f:param name="semanticMetadatumValue"
+								value="#{jobManager.semanticMetadatumValue}" />
+							<f:param name="functionalMetadatumValue"
+								value="#{jobManager.functionalMetadatumValue}" />
+						</s:link>
+						<s:link view="/jobResources.xhtml" propagation="none"
+							disabled="#{not jobManager.previousExists}"
+							styleClass="#{jobManager.previousExists?'':'disabled'}"
+							value="#{messages.left}&#160;Precedente" id="previousPage">
+							<f:param name="firstResult"
+								value="#{jobManager.previousFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+							<f:param name="semanticMetadatumValue"
+								value="#{jobManager.semanticMetadatumValue}" />
+							<f:param name="functionalMetadatumValue"
+								value="#{jobManager.functionalMetadatumValue}" />
+						</s:link>
+						<s:link view="/jobResources.xhtml" propagation="none"
+							disabled="#{not jobManager.nextExists}"
+							styleClass="#{jobManager.nextExists?'':'disabled'}"
+							value="Prossima&#160;#{messages.right}" id="nextPage">
+							<f:param name="firstResult" value="#{jobManager.nextFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+							<f:param name="semanticMetadatumValue"
+								value="#{jobManager.semanticMetadatumValue}" />
+							<f:param name="functionalMetadatumValue"
+								value="#{jobManager.functionalMetadatumValue}" />
+						</s:link>
+						<s:link view="/jobResources.xhtml" propagation="none"
+							disabled="#{not jobManager.nextExists}"
+							styleClass="#{jobManager.nextExists?'':'disabled'}"
+							value="Ultima&#160;pagina&#160;#{messages.right}#{messages.right}"
+							id="lastPage">
+							<f:param name="firstResult" value="#{jobManager.lastFirstResult}" />
+							<f:param name="pageSize" value="#{jobManager.pageSize}" />
+							<f:param name="filterAnalyzed"
+								value="#{jobManager.filterAnalyzed}" />
+							<f:param name="sortField" value="#{jobManager.sortField}" />
+							<f:param name="sortOrder" value="#{jobManager.sortOrder}" />
+							<f:param name="filterURLValue"
+								value="#{jobManager.filterURLValue}" />
+							<f:param name="filterMimeTypeValue"
+								value="#{jobManager.filterMimeTypeValue}" />
+							<f:param name="semanticMetadatumValue"
+								value="#{jobManager.semanticMetadatumValue}" />
+							<f:param name="functionalMetadatumValue"
+								value="#{jobManager.functionalMetadatumValue}" />
+						</s:link>
+					</s:div>
+				</s:decorate>
+			</s:fragment>
+			<fieldset>
+				<legend>Cancellazione risorse</legend>
+				<table>
+					<tr>
+						<td style="text-align: right; font-weight: bold; width: 100px;">Numero
+							di parole minore di:</td>
+						<td style="text-align: left"><rich:inputNumberSpinner
+								value="#{jobManager.wordsLimitDeletionNumber}" minValue="1"
+								maxValue="1000000" clientErrorMessage="Valore non valido" /></td>
+						<td><a4j:commandButton value="Cancella"
+								id="deleteResourcesWithFewWords"
+								disabled="#{s:hasRole('Guest') or not s:hasRole('Crawler User')}"
+								action="#{jobManager.deleteResourcesWithFewWords()}" /> <rich:componentControl
+								for="wait" attachTo="deleteResourcesWithFewWords"
+								operation="show" event="onclick"
+								reRender="deleteResourcesWithFewWords, crawledResourcesList" />
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: right; font-weight: bold; width: 100px;">Lingua:</td>
+						<td><rich:pickList value="#{jobManager.languagesToBeDeleted}"
+								sourceListWidth="30px" targetListWidth="30px"
+								showButtonsLabel="false">
+								<f:selectItems value="#{jobManager.currentLanguages}" />
+							</rich:pickList></td>
+						<td><a4j:commandButton value="Cancella"
+									disabled="#{s:hasRole('Guest') or not s:hasRole('Crawler User')}" id="deleteResourcesByLanguage"
+								action="#{jobManager.deleteResourcesByLanguage()}" /> <rich:componentControl
+								for="wait" attachTo="deleteResourcesByLanguage" operation="show"
+								event="onclick"
+								reRender="deleteResourcesByLanguage, crawledResourcesList" /></td>
+					</tr>
+				</table>
+			</fieldset>
+			<div style="clear: both">&nbsp;</div>
+			<fieldset>
+				<legend>Metadati</legend>
+				<s:div>
+					<s:decorate id="semanticDomainField" template="layout/edit.xhtml">
+						<ui:define name="label">Dominio semantico:</ui:define>
+						<h:selectOneMenu value="#{jobManager.semanticMetadatum}">
+							<f:selectItems
+								value="#{localResourcesManager.allSemanticMetadataMapPlusNull}" />
+						</h:selectOneMenu>
+					</s:decorate>
+					<s:decorate id="functionalDomainField" template="layout/edit.xhtml">
+						<ui:define name="label">Dominio funzionale:</ui:define>
+						<h:selectOneMenu value="#{jobManager.functionalMetadatum}">
+							<f:selectItems
+								value="#{localResourcesManager.allFunctionalMetadataMapPlusNull}" />
+						</h:selectOneMenu>
+					</s:decorate>
+				</s:div>
+				<div style="clear: both">&nbsp;</div>
+				<s:fragment rendered="#{s:hasRole('Crawler User')}">
+					<h:commandLink style="text-decoration: none;" id="assMet"
+						action="#{jobManager.assignMetadata()}" value="">
+						<h:commandButton value="Assegna metadato" />
+						<f:param name="jobId" value="#{jobManager.jobId}" />
+						<rich:componentControl for="wait" attachTo="assMet"
+							operation="show" event="onclick" reRender="assMet" />
+					</h:commandLink>
+				</s:fragment>
+				<s:fragment rendered="#{s:hasRole('Guest')}">
+					<h:commandButton value="Assegna metadato" disabled="true" />
+				</s:fragment>
+			</fieldset>
+			<s:button view="/jobDetail.xhtml" value="Dettaglio Job"
+				propagation="none">
+				<f:param name="jobId" value="#{jobManager.jobId}" />
+			</s:button>
+
+		</h:form>
+		<rich:modalPanel id="wait" autosized="true" width="200" height="120"
+			moveable="false" resizeable="false">
+			<f:facet name="header">
+				<h:outputText value="Operazione in corso" />
+			</f:facet>
+			<h:outputText value="Attendere, per favore..." />
+			<s:div>
+				<h:graphicImage alt="loader" styleClass="loaderImg" id="loaderImg"
+					value="/img/ajax-loader.gif">
+				</h:graphicImage>
+			</s:div>
+		</rich:modalPanel>
+		<ui:include src="/cleanedTextModalPanel.xhtml" />
+		<ui:include src="/posTextModalPanel.xhtml" />
+	</ui:define>
+</ui:composition>
+

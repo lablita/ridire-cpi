@@ -1,0 +1,165 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
+
+	<ui:define name="title">
+  Collocate
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Collocate</h1>
+
+		<h:form>
+			<h:panelGrid columns="4">
+				<h:outputText value="Distanza sinistra: " />
+				<rich:inputNumberSpinner id="distanceLeft" minValue="0" maxValue="4"
+					value="#{cwbCollocatesExtractor.distanceLeft}" />
+				<h:outputText value="Distanza destra: " />
+				<rich:inputNumberSpinner id="distanceRight" minValue="0"
+					maxValue="4" value="#{cwbCollocatesExtractor.distanceRight}" />
+			</h:panelGrid>
+			<h:panelGrid columns="4">
+				<h:outputText value="Freq. minima correlazione: " />
+				<rich:inputNumberSpinner id="freqMinima" minValue="3"
+					value="#{cwbCollocatesExtractor.freqMinNC}" />
+				<h:outputText value="Freq. minima parola collocata: " />
+				<rich:inputNumberSpinner id="freqCollMinima" minValue="1"
+					value="#{cwbCollocatesExtractor.freqMinColl}" />
+			</h:panelGrid>
+			<h:panelGrid columns="2">
+				<h:outputText value="Ordina:" />
+				<h:selectOneRadio value="#{cwbCollocatesExtractor.score}">
+					<s:selectItems var="tbv"
+						value="#{cwbCollocatesExtractor.getAvailableScores()}"
+						label="#{tbv}" />
+				</h:selectOneRadio>
+			</h:panelGrid>
+			<s:div id="basedOn">
+				<h:panelGrid columns="4">
+					<h:outputText value="Basate su:" />
+					<h:selectOneMenu
+						value="#{cwbCollocatesExtractor.collocationBasedOn}">
+						<s:selectItems var="bo" label="#{bo}"
+							value="#{cwbCollocatesExtractor.availableBasedOn}" />
+					</h:selectOneMenu>
+					<h:outputText value="Filtra su PoS:" />
+					<h:selectOneMenu
+						disabled="#{not cwbCollocatesExtractor.includePos or cwbCollocatesExtractor.collocationBasedOn eq 'PoS'}"
+						id="filterOnPos" value="#{cwbCollocatesExtractor.filterOnPoS}">
+						<s:selectItems var="pos" itemLabel="#{pos}" itemValue="#{pos}"
+							label="#{pos}" value="#{corpusSizeParams.availableEasyposs}" />
+					</h:selectOneMenu>
+				</h:panelGrid>
+			</s:div>
+			<h:commandButton
+				action="#{cwbCollocatesExtractor.extractCollocates(true)}"
+				value="Estrai collocate" />
+			<s:div styleClass="tableControl" id="risultati"
+				rendered="#{cwbCollocatesExtractor.resultsSize gt 0}">
+				<s:link view="/cwbcollocations.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbCollocatesExtractor.previousExists}"
+					action="#{cwbCollocatesExtractor.extractCollocates(false)}"
+					styleClass="#{cwbCollocatesExtractor.previousExists?'':'disabled'}"
+					value="#{messages.left}#{messages.left}&#160;Prima&#160;pagina"
+					id="firstPage">
+					<f:param name="firstResult" value="0" />
+					<f:param name="pageSize" value="#{cwbCollocatesExtractor.pageSize}" />
+				</s:link>
+				<s:link view="/cwbcollocations.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbCollocatesExtractor.previousExists}"
+					action="#{cwbCollocatesExtractor.extractCollocates(false)}"
+					styleClass="#{cwbCollocatesExtractor.previousExists?'':'disabled'}"
+					value="#{messages.left}&#160;Precedente" id="previousPage">
+					<f:param name="firstResult"
+						value="#{cwbCollocatesExtractor.previousFirstResult}" />
+					<f:param name="pageSize" value="#{cwbCollocatesExtractor.pageSize}" />
+				</s:link>
+				<s:link view="/cwbcollocations.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbCollocatesExtractor.nextExists}"
+					action="#{cwbCollocatesExtractor.extractCollocates(false)}"
+					styleClass="#{cwbCollocatesExtractor.nextExists?'':'disabled'}"
+					value="Prossima&#160;#{messages.right}" id="nextPage">
+					<f:param name="firstResult"
+						value="#{cwbCollocatesExtractor.nextFirstResult}" />
+					<f:param name="pageSize" value="#{cwbCollocatesExtractor.pageSize}" />
+				</s:link>
+				<s:link view="/cwbcollocations.xhtml" onclick="statusDialog.show();"
+					disabled="#{not cwbCollocatesExtractor.nextExists}"
+					action="#{cwbCollocatesExtractor.extractCollocates(false)}"
+					styleClass="#{cwbCollocatesExtractor.nextExists?'':'disabled'}"
+					value="Ultima&#160;pagina&#160;#{messages.right}#{messages.right}"
+					id="lastPage">
+					<f:param name="firstResult"
+						value="#{cwbCollocatesExtractor.lastFirstResult}" />
+					<f:param name="pageSize" value="#{cwbCollocatesExtractor.pageSize}" />
+				</s:link>
+			</s:div>
+		</h:form>
+		<s:fragment rendered="#{cwbCollocatesExtractor.resultsSize gt 0}">Risultati:&#160;
+			<strong>#{cwbCollocatesExtractor.resultsSize eq 0 ? 0 :
+				cwbCollocatesExtractor.firstResult + 1}</strong>&#160;-&#160;<strong>#{((cwbCollocatesExtractor.firstResult
+				+ cwbCollocatesExtractor.pageSize) lt
+				cwbCollocatesExtractor.resultsSize) ?
+				(cwbCollocatesExtractor.firstResult
+				+cwbCollocatesExtractor.pageSize) :
+				cwbCollocatesExtractor.resultsSize}</strong>&#160;di&#160;<strong>#{cwbCollocatesExtractor.resultsSize}</strong>
+		</s:fragment>
+		<rich:dataTable var="item"
+			value="#{cwbCollocatesExtractor.cwbCollocateResults}"
+			rendered="#{cwbCollocatesExtractor.resultsSize gt 0}"
+			id="cwbCollocatesExtractorList">
+			<rich:column style="white-space: nowrap; text-align: right;">
+				<f:facet name="header">
+					<h:outputText value="Parola" />
+				</f:facet>
+				<s:link value="#{item.term}" view="/cwbconcordances.xhtml">
+					<f:param name="query" value="#{cwbCollocatesExtractor.query}" />
+					<f:param name="distanceLeft"
+						value="#{cwbCollocatesExtractor.distanceLeft}" />
+					<f:param name="distanceRight"
+						value="#{cwbCollocatesExtractor.distanceRight}" />
+					<f:param name="term" value="#{item.term}" />
+					<f:param name="resultsFromCollocationExtracted" value="false" />
+					<f:param name="termCategory"
+						value="#{cwbCollocatesExtractor.collocationBasedOn}" />
+					<f:param name="fromCollocation" value="true" />
+				</s:link>
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Punteggio" />
+				</f:facet>
+				<h:outputText value="#{item.scoreValue}">
+					<f:convertNumber maxFractionDigits="4" minFractionDigits="2" />
+				</h:outputText>
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Freq. nel corpus" />
+				</f:facet>
+				<h:outputText value="#{item.freqInCorpus}" />
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Freq. collocata" />
+				</f:facet>
+				<h:outputText value="#{item.observedCollocateFreq}" />
+			</rich:column>
+			<rich:column>
+				<f:facet name="header">
+					<h:outputText value="Freq. collocata attesa" />
+				</f:facet>
+				<h:outputText value="#{item.expectedCollocateFreq}" />
+			</rich:column>
+		</rich:dataTable>
+	</ui:define>
+
+</ui:composition>
+

@@ -1,0 +1,111 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:h="http://java.sun.com/jsf/html" template="layout/template.xhtml">
+
+	<ui:define name="title">
+    Creazione Job - Inserimento dati Profilo
+</ui:define>
+
+	<ui:define name="body">
+		<h1>Creazione Job - Inserimento dati Profilo
+		#{profile.profileName}</h1>
+		<h:form>
+			<s:decorate id="nomeField" template="layout/edit.xhtml">
+				<ui:define name="label">Nome Job:</ui:define>
+				<h:inputText label="Nome job" value="#{profile.jobName}"
+					required="true" validator="slashValidator">
+					<a:support event="onblur" reRender="nomeField" bypassUpdates="true"
+						ajaxSingle="true" />
+				</h:inputText>
+			</s:decorate>
+
+			<s:decorate id="seedsField" template="layout/edit.xhtml">
+				<ui:define name="label">Seeds:</ui:define>
+				<h:inputTextarea rows="6" cols="50" label="Seeds"
+					value="#{profile.jobSeeds}" required="true"
+					validator="urlValidator">
+					<a:support event="onblur" reRender="seedsField"
+						bypassUpdates="true" ajaxSingle="true" />
+				</h:inputTextarea>
+			</s:decorate>
+			<s:decorate id="allowedMimeTypeField" template="layout/edit.xhtml"
+				rendered="#{profile.profileName eq 'profilo_1'}">
+				<ui:define name="label">Scelta formato risorse:</ui:define>
+				<rich:pickList listsHeight="100px" sourceListWidth="80px"
+					targetListWidth="80px" showButtonsLabel="false"
+					value="#{profile.chosenMimeTypes}">
+					<f:selectItems value="#{profile.allMimeTypes}" />
+				</rich:pickList>
+				<s:span styleClass="info">Se non si seleziona alcun formato, il crawling salverà tutti i tipi di risorsa (anche immagini, audio, ecc...)</s:span>
+			</s:decorate>
+			<div style="clear: both">&nbsp;</div>
+			<s:fragment rendered="#{profile.profileName eq 'profilo_1'}">
+				<fieldset><legend>Scelta URL navigate</legend> <s:decorate
+					id="goodURLsField" template="layout/edit.xhtml">
+					<ui:define name="label">Solo le URL contenenti le stringhe:</ui:define>
+					<h:inputTextarea rows="5" cols="30" id="followedURLList"
+						label="Solo le URL contenenti le stringhe"
+						value="#{profile.goodURLs}" required="false">
+						<a:support event="onblur" reRender="goodURLsField"
+							bypassUpdates="true" ajaxSingle="true" />
+					</h:inputTextarea>
+				</s:decorate> <s:decorate id="followedURLPatternField"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Pattern:</ui:define>
+					<h:inputText label="Pattern" id="followedURLPattern"
+						value="#{profile.followedURLPattern}" required="false"
+						onkeyup="javascript: if (#{rich:element('followedURLPattern')}.value==null || !#{rich:element('followedURLPattern')}.value.length>0) {#{rich:element('followedURLList')}.disabled='';}else{#{rich:element('followedURLList')}.disabled='disabled';}">
+						<a:support event="onblur" reRender="followedURLPatternField"
+							bypassUpdates="true" ajaxSingle="true" />
+					</h:inputText>
+					<h:message for="followedURLPatternField" />
+				</s:decorate> <s:decorate id="goodURLsFieldDenied" template="layout/edit.xhtml">
+					<ui:define name="label">Negativo:</ui:define>
+					<h:selectBooleanCheckbox label="Negativo"
+						value="#{profile.followedURLPatternDenied}">
+					</h:selectBooleanCheckbox>
+				</s:decorate></fieldset>
+				<fieldset><legend>Scelta URL salvate</legend> <s:decorate
+					id="writtenURLsField" template="layout/edit.xhtml">
+					<ui:define name="label">Solo le URL contenenti le stringhe:</ui:define>
+					<h:inputTextarea rows="5" cols="30" id="writtenURLslist"
+						label="Solo le URL contenenti le stringhe"
+						value="#{profile.writtenURLs}" required="false">
+						<a:support event="onblur" reRender="writtenURLsField"
+							bypassUpdates="true" ajaxSingle="true" />
+					</h:inputTextarea>
+				</s:decorate> <s:decorate id="writtenResourceURLPatternField"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Pattern:</ui:define>
+					<h:inputText label="Pattern" id="writtenResourceURLPattern"
+						value="#{profile.writtenResourceURLPattern}" required="false"
+						onkeyup="javascript: if (#{rich:element('writtenResourceURLPattern')}.value==null || !#{rich:element('writtenResourceURLPattern')}.value.length>0) {#{rich:element('writtenURLslist')}.disabled='';}else{#{rich:element('writtenURLslist')}.disabled='disabled';}">
+						<a:support event="onblur"
+							reRender="writtenResourceURLPatternField" bypassUpdates="true"
+							ajaxSingle="true" />
+					</h:inputText>
+				</s:decorate> <s:decorate id="writtenResourceURLPatternDenied"
+					template="layout/edit.xhtml">
+					<ui:define name="label">Negativo:</ui:define>
+					<h:selectBooleanCheckbox label="Negativo"
+						value="#{profile.writtenResourceURLPatternDenied}">
+					</h:selectBooleanCheckbox>
+				</s:decorate></fieldset>
+				<br />
+			</s:fragment>
+			<div style="clear: both"><span class="required">*</span> campi
+			obbligatori</div>
+			<br />
+			<s:button value="Indietro" view="/makeJobSelectProfile.xhtml" />
+			<h:commandButton value="Fine" action="#{profile.createJob()}" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+

@@ -1,0 +1,18 @@
+#Thu Dec 10 14:02:35 CET 2009
+action.package=it.drwolf.ridire.session
+action.sources=/it.drwolf.ridire-ejb/ejbModule
+eclipse.preferences.version=1
+model.package=it.drwolf.ridire.entity
+model.sources=/it.drwolf.ridire-ejb/ejbModule
+seam.ear.project=it.drwolf.ridire-ear
+seam.ejb.project=it.drwolf.ridire-ejb
+seam.project.connection.profile=New MySQL
+seam.project.deployment.type=ear
+seam.project.settings.version=1.1
+seam.project.web.root.folder=/it.drwolf.ridire/WebContent
+seam.runtime.name=jboss-seam-2.2.0.GA
+seam.settings.changed.by.user=true
+seam.test.creating=false
+seam.test.project=it.drwolf.ridire-test
+test.package=it.drwolf.ridire.test
+test.sources=/it.drwolf.ridire-test/test-src
