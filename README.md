@@ -26,24 +26,23 @@ from these
 
 ....
 
-<constructor\>\
- <!-- The name of the set of bindings to use for this server --\>\
- <parameter\>${jboss.service.binding.set:ports-default}</parameter\>\
-\
- <!-- The binding sets --\>\
- <parameter\>\
+<constructor>
+ <!-- The name of the set of bindings to use for this server -->
+ <parameter>${jboss.service.binding.set:ports-default}</parameter>
+
+ <!-- The binding sets -->
+ <parameter>
 ....
 
 to these
 
 ....
 
-<constructor\>\
- <!-- The name of the set of bindings to use for this server --\>\
- <parameter\>${jboss.service.binding.set:ports-01}</parameter\>\
-\
- <!-- The binding sets --\>\
- <parameter\>\
+<constructor>
+ <!-- The name of the set of bindings to use for this server -->
+ <parameter>${jboss.service.binding.set:ports-01}</parameter>
+ <!-- The binding sets -->
+ <parameter>
 ....
 
 This change will shift all ports by 100. So the HTTP listening port will
