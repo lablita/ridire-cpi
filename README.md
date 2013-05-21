@@ -11,7 +11,7 @@ Java
 
 Install Java version \>=1.5
 
-Adjust JAVA\_HOME environment variable accordingly
+Adjust `JAVA_HOME` environment variable accordingly
 
 JBoss
 -----
@@ -22,39 +22,33 @@ Install JBoss version=5.1.0GA
 
 Make sure default listening port (8080) it’s not already used. If so,
 change
-JBOSS\_INSTALL/server/default/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml
+`JBOSS_INSTALL/server/default/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml`
 
 from these
 
-....
+<pre><code>
+  ....
+  &lt;constructor&gt;  
+  &lt;!-- The name of the set of bindings to use for this server --&gt;  
+  &lt;parameter&gt;${jboss.service.binding.set:ports-default}&lt;/parameter&gt;
+  &lt;!-- The binding sets --&gt;  
+  &lt;parameter&gt;
+  ....
+</code></pre>
 
-  \<constructor\>
-  
-  <!-- The name of the set of bindings to use for this server -->
-  
-  \<parameter\>${jboss.service.binding.set:ports-default}\</parameter\>
-
-  <!-- The binding sets -->
-  
-  \<parameter\>
-  
-....
 
 to these
 
-....
+<pre><code>
+  ....
+  &lt;constructor&gt;  
+  &lt;!-- The name of the set of bindings to use for this server --&gt;  
+  &lt;parameter&gt;${jboss.service.binding.set:ports-01}&lt;/parameter&gt;
+  &lt;!-- The binding sets --&gt;  
+  &lt;parameter&gt;
+  ....
+</code></pre>
 
-\<constructor\>
-
- <!-- The name of the set of bindings to use for this server -->
- 
- \<parameter\>${jboss.service.binding.set:ports-01}\</parameter\>
- 
- <!-- The binding sets -->
- 
- \<parameter\>
- 
-....
 
 This change will shift all ports by 100. So the HTTP listening port will
 be 8180.
