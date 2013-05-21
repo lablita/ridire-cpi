@@ -3,6 +3,8 @@ RIDIRE Installation Manual
 
 http://www.ridire.it
 
+http://lablita.dit.unifi.it/projects/RIDIRE
+
 
 Java
 ----
@@ -26,23 +28,32 @@ from these
 
 ....
 
-<constructor>
- <!-- The name of the set of bindings to use for this server -->
- <parameter>${jboss.service.binding.set:ports-default}</parameter>
+  \<constructor\>
+  
+  <!-- The name of the set of bindings to use for this server -->
+  
+  \<parameter\>${jboss.service.binding.set:ports-default}\</parameter\>
 
- <!-- The binding sets -->
- <parameter>
+  <!-- The binding sets -->
+  
+  \<parameter\>
+  
 ....
 
 to these
 
 ....
 
-<constructor>
+\<constructor\>
+
  <!-- The name of the set of bindings to use for this server -->
- <parameter>${jboss.service.binding.set:ports-01}</parameter>
+ 
+ \<parameter\>${jboss.service.binding.set:ports-01}\</parameter\>
+ 
  <!-- The binding sets -->
- <parameter>
+ 
+ \<parameter\>
+ 
 ....
 
 This change will shift all ports by 100. So the HTTP listening port will
