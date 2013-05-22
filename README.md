@@ -57,16 +57,16 @@ Make also sure the system has a high limit on maximum open file (e.g.
 ubuntu’s default 1024 is often too small).
 
 If you are not a JBoss expert, go to
-JBOSS\_INSTALL/server/default/deploy and remove the directory
-admin-console.war, to avoid a well-known security issue.
+`JBOSS_INSTALL/server/default/deploy` and remove the directory
+`admin-console.war`, to avoid a well-known security issue.
 
 #### Temporary directory
 
 RIDIRE will need of a quite big amount of space for temporary files.
 Sometimes /tmp (the default temporary directory) is bound to a small
 partition. If so, create a dedicated temporary folder (something like
-\~/ridire\_tmp/) and modify JBOSS\_INSTALL/bin/run.conf adding
--Djava.io.tmpdir=/home/drwolf/ridire\_tmp at the end of JAVA\_OPTS.
+`~/ridire_tmp/`) and modify `JBOSS_INSTALL/bin/run.conf` adding
+`-Djava.io.tmpdir=/home/drwolf/ridire_tmp` at the end of `JAVA_OPTS`.
 
 MySQL
 -----
@@ -74,23 +74,24 @@ MySQL
 Install MySQL version \> 5.0
 
 Create a database and assign all privileges on it to a user.
-
+<pre><code>
 mysql\> create database ridire default character set utf8 default
 collate utf8\_bin;
 
 mysql\> grant all privileges on ridire.\* to 'ridire'@'IPADDRESS'
 identified by 'secret';
+</code></pre>
 
 RIDIRE EAR
 ----------
 
-Move to JBOSS\_INSTALL/server/default/deploy and unpack
+Move to `JBOSS_INSTALL/server/default/deploy` and unpack
 it.drwolf.ridire-ear.zip file
 
-Copy it.drwolf.ridire-ds.xml in JBOSS\_INSTALL/server/default/deploy
+Copy `it.drwolf.ridire-ds.xml` in `JBOSS\_INSTALL/server/default/deploy`
 (not in the folder created by unzipping the package).
 
-Change ds.xml file accordingly to the parameters you have set for the
+Change `ds.xml` file accordingly to the parameters you have set for the
 DB.
 
 Not shipped libraries
@@ -99,7 +100,7 @@ Not shipped libraries
 Some of the programming libraries needed by RIDIRE cannot be shipped in
 the same package for licences reasons. You have to download them by
 yourself and place in
-JBOSS\_INSTALL/server/default/deploy/it.drwolf.ridire-ear.ear/lib/
+`JBOSS_INSTALL/server/default/deploy/it.drwolf.ridire-ear.ear/lib/`
 
 1.  MySQL JDBC connector
     [http://dev.mysql.com/downloads/connector/j/](http://dev.mysql.com/downloads/connector/j/)
