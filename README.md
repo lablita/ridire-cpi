@@ -75,11 +75,9 @@ Install MySQL version \> 5.0
 
 Create a database and assign all privileges on it to a user.
 <pre><code>
-mysql\> create database ridire default character set utf8 default
-collate utf8\_bin;
+mysql> create database ridire default character set utf8 default collate utf8_bin;
 
-mysql\> grant all privileges on ridire.\* to 'ridire'@'IPADDRESS'
-identified by 'secret';
+mysql> grant all privileges on ridire.* to 'ridire'@'IPADDRESS' identified by 'secret';
 </code></pre>
 
 RIDIRE EAR
