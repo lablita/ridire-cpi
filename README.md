@@ -1,14 +1,17 @@
-RIDIRE
+RIDIRE Installation Manual
 ======
 
 http://www.ridire.it
+
+http://lablita.dit.unifi.it/projects/RIDIRE
+
 
 Java
 ----
 
 Install Java version \>=1.5
 
-Adjust JAVA\_HOME environment variable accordingly
+Adjust `JAVA_HOME` environment variable accordingly
 
 JBoss
 -----
@@ -19,31 +22,33 @@ Install JBoss version=5.1.0GA
 
 Make sure default listening port (8080) it’s not already used. If so,
 change
-JBOSS\_INSTALL/server/default/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml
+`JBOSS_INSTALL/server/default/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml`
 
 from these
 
-....
+<pre><code>
+  ....
+  &lt;constructor&gt;  
+  &lt;!-- The name of the set of bindings to use for this server --&gt;  
+  &lt;parameter&gt;${jboss.service.binding.set:ports-default}&lt;/parameter&gt;
+  &lt;!-- The binding sets --&gt;  
+  &lt;parameter&gt;
+  ....
+</code></pre>
 
-<constructor\>\
- <!-- The name of the set of bindings to use for this server --\>\
- <parameter\>${jboss.service.binding.set:ports-default}</parameter\>\
-\
- <!-- The binding sets --\>\
- <parameter\>\
-....
 
 to these
 
-....
+<pre><code>
+  ....
+  &lt;constructor&gt;  
+  &lt;!-- The name of the set of bindings to use for this server --&gt;  
+  &lt;parameter&gt;${jboss.service.binding.set:ports-01}&lt;/parameter&gt;
+  &lt;!-- The binding sets --&gt;  
+  &lt;parameter&gt;
+  ....
+</code></pre>
 
-<constructor\>\
- <!-- The name of the set of bindings to use for this server --\>\
- <parameter\>${jboss.service.binding.set:ports-01}</parameter\>\
-\
- <!-- The binding sets --\>\
- <parameter\>\
-....
 
 This change will shift all ports by 100. So the HTTP listening port will
 be 8180.
@@ -52,8 +57,16 @@ Make also sure the system has a high limit on maximum open file (e.g.
 ubuntu’s default 1024 is often too small).
 
 If you are not a JBoss expert, go to
-JBOSS\_INSTALL/server/default/deploy and remove the directory
-admin-console.war, to avoid a well-known security issue.
+`JBOSS_INSTALL/server/default/deploy` and remove the directory
+`admin-console.war`, to avoid a well-known security issue.
+
+#### Temporary directory
+
+RIDIRE will need of a quite big amount of space for temporary files.
+Sometimes /tmp (the default temporary directory) is bound to a small
+partition. If so, create a dedicated temporary folder (something like
+`~/ridire_tmp/`) and modify `JBOSS_INSTALL/bin/run.conf` adding
+`-Djava.io.tmpdir=/home/drwolf/ridire_tmp` at the end of `JAVA_OPTS`.
 
 MySQL
 -----
@@ -61,25 +74,39 @@ MySQL
 Install MySQL version \> 5.0
 
 Create a database and assign all privileges on it to a user.
+<pre><code>
+mysql> create database ridire default character set utf8 default collate utf8_bin;
 
-mysql\> create database ridire default character set utf8 default
-collate utf8\_bin;
+mysql> grant all privileges on ridire.* to 'ridire'@'IPADDRESS' identified by 'secret';
+</code></pre>
 
-mysql\> grant all privileges on ridire.\* to 'ridire'@'IPADDRESS'
-identified by 'secret';
+RIDIRE EAR
+----------
 
-### RIDIRE EAR
-
-Move to JBOSS\_INSTALL/server/default/deploy and unpack
+Move to `JBOSS_INSTALL/server/default/deploy` and unpack
 it.drwolf.ridire-ear.zip file
 
-Copy it.drwolf.ridire-ds.xml in JBOSS\_INSTALL/server/default/deploy
+Copy `it.drwolf.ridire-ds.xml` in `JBOSS\_INSTALL/server/default/deploy`
 (not in the folder created by unzipping the package).
 
-Change ds.xml file accordingly to the parameters you have set for the
+Change `ds.xml` file accordingly to the parameters you have set for the
 DB.
 
-### First run
+Not shipped libraries
+---------------------
+
+Some of the programming libraries needed by RIDIRE cannot be shipped in
+the same package for licences reasons. You have to download them by
+yourself and place in
+`JBOSS_INSTALL/server/default/deploy/it.drwolf.ridire-ear.ear/lib/`
+
+1.  MySQL JDBC connector
+    [http://dev.mysql.com/downloads/connector/j/](http://dev.mysql.com/downloads/connector/j/)
+2.  iText
+    [http://sourceforge.net/projects/itext/](http://sourceforge.net/projects/itext/)
+
+First run
+---------
 
 Move to JBOSS\_INSTALL/bin
 
@@ -107,16 +134,18 @@ password: changeme
 You may want to change it modifying the corresponding record in User
 table.
 
-### Parameters
+Parameters
+----------
 
 Parameters are set in Parameter and CommandParameter tables. They are
 just key-value records; key name should have a quite explanatory name,
 anyway they will be discussed later.
 
-To make RIDIRE aware of any changein parameters, JBoss must be
+To make RIDIRE aware of any change in parameters, JBoss must be
 restarted.
 
-### Stopping and restarting
+Stopping and restarting
+-----------------------
 
 The correct way to stop JBoss5 is:
 
@@ -128,9 +157,10 @@ if JBoss’ ports are shifted by 100, the right command is
 
 $ JBOSS\_INSTALL/bin/shutdown.sh -s jnp://localhost:1199
 
-### HERITRIX
+HERITRIX
+--------
 
-To install the crwaler, unpack the bundle heritrix-RIDIRE.tar.gz, which
+To install the crawler, unpack the bundle heritrix-RIDIRE.tar.gz, which
 is a snapshot of Heritrix v. 3.1.1, with already configured profiles and
 a custom module.
 
@@ -148,14 +178,15 @@ following parameters accordingly:
 
 Now the crawler is configured, but it’s not very useful, because the
 pipeline is not installed. Without the pipeline, downloaded resources
-are not processed and not transformed in plain text and linguistic
-information is not extracted.
+won’t be processed and transformed in plain text and linguistic
+information won’t br extracted.
 
 ### 
 
-### Pipeline
+Pipeline
+--------
 
-Transformation to HTML
+#### Transformation to HTML
 
 DOC, RTF, TXT conversion implementations are embedded in the
 application. No configuration needed.
@@ -164,7 +195,7 @@ PDF conversion needs the following configuration steps:
 
 1.  pdftohtml - you need to install pdftohtml version 0.40
     http://pdftohtml.sourceforge.net/, based on Xpdf version 3.01.
-    Notice that pdftohtml version that is shipped in ubuntu package is
+    Notice that pdftohtml version that is shipped in ubuntu’s package is
     not compatible. Change pdftohtml.bin CommandParameter accordingly.
 2.  PdfCleaner - place PdfCleaner.jar in a folder of your choice. Change
     pdfcleaner.jar CommnadParameter accordingly.
@@ -174,21 +205,25 @@ PDF conversion needs the following configuration steps:
 Place ridirecleaner.jar in a folder of your choice. Change
 CommandParameter ridirecleaner.jar accordingly.
 
-Readability is embedded in the application.
+To use Readability you must get an API key from
+[www.readability.com](http://www.readability.com)/developers/api. Read
+carefully http://www.readability.com/developers/terms
 
-To configure it, you need to adjust:
+To configure Readability cleaning, you need to adjust the following
+Parameters:
 
-1.  readability.host in Parameter, that must match the URL of the
-    application;
-2.  readability.src in CommandParameter, that must point to the
-    javascript file in the JBoss EAR uncompressed folder;
+1.  readability.host that must match the URL of RIDIRE application;
+2.  readability.key with the provided key
 
-Alchemy instead is an external web service. You must obtain an API key
+Alchemy is an external web service too. You must obtain an API key
 ([http://www.alchemyapi.com](http://www.alchemyapi.com)). Free API key
 have a limit of 1000 calls per day. You may request a key for academic
 use or a commercial one (see website for details).
 
 You must write the key in the alchemy.key Parameter.
+
+Change temp.dir Parameter according to your system’s temporary directory
+of to the one you have chosen.
 
 #### Language detection
 
@@ -216,7 +251,8 @@ resources.
 PoS tagging is disabled in default installation. Set pos.enabled
 Parameter to true to enable it.
 
-### CorpusWorkbench (CWB)
+CorpusWorkbench (CWB)
+---------------------
 
 RIDIRE exploits CWB to index resources and search for concordances and
 collocates.
@@ -263,7 +299,8 @@ Actual indexing is performed on the command line.
 Choose a corpus name (from now on: CORPUSNAME).
 
 $ cwb-encode -d CWBDATADIR -F VRTDIR -R REGISTRYDIR/CORPUSNAME -c utf8
--xsB -P pos -P lemma -S text:0+id+url+functional+semantic+jobname
+-xsB -P pos -P easypos -P lemma -S
+text:0+id+url+functional+semantic+jobname
 
 $ cwb-make -r REGISTRYDIR/ -V CORPUSNAME
 
@@ -271,7 +308,7 @@ Repeat these steps for the inverted files, placing a “INV” suffix on the
 CORPUSNAME
 
 $ cwb-encode -d CWBDATADIRINV -F VRTDIRINV -R REGISTRYDIR/CORPUSNAMEINV
--c utf8 -xsB -P pos -P lemma -S
+-c utf8 -xsB -P pos -P easypos -P lemma -S
 text:0+id+url+functional+semantic+jobname\
 $ cwb-make -r REGISTRYDIR/ -V CORPUSNAMEINV
 
