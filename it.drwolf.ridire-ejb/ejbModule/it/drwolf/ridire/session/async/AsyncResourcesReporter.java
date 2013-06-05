@@ -151,32 +151,32 @@ public class AsyncResourcesReporter {
 		if (admin) {
 			ret = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN SemanticMetadatum S on C.semanticMetadatum_id=S.id, FunctionalMetadatum F "
-									+ "where F.id=C.functionalMetadatum_id and C.deleted is false "
-									+ "group By F.description with rollup")
+							"select coalesce(F.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join FunctionalMetadatum F on F.id=C.functionalMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false "
+									+ "group by F.description with rollup")
 					.getResultList();
 			ret2 = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN SemanticMetadatum S on C.semanticMetadatum_id=S.id, FunctionalMetadatum F, Job J "
-									+ "where F.id=C.functionalMetadatum_id and C.deleted is false and C.job_id=J.id and J.validationStatus=2 "
+							"select coalesce(F.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join FunctionalMetadatum F on F.id=C.functionalMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.validationStatus=2 "
 									+ "group By F.description with rollup")
 					.getResultList();
 		} else {
 			List<Integer> users = this.getUsersIds(username);
 			ret = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN SemanticMetadatum S on C.semanticMetadatum_id=S.id, FunctionalMetadatum F, Job J "
-									+ "where F.id=C.functionalMetadatum_id and C.job_id=J.id and J.crawlerUser_id IN (:crawlerUserIds) and C.deleted is false "
+							"select coalesce(F.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join FunctionalMetadatum F on F.id=C.functionalMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.crawlerUser_id IN (:crawlerUserIds) "
 									+ "group By F.description with rollup")
 					.setParameter("crawlerUserIds", users).getResultList();
 			ret2 = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN SemanticMetadatum S on C.semanticMetadatum_id=S.id, FunctionalMetadatum F, Job J "
-									+ "where F.id=C.functionalMetadatum_id and C.job_id=J.id and J.validationStatus=2 and J.crawlerUser_id IN (:crawlerUserIds) and C.deleted is false "
+							"select coalesce(F.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join FunctionalMetadatum F on F.id=C.functionalMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.crawlerUser_id IN (:crawlerUserIds) and J.validationStatus=2 "
 									+ "group By F.description with rollup")
 					.setParameter("crawlerUserIds", users).getResultList();
 		}
@@ -187,11 +187,11 @@ public class AsyncResourcesReporter {
 		for (Object[] r : ret) {
 			if (r[0] == null) {
 				this.resourcesReporterData.getFunctionalTotal().put(username,
-						((Number) r[2]).intValue());
+						((Number) r[1]).intValue());
 				continue;
 			}
-			report.add(new CorpusDataReport((String) r[0], (String) r[1],
-					((Number) r[2]).intValue()));
+			report.add(new CorpusDataReport((String) r[0], null,
+					((Number) r[1]).intValue()));
 		}
 		for (int i = 0; i < ret2.size(); i++) {
 			Object[] r2 = ret2.get(i);
@@ -200,17 +200,12 @@ public class AsyncResourcesReporter {
 			}
 			if (r2[0] == null) {
 				this.resourcesReporterData.getFunctionalTotalValid().put(
-						username, ((Number) r2[2]).intValue());
+						username, ((Number) r2[1]).intValue());
 				continue;
 			}
-			String fun = ((String) r2[0]).equals("fun") ? "N/A"
-					: (String) r2[0];
-			String sem = ((String) r2[1]).equals("sem") ? "N/A"
-					: (String) r2[1];
 			for (CorpusDataReport cdr : report) {
-				if (cdr.getDomFunzionale().equals(fun)
-						&& cdr.getDomSemantico().equals(sem)) {
-					cdr.setWordsValid(((Number) r2[2]).intValue());
+				if (cdr.getDomFunzionale().equals(r2[0])) {
+					cdr.setWordsValid(((Number) r2[1]).intValue());
 					break;
 				}
 			}
@@ -324,32 +319,32 @@ public class AsyncResourcesReporter {
 		if (admin) {
 			ret = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN FunctionalMetadatum F on C.functionalMetadatum_id=F.id, SemanticMetadatum S "
-									+ "where S.id=C.semanticMetadatum_id and C.deleted is false "
+							"select coalesce(S.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join SemanticMetadatum S on S.id=C.semanticMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false "
 									+ "group By S.description with rollup")
 					.getResultList();
 			ret2 = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN FunctionalMetadatum F on C.functionalMetadatum_id=F.id, SemanticMetadatum S, Job J "
-									+ "where S.id=C.semanticMetadatum_id and C.deleted is false and J.validationStatus=2 "
+							"select coalesce(S.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join SemanticMetadatum S on S.id=C.semanticMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.validationStatus=2 "
 									+ "group By S.description with rollup")
 					.getResultList();
 		} else {
 			List<Integer> users = this.getUsersIds(username);
 			ret = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN FunctionalMetadatum F on C.functionalMetadatum_id=F.id, SemanticMetadatum S, Job J "
-									+ "where S.id=C.semanticMetadatum_id and C.job_id=J.id and J.crawlerUser_id IN (:crawlerUserIds) and C.deleted is false "
+							"select coalesce(S.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join SemanticMetadatum S on S.id=C.semanticMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.crawlerUser_id IN (:crawlerUserIds) "
 									+ "group By S.description with rollup")
 					.setParameter("crawlerUserIds", users).getResultList();
 			ret2 = this.entityManager
 					.createNativeQuery(
-							"select coalesce(F.description,NULL), coalesce(S.description,NULL), SUM(C.wordsNumber) "
-									+ "from CrawledResource C LEFT JOIN FunctionalMetadatum F on C.functionalMetadatum_id=F.id, SemanticMetadatum S, Job J "
-									+ "where S.id=C.semanticMetadatum_id and C.job_id=J.id and J.crawlerUser_id IN (:crawlerUserIds) and C.deleted is false and J.validationStatus=2 "
+							"select coalesce(S.description,NULL), SUM(C.wordsNumber) "
+									+ "from CrawledResource C join SemanticMetadatum S on S.id=C.semanticMetadatum_id left join Job J on C.job_id=J.id "
+									+ "where C.deleted is false and J.crawlerUser_id IN (:crawlerUserIds) and J.validationStatus=2 "
 									+ "group By S.description with rollup")
 					.setParameter("crawlerUserIds", users).getResultList();
 		}
@@ -358,13 +353,13 @@ public class AsyncResourcesReporter {
 		}
 		List<CorpusDataReport> report = new ArrayList<CorpusDataReport>();
 		for (Object[] r : ret) {
-			if (r[1] == null) {
+			if (r[0] == null) {
 				this.resourcesReporterData.getSemanticTotal().put(username,
-						((Number) r[2]).intValue());
+						((Number) r[1]).intValue());
 				continue;
 			}
-			report.add(new CorpusDataReport((String) r[0], (String) r[1],
-					((Number) r[2]).intValue()));
+			report.add(new CorpusDataReport("", (String) r[0], ((Number) r[1])
+					.intValue()));
 		}
 		for (int i = 0; i < ret2.size(); i++) {
 			Object[] r2 = ret2.get(i);
@@ -373,17 +368,12 @@ public class AsyncResourcesReporter {
 			}
 			if (r2[0] == null) {
 				this.resourcesReporterData.getSemanticTotalValid().put(
-						username, ((Number) r2[2]).intValue());
+						username, ((Number) r2[1]).intValue());
 				continue;
 			}
-			String fun = ((String) r2[0]).equals("fun") ? "N/A"
-					: (String) r2[0];
-			String sem = ((String) r2[1]).equals("sem") ? "N/A"
-					: (String) r2[1];
 			for (CorpusDataReport cdr : report) {
-				if (cdr.getDomFunzionale().equals(fun)
-						&& cdr.getDomSemantico().equals(sem)) {
-					cdr.setWordsValid(((Number) r2[2]).intValue());
+				if (cdr.getDomSemantico().equals(r2[0])) {
+					cdr.setWordsValid(((Number) r2[1]).intValue());
 					break;
 				}
 			}
