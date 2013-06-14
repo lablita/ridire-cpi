@@ -225,8 +225,8 @@ public class Mapper implements Runnable {
 			if (cleanText != null
 					&& cleanText.getString() != null
 					&& cleanText.getString().trim().length() > 0
-					&& cr.getCleaner() != null
-					&& (cr.getCleaner().equals(Mapper.ALCHEMY) || cr
+					&& cleanText.getCleaner() != null
+					&& (cleanText.getCleaner().equals(Mapper.ALCHEMY) || cleanText
 							.getCleaner().equals(Mapper.READABILITY))) {
 				cr.setCleaner(cleanText.getCleaner());
 				File plainTextFile = new File(resourceDir, plainTextFileName);
@@ -356,11 +356,9 @@ public class Mapper implements Runnable {
 			int exitValue = executor.execute(commandLine);
 			if (exitValue == 0) {
 				rawContentAndEncoding = new StringWithEncoding(
-						baosStdOut
-								.toString(rawContentAndEncoding.getEncoding()),
-						"UTF-8");
+						baosStdOut.toString(), "UTF-8");
 				// TODO filter real errors
-				rawContentAndEncoding.setCleaner(baosStdErr.toString());
+				rawContentAndEncoding.setCleaner(baosStdErr.toString().trim());
 			}
 			FileUtils.deleteQuietly(tmpFile);
 		}

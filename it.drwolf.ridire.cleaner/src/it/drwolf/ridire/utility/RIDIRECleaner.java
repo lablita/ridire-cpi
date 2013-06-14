@@ -33,6 +33,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
@@ -186,11 +187,13 @@ public class RIDIRECleaner {
 				Map<String, String> map = new Gson().fromJson(responseBody,
 						new TypeToken<Map<String, String>>() {
 						}.getType());
-				textExtracted = true;
-				System.out.println(map.get("content")
-						.replaceAll("\\<.*?\\>", " ")
-						.replaceAll("\\s{2,}", " "));
-				System.err.println(RIDIRECleaner.READABILITY);
+				String text = map.get("content").replaceAll("\\<.*?\\>", " ")
+						.replaceAll("\\s{2,}", " ");
+				if (text != null && text.trim().length() > 50) {
+					System.out.println(StringEscapeUtils.unescapeHtml(text));
+					textExtracted = true;
+					System.err.println(RIDIRECleaner.READABILITY);
+				}
 			}
 		} catch (FailingHttpStatusCodeException e) {
 			// TODO Auto-generated catch block
