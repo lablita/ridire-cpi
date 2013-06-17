@@ -80,6 +80,7 @@ import org.archive.io.ArchiveRecord;
 import org.archive.io.arc.ARCRecord;
 import org.archive.io.arc.ARCRecordMetaData;
 import org.jboss.seam.Component;
+import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.contexts.Lifecycle;
 import org.jboss.seam.faces.Renderer;
@@ -622,7 +623,8 @@ public class Mapper implements Runnable {
 		this.setRunning(true);
 		Lifecycle.beginCall();
 		this.mapperUserTx = (UserTransaction) org.jboss.seam.Component
-				.getInstance("org.jboss.seam.transaction.transaction");
+				.getInstance("org.jboss.seam.transaction.transaction",
+						ScopeType.CONVERSATION);
 		this.em = (EntityManager) Component.getInstance("eventEntityManager");
 		this.tempDir = this.em.find(Parameter.class,
 				Parameter.TEMP_DIR.getKey()).getValue();
@@ -697,7 +699,8 @@ public class Mapper implements Runnable {
 							String url = metadata.getUrl();
 							long length = metadata.getLength();
 							System.out.println("Mapping URL: " + url + "\n"
-									+ "Size: " + length);
+									+ "Size: " + length + "\t"
+									+ this.mapperUserTx);
 							try {
 								archiveRecord.skipHttpHeader();
 								archiveRecord.close();

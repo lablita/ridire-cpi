@@ -107,7 +107,8 @@ public class JobMapperMonitor {
 		this.httpClient = new HttpClient();
 		this.httpClient.getParams().setAuthenticationPreemptive(true);
 		this.mainUserTx = (UserTransaction) org.jboss.seam.Component
-				.getInstance("org.jboss.seam.transaction.transaction");
+				.getInstance("org.jboss.seam.transaction.transaction",
+						ScopeType.APPLICATION);
 		Credentials defaultcreds = null;
 		int jobsToBeProcessed = 4;
 		try {
@@ -229,7 +230,11 @@ public class JobMapperMonitor {
 		if (!this.flagBearer.isJobMapperRunning()
 				&& !this.flagBearer.isMappingSuspended()) {
 			this.flagBearer.setJobMapperRunning(true);
-			System.out.println("Job mapper running");
+			System.out.print("Job mapper running ");
+			if (this.mainUserTx != null) {
+				System.out.print(this.mainUserTx);
+			}
+			System.out.println();
 			this.create();
 			this.lookForNotMappedJob();
 			this.flagBearer.setJobMapperRunning(false);
