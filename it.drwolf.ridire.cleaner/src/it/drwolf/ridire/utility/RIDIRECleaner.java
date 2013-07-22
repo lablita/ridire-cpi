@@ -168,9 +168,13 @@ public class RIDIRECleaner {
 	}
 
 	private boolean getTextWithReadability() {
+		LogFactory.getFactory().setAttribute("org.apache.commons.logging.Log",
+				"org.apache.commons.logging.impl.NoOpLog");
 		boolean textExtracted = false;
 		WebClient webClient = new WebClient();
 		webClient = new WebClient(BrowserVersion.FIREFOX_3);
+		webClient.setThrowExceptionOnFailingStatusCode(false);
+		webClient.setThrowExceptionOnScriptError(false);
 		try {
 			Page p = webClient
 					.getPage("https://readability.com/api/content/v1/parser?token="
@@ -197,13 +201,14 @@ public class RIDIRECleaner {
 			}
 		} catch (FailingHttpStatusCodeException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
+		} catch (Throwable t) {
 		} finally {
 			webClient.closeAllWindows();
 		}
