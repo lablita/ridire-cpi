@@ -226,7 +226,7 @@ public class Starter {
 				this.entityManager.find(Parameter.class,
 						Parameter.RESOURCESREPORT_CRON.getKey()).getValue(),
 				endDate.getTime(), this.resourcesReporterData);
-		System.out.println(handle);
+		System.out.println("ResRep:" + handle);
 	}
 
 	@Observer("org.jboss.seam.postInitialization")

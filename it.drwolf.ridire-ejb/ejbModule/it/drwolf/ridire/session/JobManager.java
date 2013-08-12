@@ -1228,8 +1228,12 @@ public class JobManager {
 	}
 
 	public Long getRawBytes() throws HeritrixException, CrawlingFileException {
-		return this.crawlerManager.getRawBytes(this.job.getName(),
-				this.getCurrentUser());
+		if (this.crawlerManager.getCrawlerEngineStatus().equals(
+				CrawlerManager.RUNNING)) {
+			return this.crawlerManager.getRawBytes(this.job.getName(),
+					this.getCurrentUser());
+		}
+		return 0L;
 	}
 
 	public Long getResourcesBytes() {
@@ -1646,19 +1650,11 @@ public class JobManager {
 	@Asynchronous
 	@Transactional
 	public String selectValidationResources(Integer jobId) {
-		int transactionTimeoutSeconds = 240;
-		try {
-			((javax.transaction.UserTransaction) org.jboss.seam.transaction.Transaction
-					.instance())
-					.setTransactionTimeout(transactionTimeoutSeconds);
-		} catch (SystemException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		int transactionTimeoutSeconds = 600;
 		this.userTx = (UserTransaction) org.jboss.seam.Component
 				.getInstance("org.jboss.seam.transaction.transaction");
 		try {
-			this.userTx.setTransactionTimeout(10 * 10 * 60);
+			this.userTx.setTransactionTimeout(transactionTimeoutSeconds);
 			// set timeout to
 			// 10 mins
 			if (!this.userTx.isActive()) {
