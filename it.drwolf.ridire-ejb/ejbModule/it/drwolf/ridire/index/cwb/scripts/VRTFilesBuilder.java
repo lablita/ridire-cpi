@@ -41,8 +41,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrTokenizer;
 import org.jboss.seam.Component;
+import org.jboss.seam.annotations.Logger;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.async.Asynchronous;
+import org.jboss.seam.log.Log;
 import org.jboss.seam.transaction.UserTransaction;
 
 @Name("vrtFilesBuilder")
@@ -93,6 +95,9 @@ public class VRTFilesBuilder {
 			this.put("VER:ppre", "VERB");
 		}
 	};
+
+	@Logger
+	private Log log;
 
 	@Asynchronous
 	public void buildFiles(VRTFilesBuilderData vrtFilesBuilderData) {
@@ -182,7 +187,8 @@ public class VRTFilesBuilder {
 				newLines.add(0, header);
 				newLines.add("</text>");
 				File vrtFile = new File(destDir, FilenameUtils.getBaseName(f
-						.getName()) + ".vrt");
+						.getName())
+						+ ".vrt");
 				FileUtils.writeLines(vrtFile, newLines);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -212,9 +218,8 @@ public class VRTFilesBuilder {
 				}
 				this.entityManager.joinTransaction();
 				jobName = jobName.replaceAll("completed-", "");
-				jobIds = this.entityManager
-						.createQuery(
-								"select j.id from Job j where j.name=:name ")
+				jobIds = this.entityManager.createQuery(
+						"select j.id from Job j where j.name=:name ")
 						.setParameter("name", jobName.trim()).getResultList();
 				this.entityManager.flush();
 				this.entityManager.clear();
@@ -319,6 +324,30 @@ public class VRTFilesBuilder {
 		return header;
 	}
 
+	private boolean haveStrangeChars(List<String> posFileLines) {
+		for (String posFileLine : posFileLines) {
+			if (posFileLine.contains("�") || posFileLine.contains("â€œ")
+					|| posFileLine.contains("â€�")
+					|| posFileLine.contains("â€™")
+					|| posFileLine.contains("â\\u0080\\u0099")
+					|| posFileLine.contains("â\\u0080\\u009c")
+					|| posFileLine.contains("â\\u0080\\u009d")
+					|| posFileLine.contains("â\\u0080\\u0093")
+					|| posFileLine.contains("Â\\u0092")
+					|| posFileLine.contains("Â\\u0093")
+					|| posFileLine.contains("Â«") || posFileLine.contains("Â»")
+					|| posFileLine.contains("Ã¹") || posFileLine.contains("Ã ")
+					|| posFileLine.contains("Ã¨") || posFileLine.contains("Ã©")
+					|| posFileLine.contains("Ã¬") || posFileLine.contains("Ã²")
+					|| posFileLine.contains("Ãˆ") || posFileLine.contains("Ã")
+					|| posFileLine.contains("Â")
+					|| posFileLine.contains("Follow us on Twitter »")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void processResourcesOfJob(Integer jobId,
 			VRTFilesBuilderData vrtFilesBuilderData) throws SystemException,
 			NotSupportedException, SecurityException, IllegalStateException,
@@ -356,6 +385,11 @@ public class VRTFilesBuilder {
 					try {
 						List<String> posFileLines = FileUtils
 								.readLines(posFile);
+						if (this.haveStrangeChars(posFileLines)) {
+							this.log.warn("File with strange chars {0}",
+									posFileName);
+							continue;
+						}
 						List<String> newLines = new ArrayList<String>();
 						for (String l : posFileLines) {
 							strTokenizer.reset(l);
@@ -375,7 +409,8 @@ public class VRTFilesBuilder {
 								.getFunctionalMetadatum() != null ? cr
 								.getFunctionalMetadatum().getDescription() : "";
 						String semanticMetadatum = cr.getSemanticMetadatum() != null ? cr
-								.getSemanticMetadatum().getDescription() : "";
+								.getSemanticMetadatum().getDescription()
+								: "";
 						String url = cr.getUrl();
 						if (url == null) {
 							url = "";
@@ -428,7 +463,8 @@ public class VRTFilesBuilder {
 				}
 				newLines.add(tail);
 				File vrtFile = new File(destDir, FilenameUtils.getBaseName(f
-						.getName()) + ".vrt");
+						.getName())
+						+ ".vrt");
 				FileUtils.writeLines(vrtFile, newLines);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

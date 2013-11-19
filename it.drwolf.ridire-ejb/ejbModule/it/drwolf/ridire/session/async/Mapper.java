@@ -944,10 +944,8 @@ public class Mapper implements Runnable {
 	private CrawledResource sameURLExists(String url, Job persistedJob,
 			EntityManager entityManager) {
 		List<CrawledResource> listCR = entityManager
-				.createQuery(
-						"from CrawledResource cr where cr.url=:url and cr.job=:job")
-				.setParameter("url", url).setParameter("job", persistedJob)
-				.getResultList();
+				.createQuery("from CrawledResource cr where cr.url=:url")
+				.setParameter("url", url).getResultList();
 		if (listCR.size() == 1) {
 			return listCR.get(0);
 		}
