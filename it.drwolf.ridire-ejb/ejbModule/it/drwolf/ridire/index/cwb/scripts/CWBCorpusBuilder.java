@@ -93,6 +93,12 @@ public class CWBCorpusBuilder {
 		return this.inverse;
 	}
 
+	public void retagFiles() {
+		this.vrtFilesBuilderData.setDestDir(this.getDestDir());
+		this.vrtFilesBuilderData.setOrigDir(this.getOrigDir());
+		this.vrtFilesBuilder.retagFiles(this.vrtFilesBuilderData);
+	}
+
 	public void reverseVRTFiles() {
 		this.vrtFilesBuilderData.setDestDir(this.getDestDir());
 		this.vrtFilesBuilderData.setOrigDir(this.getOrigDir());

@@ -98,21 +98,21 @@ public class CWBFrequencyList {
 		List<String> semDescription = new ArrayList<String>();
 		for (String sm : this.getSemanticMetadatum()) {
 			if (!sm.equals("-1")) {
-				semDescription.add(this.entityManager
-						.find(SemanticMetadatum.class, Integer.parseInt(sm))
+				semDescription.add(this.entityManager.find(
+						SemanticMetadatum.class, Integer.parseInt(sm))
 						.getDescription().trim().replaceAll("\\s", "_"));
 			}
 		}
 		List<String> funDescription = new ArrayList<String>();
 		for (String fm : this.getFunctionalMetadatum()) {
 			if (!fm.equals("-1")) {
-				funDescription.add(this.entityManager
-						.find(FunctionalMetadatum.class, Integer.parseInt(fm))
+				funDescription.add(this.entityManager.find(
+						FunctionalMetadatum.class, Integer.parseInt(fm))
 						.getDescription().trim().replaceAll("\\s", "_"));
 			}
 		}
-		this.getFrequencyList(true, semDescription, funDescription,
-				this.getQuantity(), this.getFrequencyBy(), this.getThreshold(),
+		this.getFrequencyList(true, semDescription, funDescription, this
+				.getQuantity(), this.getFrequencyBy(), this.getThreshold(),
 				true);
 	}
 
@@ -134,18 +134,14 @@ public class CWBFrequencyList {
 			this.entityManager.clear();
 			this.userTx.commit();
 			for (SemanticMetadatum sm : resultList) {
-				this.createFreqTable("lemma",
-						sm.getDescription().replaceAll("\\s", "_"), null,
-						sm.getId() + "", "-1");
-				this.createFreqTable("forma",
-						sm.getDescription().replaceAll("\\s", "_"), null,
-						sm.getId() + "", "-1");
-				this.createFreqTable("PoS",
-						sm.getDescription().replaceAll("\\s", "_"), null,
-						sm.getId() + "", "-1");
-				this.createFreqTable("easypos",
-						sm.getDescription().replaceAll("\\s", "_"), null,
-						sm.getId() + "", "-1");
+				this.createFreqTable("lemma", sm.getDescription().replaceAll(
+						"\\s", "_"), null, sm.getId() + "", "-1");
+				this.createFreqTable("forma", sm.getDescription().replaceAll(
+						"\\s", "_"), null, sm.getId() + "", "-1");
+				this.createFreqTable("PoS", sm.getDescription().replaceAll(
+						"\\s", "_"), null, sm.getId() + "", "-1");
+				this.createFreqTable("easypos", sm.getDescription().replaceAll(
+						"\\s", "_"), null, sm.getId() + "", "-1");
 			}
 			if (!this.userTx.isActive()) {
 				this.userTx.begin();
@@ -247,7 +243,8 @@ public class CWBFrequencyList {
 			this.entityManager.joinTransaction();
 			this.entityManager.createNativeQuery(
 					"LOAD DATA LOCAL INFILE '" + filename + "' INTO TABLE "
-							+ tableName).executeUpdate();
+							+ tableName + " CHARACTER SET utf8")
+					.executeUpdate();
 			this.entityManager.flush();
 			this.entityManager.clear();
 			this.userTx.commit();
@@ -375,8 +372,8 @@ public class CWBFrequencyList {
 						this.frequencyList.add(frequencyItem);
 					} else if (tokens.length == 3) {
 						FrequencyItem frequencyItem = new FrequencyItem(
-								tokens[2], tokens[1],
-								Integer.parseInt(tokens[0].trim()));
+								tokens[2], tokens[1], Integer
+										.parseInt(tokens[0].trim()));
 						this.frequencyList.add(frequencyItem);
 					}
 				}

@@ -99,16 +99,23 @@ public class Mapper implements Runnable {
 
 	private static final int PDFCLEANER_TIMEOUT = 300000;
 
+	public static boolean isValidPos(String pos) {
+		if (Mapper.notWordPoSs.contains(pos)) {
+			return false;
+		}
+		return true;
+	}
+
 	private Integer jobId;
 
 	private EntityManager em = null;
-
 	private boolean running = false;
+
 	private Job job;
 
 	private UserTransaction mapperUserTx;
-
 	private static final String ATTICDIR = "attic/";
+
 	private static final int BUFLENGTH = 8192;
 
 	private static final String ITALIAN = "it";
@@ -117,7 +124,7 @@ public class Mapper implements Runnable {
 
 	private static final long READABILITY_TIMEOUT = 360000; // 6 mins
 
-	private List<String> notWordPoSs = new ArrayList<String>() {
+	private static List<String> notWordPoSs = new ArrayList<String>() {
 		/**
 		 * 
 		 */
@@ -129,10 +136,10 @@ public class Mapper implements Runnable {
 			this.add("SYM");
 		}
 	};
-
 	@In(create = true)
 	private Renderer renderer;
 	private String tempDir;
+
 	private final OutputType HTML = new OutputType() {
 		public ContentHandler getContentHandler(String encoding, Writer writer)
 				throws TransformerConfigurationException {
@@ -162,16 +169,9 @@ public class Mapper implements Runnable {
 
 	private static final String READABILITY = "readability";
 
-	public Mapper(Job job, FlagBearer flagBearer) {
-		this.job = job;
-		this.jobId = job.getId();
-		this.flagBearer = flagBearer;
-		this.ridireReTagger = new RIDIREReTagger(null);
-	}
-
 	@SuppressWarnings("unchecked")
-	private Integer countWordsFromPoSTagResource(String posTagResourceFileName)
-			throws IOException {
+	public static Integer countWordsFromPoSTagResource(
+			String posTagResourceFileName) throws IOException {
 		List<String> lines = FileUtils.readLines(new File(
 				posTagResourceFileName));
 		Integer count = 0;
@@ -180,12 +180,19 @@ public class Mapper implements Runnable {
 			tokenizer.reset(l);
 			String[] tokens = tokenizer.getTokenArray();
 			if (tokens.length == 3) {
-				if (this.isValidPos(tokens[1].trim())) {
+				if (Mapper.isValidPos(tokens[1].trim())) {
 					++count;
 				}
 			}
 		}
 		return count;
+	}
+
+	public Mapper(Job job, FlagBearer flagBearer) {
+		this.job = job;
+		this.jobId = job.getId();
+		this.flagBearer = flagBearer;
+		this.ridireReTagger = new RIDIREReTagger(null);
 	}
 
 	private void createArchivedResource(File f, CrawledResource cr,
@@ -231,8 +238,8 @@ public class Mapper implements Runnable {
 							.getCleaner().equals(Mapper.READABILITY))) {
 				cr.setCleaner(cleanText.getCleaner());
 				File plainTextFile = new File(resourceDir, plainTextFileName);
-				FileUtils.writeStringToFile(plainTextFile,
-						cleanText.getString(), cleanText.getEncoding());
+				FileUtils.writeStringToFile(plainTextFile, cleanText
+						.getString(), cleanText.getEncoding());
 				cr.setExtractedTextHash(MD5DigestCreator
 						.getMD5Digest(plainTextFile));
 				// language detection
@@ -248,12 +255,12 @@ public class Mapper implements Runnable {
 					// PoS tag if it's an italian text
 					// t1 = System.currentTimeMillis();
 					String posTagResourceFileName = this.createPoSTagResource(
-							plainTextFile, entityManager,
-							cleanText.getEncoding());
+							plainTextFile, entityManager, cleanText
+									.getEncoding());
 					// t2 = System.currentTimeMillis();
 					// System.out.println("PoS tagging: " + (t2 - t1));
 					if (posTagResourceFileName != null) {
-						Integer wordsNumber = this
+						Integer wordsNumber = Mapper
 								.countWordsFromPoSTagResource(posTagResourceFileName);
 						cr.setWordsNumber(wordsNumber);
 					}
@@ -323,8 +330,8 @@ public class Mapper implements Runnable {
 			rawContentAndEncoding = new StringWithEncoding(cleanText,
 					rawContentAndEncoding.getEncoding());
 			File tmpFile = File.createTempFile("ridire", null);
-			FileUtils.writeStringToFile(tmpFile,
-					rawContentAndEncoding.getString(), "UTF-8");
+			FileUtils.writeStringToFile(tmpFile, rawContentAndEncoding
+					.getString(), "UTF-8");
 			String ridireCleanerJar = entityManager.find(
 					CommandParameter.class,
 					CommandParameter.RIDIRE_CLEANER_EXECUTABLE_KEY)
@@ -356,8 +363,8 @@ public class Mapper implements Runnable {
 			executor.setStreamHandler(executeStreamHandler);
 			int exitValue = executor.execute(commandLine);
 			if (exitValue == 0) {
-				rawContentAndEncoding = new StringWithEncoding(
-						baosStdOut.toString(), "UTF-8");
+				rawContentAndEncoding = new StringWithEncoding(baosStdOut
+						.toString(), "UTF-8");
 				// TODO filter real errors
 				rawContentAndEncoding.setCleaner(baosStdErr.toString().trim());
 			}
@@ -431,8 +438,8 @@ public class Mapper implements Runnable {
 		Long count = (Long) this.em
 				.createQuery(
 						"select count(cr) from CrawledResource cr where cr.extractedTextHash=:md5 and cr.id<>:id")
-				.setParameter("md5", cr.getExtractedTextHash())
-				.setParameter("id", cr.getId()).getSingleResult();
+				.setParameter("md5", cr.getExtractedTextHash()).setParameter(
+						"id", cr.getId()).getSingleResult();
 		if (count > 0) {
 			return true;
 		}
@@ -524,13 +531,6 @@ public class Mapper implements Runnable {
 		return this.running;
 	}
 
-	private boolean isValidPos(String pos) {
-		if (this.notWordPoSs.contains(pos)) {
-			return false;
-		}
-		return true;
-	}
-
 	private void lookForNoMoreAvailableResources(Job persistedJob,
 			Set<CrawledResource> childResources, File f,
 			EntityManager entityManager) throws IOException,
@@ -549,7 +549,8 @@ public class Mapper implements Runnable {
 	private void moveResourceInAttic(CrawledResource cr, File f)
 			throws IOException {
 		File atticDir = new File(FilenameUtils.getFullPath(f.getCanonicalPath()
-				.replaceAll("__\\d+", "")) + Mapper.ATTICDIR);
+				.replaceAll("__\\d+", ""))
+				+ Mapper.ATTICDIR);
 		File resourceDir = new File(FilenameUtils.getFullPath(f
 				.getCanonicalPath().replaceAll("__\\d+", ""))
 				+ JobMapperMonitor.RESOURCESDIR);
@@ -943,9 +944,9 @@ public class Mapper implements Runnable {
 	@SuppressWarnings("unchecked")
 	private CrawledResource sameURLExists(String url, Job persistedJob,
 			EntityManager entityManager) {
-		List<CrawledResource> listCR = entityManager
-				.createQuery("from CrawledResource cr where cr.url=:url")
-				.setParameter("url", url).getResultList();
+		List<CrawledResource> listCR = entityManager.createQuery(
+				"from CrawledResource cr where cr.url=:url").setParameter(
+				"url", url).getResultList();
 		if (listCR.size() == 1) {
 			return listCR.get(0);
 		}
@@ -965,8 +966,8 @@ public class Mapper implements Runnable {
 		Metadata metadata = new Metadata();
 		Writer writer = null;
 		if (resourceFile.isFile()) {
-			metadata.set(TikaMetadataKeys.RESOURCE_NAME_KEY,
-					resourceFile.getName());
+			metadata.set(TikaMetadataKeys.RESOURCE_NAME_KEY, resourceFile
+					.getName());
 			InputStream input = new FileInputStream(resourceFile);
 			try {
 				writer = new StringWriter();

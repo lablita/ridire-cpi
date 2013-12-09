@@ -15,9 +15,13 @@
  ******************************************************************************/
 package it.drwolf.ridire.index.cwb.scripts;
 
+import it.drwolf.ridire.entity.CommandParameter;
 import it.drwolf.ridire.entity.CrawledResource;
 import it.drwolf.ridire.entity.Job;
 import it.drwolf.ridire.session.async.JobMapperMonitor;
+import it.drwolf.ridire.session.async.Mapper;
+import it.drwolf.ridire.utility.RIDIREPlainTextCleaner;
+import it.drwolf.ridire.utility.RIDIREReTagger;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +39,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -98,6 +103,10 @@ public class VRTFilesBuilder {
 
 	@Logger
 	private Log log;
+
+	private RIDIREPlainTextCleaner ridirePlainTextCleaner;
+
+	private RIDIREReTagger ridireReTagger;
 
 	@Asynchronous
 	public void buildFiles(VRTFilesBuilderData vrtFilesBuilderData) {
@@ -271,6 +280,58 @@ public class VRTFilesBuilder {
 		}
 	}
 
+	private void createVRTFile(String posFileName, StrTokenizer strTokenizer,
+			CrawledResource cr, File destDir) {
+		File posFile = new File(posFileName);
+		if (posFile.exists() && posFile.canRead()) {
+			try {
+				List<String> posFileLines = FileUtils.readLines(posFile);
+				if (this.haveStrangeChars(posFileLines)) {
+					this.log.warn("File with strange chars {0}", posFileName);
+					return;
+				}
+				List<String> newLines = new ArrayList<String>();
+				for (String l : posFileLines) {
+					strTokenizer.reset(l);
+					String[] tokens = strTokenizer.getTokenArray();
+					if (tokens.length != 3) {
+						System.err.println("File: " + posFileName
+								+ " Stringa malformed: " + l);
+						continue;
+					}
+					String nl = tokens[0] + "\t";
+					nl += tokens[1].replaceAll(":", "") + "\t";
+					nl += this.getEasyPos(tokens[1]) + "\t";
+					nl += tokens[2];
+					newLines.add(nl);
+				}
+				String functionalMetadatum = cr.getFunctionalMetadatum() != null ? cr
+						.getFunctionalMetadatum().getDescription()
+						: "";
+				String semanticMetadatum = cr.getSemanticMetadatum() != null ? cr
+						.getSemanticMetadatum().getDescription()
+						: "";
+				String url = cr.getUrl();
+				if (url == null) {
+					url = "";
+				}
+				String header = this.getHeaderFromResource(cr.getJob()
+						.getName(), functionalMetadatum, semanticMetadatum,
+						url, posFile);
+				newLines.add(0, header);
+				newLines.add("</text>");
+				File vrtFile = new File(destDir, cr.getDigest() + ".vrt");
+				FileUtils.writeLines(vrtFile, newLines);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			System.err.println("Warning - File " + posFileName
+					+ " doesn't exist.");
+		}
+	}
+
 	private String getEasyPos(String pos) {
 		if (this.easyPos.containsKey(pos)) {
 			return this.easyPos.get(pos);
@@ -380,57 +441,7 @@ public class VRTFilesBuilder {
 				String posFileName = FilenameUtils.getFullPath(cr.getArcFile())
 						+ JobMapperMonitor.RESOURCESDIR + cr.getDigest()
 						+ ".txt.pos";
-				File posFile = new File(posFileName);
-				if (posFile.exists() && posFile.canRead()) {
-					try {
-						List<String> posFileLines = FileUtils
-								.readLines(posFile);
-						if (this.haveStrangeChars(posFileLines)) {
-							this.log.warn("File with strange chars {0}",
-									posFileName);
-							continue;
-						}
-						List<String> newLines = new ArrayList<String>();
-						for (String l : posFileLines) {
-							strTokenizer.reset(l);
-							String[] tokens = strTokenizer.getTokenArray();
-							if (tokens.length != 3) {
-								System.err.println("File: " + posFileName
-										+ " Stringa malformed: " + l);
-								continue;
-							}
-							String nl = tokens[0] + "\t";
-							nl += tokens[1].replaceAll(":", "") + "\t";
-							nl += this.getEasyPos(tokens[1]) + "\t";
-							nl += tokens[2];
-							newLines.add(nl);
-						}
-						String functionalMetadatum = cr
-								.getFunctionalMetadatum() != null ? cr
-								.getFunctionalMetadatum().getDescription() : "";
-						String semanticMetadatum = cr.getSemanticMetadatum() != null ? cr
-								.getSemanticMetadatum().getDescription()
-								: "";
-						String url = cr.getUrl();
-						if (url == null) {
-							url = "";
-						}
-						String header = this.getHeaderFromResource(cr.getJob()
-								.getName(), functionalMetadatum,
-								semanticMetadatum, url, posFile);
-						newLines.add(0, header);
-						newLines.add("</text>");
-						File vrtFile = new File(destDir, cr.getDigest()
-								+ ".vrt");
-						FileUtils.writeLines(vrtFile, newLines);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				} else {
-					System.err.println("Warning - File " + posFileName
-							+ " doesn't exist.");
-				}
+				this.createVRTFile(posFileName, strTokenizer, cr, destDir);
 			}
 			this.entityManager.flush();
 			this.entityManager.clear();
@@ -440,6 +451,128 @@ public class VRTFilesBuilder {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Asynchronous
+	public void retagFiles(VRTFilesBuilderData vrtFilesBuilderData) {
+		String destDir = vrtFilesBuilderData.getDestDir();
+		StrTokenizer strTokenizer = new StrTokenizer("\t");
+		this.ridirePlainTextCleaner = new RIDIREPlainTextCleaner(null);
+		this.ridireReTagger = new RIDIREReTagger(null);
+		this.entityManager = (EntityManager) Component
+				.getInstance("entityManager");
+		this.userTx = (UserTransaction) org.jboss.seam.Component
+				.getInstance("org.jboss.seam.transaction.transaction");
+		try {
+			this.userTx.setTransactionTimeout(1000 * 10 * 60);
+			if (!this.userTx.isActive()) {
+				this.userTx.begin();
+			}
+			this.entityManager.joinTransaction();
+			String treeTaggerBin = this.entityManager.find(
+					CommandParameter.class,
+					CommandParameter.TREETAGGER_EXECUTABLE_KEY)
+					.getCommandValue();
+			this.ridireReTagger.setTreetaggerBin(treeTaggerBin);
+			this.entityManager.flush();
+			this.entityManager.clear();
+			this.userTx.commit();
+
+			String strangeFilesList = vrtFilesBuilderData.getOrigDir();
+			File strangeFilesListFile = new File(strangeFilesList);
+			if (strangeFilesListFile.exists() && strangeFilesListFile.canRead()) {
+				List<String> posFilesName = FileUtils
+						.readLines(strangeFilesListFile);
+				int count = 0;
+				int size = posFilesName.size();
+				for (String posFName : posFilesName) {
+					String digest = FilenameUtils.getBaseName(posFName.trim())
+							.replaceAll(".txt", "");
+					if (this.vrtFileExists(destDir, digest)) {
+						System.out.println("Skipping: " + digest);
+						continue;
+					}
+					if (!this.userTx.isActive()) {
+						this.userTx.begin();
+					}
+					this.entityManager.joinTransaction();
+					List<CrawledResource> crs = this.entityManager.createQuery(
+							"from CrawledResource cr where cr.digest=:digest")
+							.setParameter("digest", digest).getResultList();
+					if (crs != null && crs.size() > 0) {
+						CrawledResource cr = crs.get(0);
+						File fToBeCleaned = new File(posFName.trim().replace(
+								".pos", ""));
+						try {
+							this.ridirePlainTextCleaner
+									.cleanTextFile(fToBeCleaned);
+							this.ridireReTagger.retagFile(fToBeCleaned);
+							if (fToBeCleaned != null) {
+								Integer wordsNumber = Mapper
+										.countWordsFromPoSTagResource(fToBeCleaned
+												.getAbsolutePath());
+								cr.setWordsNumber(wordsNumber);
+								this.entityManager.persist(cr);
+								this.createVRTFile(posFName.trim(),
+										strTokenizer, cr, new File(destDir));
+							}
+						} catch (ExecuteException ee) {
+							ee.printStackTrace();
+						}
+					}
+					this.entityManager.flush();
+					this.entityManager.clear();
+					this.userTx.commit();
+					++count;
+					if (count % 100 == 0) {
+						System.out.println("Retagging: " + count + " of "
+								+ size);
+					}
+				}
+			}
+		} catch (SystemException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicMixedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (HeuristicRollbackException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				if (this.userTx != null && this.userTx.isActive()) {
+					this.userTx.rollback();
+				}
+			} catch (IllegalStateException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SecurityException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (SystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		System.out.println("Retagging done.");
+	}
+
+	@Asynchronous
 	public void reverseVRTFiles(VRTFilesBuilderData vrtFilesBuilderData) {
 		String origDir = vrtFilesBuilderData.getOrigDir();
 		Collection<File> files = FileUtils.listFiles(new File(origDir),
@@ -477,4 +610,8 @@ public class VRTFilesBuilder {
 
 	}
 
+	private boolean vrtFileExists(String destDir, String digest) {
+		File vrtFile = new File(destDir, digest + ".vrt");
+		return vrtFile.exists() && vrtFile.canRead();
+	}
 }
