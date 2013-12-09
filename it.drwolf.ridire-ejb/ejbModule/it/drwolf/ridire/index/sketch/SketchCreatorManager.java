@@ -84,15 +84,11 @@ public class SketchCreatorManager {
 	}
 
 	public void createSketches() {
+		// sketches are created not in the same dir of the currently queried
+		// ones.
 		String indexLocation = this.entityManager.find(Parameter.class,
-				Parameter.SKETCH_INDEX_LOCATION.getKey()).getValue();
-		this.doCreateSketches(indexLocation);
-	}
-
-	public void createSketches2() {
-		String indexLocation2 = this.entityManager.find(Parameter.class,
 				Parameter.SKETCH_INDEX_LOCATION2.getKey()).getValue();
-		this.doCreateSketches(indexLocation2);
+		this.doCreateSketches(indexLocation);
 	}
 
 	private void doCreateSketches(String indexLocation) {
