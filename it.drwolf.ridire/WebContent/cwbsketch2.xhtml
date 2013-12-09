@@ -48,7 +48,7 @@
 			</h:panelGrid>
 			<h:commandButton action="#{sketchRetriever.getSketchesFromIndex1()}"
 				value="Calcola sketch" />
-			<h:commandButton action="#{sketchRetriever.getSketchesFromIndex2()}"
+			<h:commandButton rendered="#{s:hasRole('Admin')}" action="#{sketchRetriever.getSketchesFromIndex2()}"
 				value="Calcola sketch 2" />
 			<br />
 			<h:outputText rendered="#{sketchRetriever.noResults}"
