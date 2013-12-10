@@ -99,6 +99,8 @@ public class Parameter implements Serializable {
 			"cwbscan.executable", "/usr/local/cwb-3.4.3/bin/cwb-scan-corpus");
 	public static final Parameter CQP_CORPUSNAME = new Parameter(
 			"cqp.corpusname", "RIDIRE2");
+	public static final Parameter CQP_CORPUSNAME_FOR_SKETCHES = new Parameter(
+			"cqp.corpusname.sketch", "RIDIRE3");
 	public static final Parameter CQP_REGISTRY = new Parameter("cqp.registry",
 			"/usr/local/share/cwb/registry/");
 	public static final Parameter SKETCH_INDEX_LOCATION = new Parameter(
@@ -122,9 +124,10 @@ public class Parameter implements Serializable {
 			Parameter.WWW1_LOCAL_STORE, Parameter.RIDIRETESTCorpus,
 			Parameter.TEMP_DIR, Parameter.INDEXING_ENABLED,
 			Parameter.CQP_EXECUTABLE, Parameter.CQP_CORPUSNAME,
-			Parameter.CQP_REGISTRY, Parameter.CWBSCAN_EXECUTABLE,
-			Parameter.CWBDECODE_EXECUTABLE, Parameter.JOBS_TO_BE_PROCESSED,
-			Parameter.SKETCH_INDEX_LOCATION, Parameter.SKETCH_INDEX_LOCATION2 };
+			Parameter.CQP_CORPUSNAME_FOR_SKETCHES, Parameter.CQP_REGISTRY,
+			Parameter.CWBSCAN_EXECUTABLE, Parameter.CWBDECODE_EXECUTABLE,
+			Parameter.JOBS_TO_BE_PROCESSED, Parameter.SKETCH_INDEX_LOCATION,
+			Parameter.SKETCH_INDEX_LOCATION2 };
 
 	public static final Integer FINISHED = 10;
 	public static final Integer NOT_PROCESSED = 0;
