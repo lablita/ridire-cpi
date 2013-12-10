@@ -160,7 +160,7 @@ public class SketchCreator {
 			String cqpRegistry = this.entityManager.find(Parameter.class,
 					Parameter.CQP_REGISTRY.getKey()).getValue();
 			String cqpCorpusName = this.entityManager.find(Parameter.class,
-					Parameter.CQP_CORPUSNAME.getKey()).getValue();
+					Parameter.CQP_CORPUSNAME_FOR_SKETCHES.getKey()).getValue();
 			LocalResourcesManager localResourcesManager = (LocalResourcesManager) Component
 					.getInstance("localResourcesManager");
 			AsyncSketchCreator asyncSketchCreator = (AsyncSketchCreator) Component
@@ -454,9 +454,8 @@ public class SketchCreator {
 				this.userTx.begin();
 			}
 			this.entityManager.joinTransaction();
-			List<FunctionalMetadatum> fs = this.entityManager
-					.createQuery(
-							"from FunctionalMetadatum f where f.description=:d")
+			List<FunctionalMetadatum> fs = this.entityManager.createQuery(
+					"from FunctionalMetadatum f where f.description=:d")
 					.setParameter("d", domain).getResultList();
 			this.userTx.commit();
 			if (fs.size() == 1) {
@@ -474,14 +473,14 @@ public class SketchCreator {
 				continue;
 			}
 			for (String functionalMetadatum : functionalMetadata) {
-				if (!this.alreadyIndexed(lemma, functionalMetadatum, null,
-						s.getName(), indexSearcher)) {
+				if (!this.alreadyIndexed(lemma, functionalMetadatum, null, s
+						.getName(), indexSearcher)) {
 					return true;
 				}
 			}
 			for (String semanticMetadatum : semanticMetadata) {
-				if (!this.alreadyIndexed(lemma, null, semanticMetadatum,
-						s.getName(), indexSearcher)) {
+				if (!this.alreadyIndexed(lemma, null, semanticMetadatum, s
+						.getName(), indexSearcher)) {
 					return true;
 				}
 			}
@@ -515,9 +514,9 @@ public class SketchCreator {
 			List<String> itemsToBeProcessed = list.subList(fromIndex, endIndex);
 			System.out.println("Process " + i + "\t" + fromIndex + "\t"
 					+ endIndex);
-			asyncSketchCreator.createSketches(
-					sketchCreatorData.getIndexWriter(), itemsToBeProcessed,
-					cqpExecutable, cqpRegistry, cqpCorpusName, pos);
+			asyncSketchCreator.createSketches(sketchCreatorData
+					.getIndexWriter(), itemsToBeProcessed, cqpExecutable,
+					cqpRegistry, cqpCorpusName, pos);
 			fromIndex = endIndex;
 		}
 		System.out.println("Processing " + pos + " done.");
