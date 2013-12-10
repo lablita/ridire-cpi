@@ -55,9 +55,20 @@ public class SketchList {
 		SketchList.sketches.add(s);
 		s = new Sketch();
 		s.setName("postN_V");
+		// new POSTN_V
 		s.addGramrel(
-				"A1=[lemma=\"%1$s\" & pos=\"NOUN\"] [pos=\"ADJ\"]* [pos=\"ADV|NEG\"]{0,3} [pos=\"CLI\"]{0,2} ([pos=\"AUX.*|VER2.*\" & lemma !=\"essere\" & lemma!=\"venire\" & lemma!=\"fare\"] [pos=\"ADV.*|NEG\"]?){0,2} @[pos=\"VER.*\"]",
+				"A1=[lemma=\"%1$s\" & pos=\"NOUN\"] [pos=\"ADJ\"]* "
+						+ "[pos=\"ADV|NEG\"]{0,3} [pos=\"CLI\"]{0,2} "
+						+ "((([pos=\"AUX.*|VER2.*\" & lemma !=\"essere\" & lemma!=\"venire\" & lemma!=\"fare\"] "
+						+ "[pos=\"ADV.*|NEG\"]?){1,2} @[pos=\"VER.*\"]) | "
+						+ "(([pos=\"AUX.*|VER2.*\" & lemma !=\"essere\" & lemma!=\"venire\" & lemma!=\"fare\"] "
+						+ "[pos=\"ADV.*|NEG\"]?){0} @[pos=\"VER.*\" & pos != \".*ppast\"]))",
 				false, null, null);
+
+		// original sketch from sketchengine
+		// s.addGramrel(
+		// "A1=[lemma=\"%1$s\" & pos=\"NOUN\"] [pos=\"ADJ\"]* [pos=\"ADV|NEG\"]{0,3} [pos=\"CLI\"]{0,2} ([pos=\"AUX.*|VER2.*\" & lemma !=\"essere\" & lemma!=\"venire\" & lemma!=\"fare\"] [pos=\"ADV.*|NEG\"]?){0,2} @[pos=\"VER.*\"]",
+		// false, null, null);
 		s.setGoodFor(Sketch.NOUN);
 		SketchList.sketches.add(s);
 		s = new Sketch();
