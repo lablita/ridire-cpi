@@ -54,6 +54,7 @@ public class TmpResourcesFilter extends AbstractFilter {
 		String encoding = req.getParameter("encoding");
 		String tempDir = System.getProperty("java.io.tmpdir");
 		String freqList = req.getParameter("freqList");
+		String tsvList = req.getParameter("tsvList");
 		if (filename != null && encoding != null
 				&& filename.indexOf(tempDir) != -1) {
 			try {
@@ -81,14 +82,23 @@ public class TmpResourcesFilter extends AbstractFilter {
 			} finally {
 				Lifecycle.endCall();
 			}
-		} else if (freqList != null && freqList.length() > 0) {
+		} else if (freqList != null && freqList.trim().length() > 0
+				|| tsvList != null && tsvList.trim().length() > 0) {
 			try {
 				Lifecycle.beginCall();
 				String contentType = "application/vnd.oasis.opendocument.spreadsheet";
-				File file = new File(TmpResourcesFilter.LF_DIR + freqList
-						+ ".ods");
-				if (freqList.equals("RIDIRE_LF")) {
+				File file = null;
+				if (freqList != null) {
 					file = new File(TmpResourcesFilter.LF_DIR + freqList
+							+ ".ods");
+					if (freqList.equals("RIDIRE_LF")) {
+						file = new File(TmpResourcesFilter.LF_DIR + freqList
+								+ ".zip");
+						contentType = "application/zip";
+					}
+				} else {
+					String zipFileName = tsvList.replaceAll("\\s\\(TSV\\)", "");
+					file = new File(TmpResourcesFilter.LF_DIR + zipFileName
 							+ ".zip");
 					contentType = "application/zip";
 				}
@@ -97,14 +107,20 @@ public class TmpResourcesFilter extends AbstractFilter {
 						HttpServletResponse response = (HttpServletResponse) resp;
 						response.setContentType(contentType);
 						response.setHeader("Expires", "0");
-						if (freqList.equals("RIDIRE_LF")) {
+						if (freqList != null) {
+							if (freqList.equals("RIDIRE_LF")) {
+								response.addHeader("Content-disposition",
+										"attachment; filename=\"" + freqList
+												+ ".zip\"");
+							} else {
+								response.addHeader("Content-disposition",
+										"attachment; filename=\"" + freqList
+												+ ".ods\"");
+							}
+						} else if (tsvList != null) {
 							response.addHeader("Content-disposition",
-									"attachment; filename=\"" + freqList
+									"attachment; filename=\"" + tsvList
 											+ ".zip\"");
-						} else {
-							response.addHeader("Content-disposition",
-									"attachment; filename=\"" + freqList
-											+ ".ods\"");
 						}
 						response.setHeader("Date", new Date().toString());
 						response.setHeader("Cache-Control",

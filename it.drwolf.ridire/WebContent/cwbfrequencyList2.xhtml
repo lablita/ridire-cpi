@@ -47,7 +47,7 @@
 				<s:link view="/cwbfrequencyList2.xhtml">
 					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
 						title="Scarica" />
-					<f:param name="freqList" value="#{lf.name}" />
+					<f:param name="#{lf.format eq 'zip' ? 'tsvList': 'freqList'}" value="#{lf.name}" />
 				</s:link>
 			</rich:column>
 		</rich:dataTable>
@@ -73,7 +73,7 @@
 				<s:link view="/cwbfrequencyList2.xhtml">
 					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
 						title="Scarica" />
-					<f:param name="freqList" value="#{lf.name}" />
+					<f:param name="#{lf.format eq 'zip' ? 'tsvList': 'freqList'}" value="#{lf.name}" />
 				</s:link>
 			</rich:column>
 		</rich:dataTable>
@@ -99,7 +99,7 @@
 				<s:link view="/cwbfrequencyList2.xhtml">
 					<h:graphicImage value="/img/arrow_270.png" alt="Scarica"
 						title="Scarica" />
-					<f:param name="freqList" value="#{lf.name}" />
+					<f:param name="#{lf.format eq 'zip' ? 'tsvList': 'freqList'}" value="#{lf.name}" />
 				</s:link>
 			</rich:column>
 		</rich:dataTable>
@@ -159,6 +159,8 @@ WH		wh word
 			toggleSpeed="200">
 			<s:div style="overflow: auto;">
 				Le liste di frequenza sono in formato tabellare OpenOffice.org (.ods).
+				Il dominio semantico <em>Informazione</em> ed i <em>Totali</em> producono liste di frequenza con più di un milione di entrate: OpenOffice.org non supporta un numero di righe cos&igrave; grande.
+				Per questi domini oltre alle tabelle troncate sono forniti archivi ZIP di file testuali in formato Tabbed Separated Values (TSV).
 			</s:div>
 		</p:panel>
 	</ui:define>

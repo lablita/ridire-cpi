@@ -18,10 +18,18 @@ package it.drwolf.ridire.util;
 public class DownloadableFrequencyList {
 	private String name;
 	private int size;
+	private String format;
+	public static final String ODS = "ods";
+	public static final String ZIP = "zip";
 
-	public DownloadableFrequencyList(String name, int size) {
+	public DownloadableFrequencyList(String name, int size, String format) {
 		this.name = name;
 		this.size = size;
+		this.format = format;
+	}
+
+	public String getFormat() {
+		return this.format;
 	}
 
 	public String getName() {
@@ -30,6 +38,10 @@ public class DownloadableFrequencyList {
 
 	public int getSize() {
 		return this.size;
+	}
+
+	public void setFormat(String format) {
+		this.format = format;
 	}
 
 	public void setName(String name) {
