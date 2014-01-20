@@ -90,7 +90,7 @@ public class FrequencyListManager {
 		private static final long serialVersionUID = 7878253616690377456L;
 
 		{
-			this.add(new DownloadableFrequencyList("RIDIRE_LF", 3680314,
+			this.add(new DownloadableFrequencyList("RIDIRE_LF", 90181337,
 					DownloadableFrequencyList.ZIP));
 		}
 	};
