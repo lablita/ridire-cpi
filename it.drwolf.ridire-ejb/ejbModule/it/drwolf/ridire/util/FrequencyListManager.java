@@ -30,14 +30,17 @@ public class FrequencyListManager {
 
 		{
 			this.add(new DownloadableFrequencyList(
-					"Amministrazione_e_Legislazione", 4975230,
+					"Amministrazione_e_Legislazione", 12287911,
 					DownloadableFrequencyList.ODS));
+			this.add(new DownloadableFrequencyList(
+					"Amministrazione_e_Legislazione (TSV)", 5651727,
+					DownloadableFrequencyList.ZIP));
 			this.add(new DownloadableFrequencyList("Economia_e_Affari",
-					4519731, DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Informazione", 7573329,
+					9581895, DownloadableFrequencyList.ODS));
+			this.add(new DownloadableFrequencyList("Informazione", 14889653,
 					DownloadableFrequencyList.ODS));
 			this.add(new DownloadableFrequencyList("Informazione (TSV)",
-					5373309, DownloadableFrequencyList.ZIP));
+					7691594, DownloadableFrequencyList.ZIP));
 		}
 	};
 
@@ -49,22 +52,28 @@ public class FrequencyListManager {
 
 		{
 			this.add(new DownloadableFrequencyList("Architettura_e_Design",
-					4975230, DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Arti_figurative", 6461302,
+					12287911, DownloadableFrequencyList.ODS));
+			this.add(new DownloadableFrequencyList(
+					"Architettura_e_Design (TSV)", 5814699,
+					DownloadableFrequencyList.ZIP));
+			this.add(new DownloadableFrequencyList("Arti_figurative", 8019129,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Cinema", 3021985,
+			this.add(new DownloadableFrequencyList("Cinema", 4958426,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Cucina", 2644094,
+			this.add(new DownloadableFrequencyList("Cucina", 4775517,
 					DownloadableFrequencyList.ODS));
 			this.add(new DownloadableFrequencyList("Letteratura_e_Teatro",
-					4519731, DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Moda", 7573329,
+					10941656, DownloadableFrequencyList.ODS));
+			this.add(new DownloadableFrequencyList(
+					"Letteratura_e_Teatro (TSV)", 5455815,
+					DownloadableFrequencyList.ZIP));
+			this.add(new DownloadableFrequencyList("Moda", 5355152,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Musica", 5181815,
+			this.add(new DownloadableFrequencyList("Musica", 8923977,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Religione", 3570831,
+			this.add(new DownloadableFrequencyList("Religione", 6173747,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("Sport", 5238954,
+			this.add(new DownloadableFrequencyList("Sport", 9525997,
 					DownloadableFrequencyList.ODS));
 		}
 	};
@@ -78,7 +87,7 @@ public class FrequencyListManager {
 		{
 			this.add(new DownloadableFrequencyList("TOTALE", 8619943,
 					DownloadableFrequencyList.ODS));
-			this.add(new DownloadableFrequencyList("TOTALE (TSV)", 18915460,
+			this.add(new DownloadableFrequencyList("TOTALE (TSV)", 31296961,
 					DownloadableFrequencyList.ZIP));
 		}
 	};
