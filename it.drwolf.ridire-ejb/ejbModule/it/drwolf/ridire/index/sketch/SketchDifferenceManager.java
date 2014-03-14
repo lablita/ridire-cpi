@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,21 @@ import org.jboss.seam.annotations.Scope;
 @Scope(ScopeType.CONVERSATION)
 public class SketchDifferenceManager {
 
+	private class SketchDiffSummComparator implements Comparator<SketchDiffRow> {
+
+		public int compare(SketchDiffRow o1, SketchDiffRow o2) {
+			if (o1.getSummedScores() == null) {
+				return -1;
+			}
+			if (o2.getSummedScores() == null) {
+				return 1;
+			}
+			return -o1.getSummedScores().compareTo(o2.getSummedScores());
+
+		}
+
+	}
+
 	@In
 	private EntityManager entityManager;
 
@@ -63,17 +79,17 @@ public class SketchDifferenceManager {
 	private Integer functionalMetadatum = -1;
 
 	private Integer semanticMetadatum = -1;
-
 	private String firstLemma;
-	private String secondLemma;
 
+	private String secondLemma;
 	private List<SketchTable> sketchTables = new ArrayList<SketchTable>();
 	private List<SketchTable> sketchTablesFirst = new ArrayList<SketchTable>();
 	private List<SketchTable> sketchTablesSecond = new ArrayList<SketchTable>();
-	private List<SketchTable> sketchTablesThird = new ArrayList<SketchTable>();
 
+	private List<SketchTable> sketchTablesThird = new ArrayList<SketchTable>();
 	private List<SketchDiff> sketchDiffFirst = new ArrayList<SketchDiff>();
 	private List<SketchDiff> sketchDiffSecond = new ArrayList<SketchDiff>();
+
 	private List<SketchDiff> sketchDiffThird = new ArrayList<SketchDiff>();
 
 	static List<String> prepOrderList = new ArrayList<String>() {
@@ -196,8 +212,8 @@ public class SketchDifferenceManager {
 			this.addAll(SketchDifferenceManager.prepOrderList);
 		}
 	};
-
 	private boolean noResults = false;
+
 	private boolean allDomains = true;
 
 	private boolean sketch1 = true;
@@ -267,6 +283,7 @@ public class SketchDifferenceManager {
 			r2V = r2.getScore();
 		}
 		sdr.setDifference(r1V - r2V);
+		sdr.setSummedScores(r1V + r2V);
 		return sdr;
 	}
 
@@ -293,21 +310,24 @@ public class SketchDifferenceManager {
 							r2 = secondRows.get(indexOfR1);
 						}
 						SketchDiffRow computedDiff = this.computeDiff(r1, r2);
-						if (computedDiff.getFrequency1() > 2
-								|| computedDiff.getFrequency2() > 2) {
-							diffRows.add(computedDiff);
-						}
+						// if (computedDiff.getFrequency1() > 2
+						// || computedDiff.getFrequency2() > 2) {
+						diffRows.add(computedDiff);
+						// }
 					}
 					for (SketchResultRow r2 : secondRows) {
 						if (firstRows.contains(r2)) {
 							continue;
 						}
 						SketchDiffRow computedDiff = this.computeDiff(null, r2);
-						if (computedDiff.getFrequency1() > 5
-								|| computedDiff.getFrequency2() > 5) {
-							diffRows.add(computedDiff);
-						}
+						// if (computedDiff.getFrequency1() > 5
+						// || computedDiff.getFrequency2() > 5) {
+						diffRows.add(computedDiff);
+						// }
 					}
+					Collections.sort(diffRows, new SketchDiffSummComparator());
+					diffRows = diffRows.subList(0, Math
+							.min(25, diffRows.size()));
 					Collections.sort(diffRows);
 					if (diffRows.size() > 0) {
 						SketchDiff sd = new SketchDiff(st1.getSketchName());
@@ -397,14 +417,14 @@ public class SketchDifferenceManager {
 		if (this.getFunctionalMetadatum() >= 0) {
 			FunctionalMetadatum fm = this.entityManager.find(
 					FunctionalMetadatum.class, this.getFunctionalMetadatum());
-			TermQuery funcQuery = new TermQuery(new Term("functional",
-					fm.getDescription()));
+			TermQuery funcQuery = new TermQuery(new Term("functional", fm
+					.getDescription()));
 			bq.add(funcQuery, Occur.MUST);
 		} else if (this.getSemanticMetadatum() >= 0) {
 			SemanticMetadatum sm = this.entityManager.find(
 					SemanticMetadatum.class, this.getSemanticMetadatum());
-			TermQuery semQuery = new TermQuery(new Term("semantic",
-					sm.getDescription()));
+			TermQuery semQuery = new TermQuery(new Term("semantic", sm
+					.getDescription()));
 			bq.add(semQuery, Occur.MUST);
 		}
 		if (this.getSemanticMetadatum() < 0
@@ -458,8 +478,8 @@ public class SketchDifferenceManager {
 					// sketchName = "preADV_V";
 					// }
 					// }
-					if (!SketchList.isSketchNameGoodFor(sketchName,
-							this.getPos())) {
+					if (!SketchList.isSketchNameGoodFor(sketchName, this
+							.getPos())) {
 						continue;
 					}
 					int index = orderList.indexOf(sketchName);
@@ -471,16 +491,26 @@ public class SketchDifferenceManager {
 					if (!allResults) {
 						maxJ = Math.min(20, righe.length);
 					}
+					List<SketchResultRow> rows = new ArrayList<SketchResultRow>();
 					for (int j = 0; j < maxJ; j++) {
 						SketchResultRow sketchResultRow = new SketchResultRow();
 						String[] tokens = StringUtils.split(righe[j], "\t");
 						sketchResultRow.setItem(tokens[0].trim());
 						sketchResultRow.setFrequency(Integer.parseInt(tokens[1]
 								.trim()));
-						sketchResultRow.setScore(Double.parseDouble(tokens[2]
-								.trim()));
-						sketchTable.getRows().add(sketchResultRow);
+						double score = Double.parseDouble(tokens[2].trim());
+						// do not add rows with logdice < 0
+						if (score < 0.0) {
+							continue;
+						}
+						sketchResultRow.setScore(score);
+						rows.add(sketchResultRow);
 					}
+					// sorting comes in reverse order
+					Collections.sort(rows);
+					// take the first 25 results
+					sketchTable.getRows().addAll(
+							rows.subList(0, Math.min(25, rows.size())));
 				}
 			}
 		} catch (IOException e) {
@@ -619,18 +649,16 @@ public class SketchDifferenceManager {
 	public void setDomain(String domain) {
 		this.domain = domain;
 		if (domain != null) {
-			List<FunctionalMetadatum> fs = this.entityManager
-					.createQuery(
-							"from FunctionalMetadatum f where f.description=:d")
+			List<FunctionalMetadatum> fs = this.entityManager.createQuery(
+					"from FunctionalMetadatum f where f.description=:d")
 					.setParameter("d", domain).getResultList();
 			if (fs.size() == 1) {
 				this.setFunctionalMetadatum(fs.get(0).getId());
 				this.setSemanticMetadatum(-1);
 				return;
 			}
-			List<SemanticMetadatum> ss = this.entityManager
-					.createQuery(
-							"from SemanticMetadatum s where s.description=:d")
+			List<SemanticMetadatum> ss = this.entityManager.createQuery(
+					"from SemanticMetadatum s where s.description=:d")
 					.setParameter("d", domain).getResultList();
 			if (ss.size() == 1) {
 				this.setSemanticMetadatum(ss.get(0).getId());
