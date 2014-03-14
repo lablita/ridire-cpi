@@ -24,7 +24,7 @@ public class SketchDiffRow implements Comparable<SketchDiffRow> {
 	private Integer frequency2 = 0;
 	private Double score2 = 0.0;
 	private Double difference;
-	private String color;
+	private Double summedScores = 0.0;
 
 	public int compareTo(SketchDiffRow o) {
 		if (o != null) {
@@ -62,13 +62,25 @@ public class SketchDiffRow implements Comparable<SketchDiffRow> {
 		} else if (diff < -6.0) {
 			diff = -6.0;
 		}
-		long col = Math.round(diff * 255 / 6);
-		String hex2digits = String
-				.format("%02X", Math.abs(Math.abs(col) - 255));
-		if (col >= 0) {
-			return "#FF" + hex2digits + hex2digits;
+		if (diff > 6.0) {
+			return "#00FF00";
 		}
-		return "#" + hex2digits + "FF" + hex2digits;
+		if (diff > 4.0) {
+			return "#55FF55";
+		}
+		if (diff > 2.0) {
+			return "#AAFFAA";
+		}
+		if (diff > -2.0) {
+			return "#FFFFFF";
+		}
+		if (diff > -4.0) {
+			return "#FFAAAA";
+		}
+		if (diff > -6.0) {
+			return "#FF5555";
+		}
+		return "#FF0000";
 	}
 
 	public Double getDifference() {
@@ -93,6 +105,10 @@ public class SketchDiffRow implements Comparable<SketchDiffRow> {
 
 	public Double getScore2() {
 		return this.score2;
+	}
+
+	public Double getSummedScores() {
+		return this.summedScores;
 	}
 
 	@Override
@@ -126,5 +142,9 @@ public class SketchDiffRow implements Comparable<SketchDiffRow> {
 
 	public void setScore2(Double score2) {
 		this.score2 = score2;
+	}
+
+	public void setSummedScores(Double summedScores) {
+		this.summedScores = summedScores;
 	}
 }

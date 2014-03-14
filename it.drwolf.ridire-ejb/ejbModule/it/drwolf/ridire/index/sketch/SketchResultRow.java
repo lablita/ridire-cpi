@@ -15,12 +15,22 @@
  ******************************************************************************/
 package it.drwolf.ridire.index.sketch;
 
-public class SketchResultRow {
+public class SketchResultRow implements Comparable<SketchResultRow> {
 	private String item;
 
 	private Integer frequency;
 
 	private Double score;
+
+	public int compareTo(SketchResultRow o) {
+		if (this.score < 0) {
+			return -1;
+		}
+		if (o.getScore() < 0) {
+			return 1;
+		}
+		return -this.score.compareTo(o.getScore());
+	}
 
 	@Override
 	public boolean equals(Object obj) {
