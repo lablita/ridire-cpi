@@ -85,6 +85,8 @@ public class LocalResourcesManager {
 	List<LocalResource> lrList;
 
 	private List<SelectItem> allMetadata = new ArrayList<SelectItem>();
+	private List<SelectItem> semanticMetadata = new ArrayList<SelectItem>();
+	private List<SelectItem> functionalMetadata = new ArrayList<SelectItem>();
 
 	public void assignMetadata() {
 		for (LocalResource lr : this.lrList) {
@@ -104,8 +106,8 @@ public class LocalResourcesManager {
 	public void delete(LocalResource localResource) {
 		String localResourceDir = this.entityManager.find(Parameter.class,
 				Parameter.LOCAL_RESOURCES_DIR.getKey()).getValue();
-		File toBeDeleted = new File(new File(localResourceDir),
-				localResource.getUniqueFileName());
+		File toBeDeleted = new File(new File(localResourceDir), localResource
+				.getUniqueFileName());
 		toBeDeleted.delete();
 		User owner = localResource.getCrawlerUser();
 		owner.getLocalResources().remove(localResource);
@@ -121,8 +123,8 @@ public class LocalResourcesManager {
 		}
 		LocalResource lr = (LocalResource) current;
 		if (lr.getOrigFileName() != null
-				&& lr.getOrigFileName().toLowerCase()
-						.contains(this.filterFileNameValue.toLowerCase())) {
+				&& lr.getOrigFileName().toLowerCase().contains(
+						this.filterFileNameValue.toLowerCase())) {
 			return true;
 		}
 		return false;
@@ -135,8 +137,8 @@ public class LocalResourcesManager {
 		}
 		LocalResource lr = (LocalResource) current;
 		if (lr.getFunctionalMetadatum() != null
-				&& lr.getFunctionalMetadatum().getId()
-						.equals(this.functionalMetadatumValue)) {
+				&& lr.getFunctionalMetadatum().getId().equals(
+						this.functionalMetadatumValue)) {
 			return true;
 		}
 		return false;
@@ -149,8 +151,8 @@ public class LocalResourcesManager {
 		}
 		LocalResource lr = (LocalResource) current;
 		if (lr.getContentType() != null
-				&& lr.getContentType().toLowerCase()
-						.contains(this.filterMimeTypeValue.toLowerCase())) {
+				&& lr.getContentType().toLowerCase().contains(
+						this.filterMimeTypeValue.toLowerCase())) {
 			return true;
 		}
 		return false;
@@ -163,8 +165,8 @@ public class LocalResourcesManager {
 		}
 		LocalResource lr = (LocalResource) current;
 		if (lr.getSemanticMetadatum() != null
-				&& lr.getSemanticMetadatum().getId()
-						.equals(this.semanticMetadatumValue)) {
+				&& lr.getSemanticMetadatum().getId().equals(
+						this.semanticMetadatumValue)) {
 			return true;
 		}
 		return false;
@@ -177,11 +179,25 @@ public class LocalResourcesManager {
 		LocalResource lr = (LocalResource) current;
 		if (lr.getCrawlerUser() != null
 				&& lr.getCrawlerUser().getUsername() != null
-				&& lr.getCrawlerUser().getUsername()
-						.contains(this.filterUserValue.toLowerCase())) {
+				&& lr.getCrawlerUser().getUsername().contains(
+						this.filterUserValue.toLowerCase())) {
 			return true;
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<SelectItem> getAllFunctionalMetadata() {
+		this.functionalMetadata.clear();
+		List<Object[]> listFM = this.entityManager
+				.createQuery(
+						"select m.description, m.description from FunctionalMetadatum m order by m.description")
+				.getResultList();
+		for (Object[] o : listFM) {
+			this.functionalMetadata.add(new SelectItem((String) o[1],
+					(String) o[0]));
+		}
+		return this.functionalMetadata;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,6 +248,19 @@ public class LocalResourcesManager {
 		return this.allMetadata;
 	}
 
+	public List<SelectItem> getAllSemanticMetadata() {
+		this.semanticMetadata.clear();
+		List<Object[]> listSM = this.entityManager
+				.createQuery(
+						"select m.description,m.description from SemanticMetadatum m order by m.description")
+				.getResultList();
+		for (Object[] o : listSM) {
+			this.semanticMetadata.add(new SelectItem((String) o[1],
+					(String) o[0]));
+		}
+		return this.semanticMetadata;
+	}
+
 	@SuppressWarnings("unchecked")
 	public Map<String, Integer> getAllSemanticMetadataMap() {
 		List<Object[]> listFM = this.entityManager
@@ -261,10 +290,9 @@ public class LocalResourcesManager {
 
 	@SuppressWarnings("unchecked")
 	private User getCurrentUser() {
-		List<User> users = this.entityManager
-				.createQuery("from User u where u.username=:username")
-				.setParameter("username",
-						this.identity.getCredentials().getUsername())
+		List<User> users = this.entityManager.createQuery(
+				"from User u where u.username=:username").setParameter(
+				"username", this.identity.getCredentials().getUsername())
 				.getResultList();
 		if (users.size() == 1) {
 			return users.get(0);
@@ -349,8 +377,8 @@ public class LocalResourcesManager {
 			this.entityManager.merge(currentUser);
 			this.lrList.add(lr);
 		} catch (IOException e) {
-			throw new FileHandlingException(
-					this.messages.get("FileSavingError"));
+			throw new FileHandlingException(this.messages
+					.get("FileSavingError"));
 		} catch (NoSuchAlgorithmException e) {
 			throw new Exception();
 		} catch (SAXException e) {

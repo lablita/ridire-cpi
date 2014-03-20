@@ -253,3 +253,29 @@ td.action a {
 	border: none;
 }
 
+td > input[value="Architettura e design"]:before {
+	content: "Domini semantici";
+	position: relative;
+	top: -1.6em;
+	width: 200px;
+	display: block;
+	font-weight: bold;
+}
+
+td > input[value="Amministrazione e Legislazione"]:before {
+	content: "Domini funzionali";
+	position: relative;
+	top: -1.6em;
+	width: 200px;
+	display: block;
+	font-weight: bold;
+}
+
+.domainSelection input[value="Sport"] {
+	margin-bottom: 3em;
+}
+
+.domainSelection input[value="Tutti"] {
+	margin-bottom: 3em;
+}
+
