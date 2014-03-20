@@ -309,13 +309,13 @@ public class CWBConcordancer {
 		} else if (this.isFromSketch() && this.getSketchName() != null
 				&& this.getSketchTermHead() != null
 				&& this.getSketchTermCollocate() != null) {
-			Sketch s = SketchList.getSketchByName(this.getSketchName(),
-					this.getSketchPoS());
+			Sketch s = SketchList.getSketchByName(this.getSketchName(), this
+					.getSketchPoS());
 			if (s != null) {
 				List<GramRel> gramRels = s.getGramrels();
-				realQuery = this.rewriteGramRels(gramRels,
-						this.getSketchTermHead(),
-						this.getSketchTermCollocate(), s, this.getSketchName());
+				realQuery = this.rewriteGramRels(gramRels, this
+						.getSketchTermHead(), this.getSketchTermCollocate(), s,
+						this.getSketchName());
 			}
 			if (this.getSketchDomain() != null
 					&& !this.getSketchDomain().equals("Tutti")) {
@@ -903,8 +903,12 @@ public class CWBConcordancer {
 
 	public void resetDomains() {
 		if (this.isAllDomains()) {
-			this.getSemanticMetadatum().clear();
-			this.getFunctionalMetadatum().clear();
+			if (this.getSemanticMetadatum() != null) {
+				this.getSemanticMetadatum().clear();
+			}
+			if (this.getFunctionalMetadatum() != null) {
+				this.getFunctionalMetadatum().clear();
+			}
 		}
 	}
 

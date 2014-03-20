@@ -54,6 +54,7 @@ public class MenuState {
 		this.menu.put("ridire", true);
 		this.menu.put("crawlingarea", true);
 		this.menu.put("queryingarea", true);
+		this.menu.put("sketcharea", true);
 		this.menu.put("reportingarea", true);
 		this.menu.put("adminarea", true);
 		this.menu.put("processingarea", true);

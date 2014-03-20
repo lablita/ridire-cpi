@@ -91,6 +91,8 @@ public class SketchDifferenceManager {
 	private List<SketchDiff> sketchDiffSecond = new ArrayList<SketchDiff>();
 
 	private List<SketchDiff> sketchDiffThird = new ArrayList<SketchDiff>();
+	private String firstDomain = "Tutti";
+	private String secondDomain = "Tutti";
 
 	static List<String> prepOrderList = new ArrayList<String>() {
 		{
@@ -344,6 +346,10 @@ public class SketchDifferenceManager {
 		return this.domain;
 	}
 
+	public String getFirstDomain() {
+		return this.firstDomain;
+	}
+
 	public String getFirstLemma() {
 		return this.firstLemma;
 	}
@@ -354,6 +360,10 @@ public class SketchDifferenceManager {
 
 	public String getPos() {
 		return this.pos;
+	}
+
+	public String getSecondDomain() {
+		return this.secondDomain;
 	}
 
 	public String getSecondLemma() {
@@ -401,6 +411,40 @@ public class SketchDifferenceManager {
 					firstLemmaSketchTablesSecond, this.sketchTablesSecond));
 			this.setSketchDiffThird(this.computeSketchDifference(
 					firstLemmaSketchTablesThird, this.sketchTablesThird));
+			this.insertNONESketches();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	}
+
+	public void getSketchesDifferencesForDomains() {
+		this.sketch1 = true;
+		try {
+			IndexReader newReader = IndexReader
+					.openIfChanged(this.indexReader1);
+			if (newReader != null) {
+				this.indexReader1.close();
+				this.indexReader1 = newReader;
+			}
+			this.setDomain(this.getFirstDomain());
+			this.getSketchesFromIndex(this.indexReader1, this.getFirstLemma(),
+					true);
+			List<SketchTable> firstDomainSketchTablesFirst = new ArrayList<SketchTable>(
+					this.sketchTablesFirst);
+			List<SketchTable> firstDomainSketchTablesSecond = new ArrayList<SketchTable>(
+					this.sketchTablesSecond);
+			List<SketchTable> firstDomainSketchTablesThird = new ArrayList<SketchTable>(
+					this.sketchTablesThird);
+			this.setDomain(this.getSecondDomain());
+			this.getSketchesFromIndex(this.indexReader1, this.getFirstLemma(),
+					true);
+			this.setSketchDiffFirst(this.computeSketchDifference(
+					firstDomainSketchTablesFirst, this.sketchTablesFirst));
+			this.setSketchDiffSecond(this.computeSketchDifference(
+					firstDomainSketchTablesSecond, this.sketchTablesSecond));
+			this.setSketchDiffThird(this.computeSketchDifference(
+					firstDomainSketchTablesThird, this.sketchTablesThird));
 			this.insertNONESketches();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
@@ -670,6 +714,10 @@ public class SketchDifferenceManager {
 		this.setSemanticMetadatum(-1);
 	}
 
+	public void setFirstDomain(String firstDomain) {
+		this.firstDomain = firstDomain;
+	}
+
 	public void setFirstLemma(String firstLemma) {
 		this.firstLemma = firstLemma;
 	}
@@ -684,6 +732,10 @@ public class SketchDifferenceManager {
 
 	public void setPos(String pos) {
 		this.pos = pos;
+	}
+
+	public void setSecondDomain(String secondDomain) {
+		this.secondDomain = secondDomain;
 	}
 
 	public void setSecondLemma(String secondLemma) {

@@ -78,10 +78,26 @@
 					<s:link view="/cwbpatterns.xhtml" value="Pattern"
 						includePageParams="false" propagation="none" />
 				</rich:panelMenuItem>
+			</rich:panelMenuGroup>
+			<rich:panelMenuGroup label="Sketch Area" id="sketcharea"
+				rendered="#{identity.loggedIn}"
+				value="#{menuState.menu['sketcharea']}">
 				<rich:panelMenuItem actionListener="#{menuBean.select}"
-					id="queryingarea_sketch" mode="server"
+					id="sketcharea_single" mode="server"
 					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
-					<s:link view="/cwbsketch2.xhtml" value="Sketch"
+					<s:link view="/cwbsketch2.xhtml" value="Single lemma"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="sketcharea_2lemmas" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbsketchdiff.xhtml" value="Confronto due lemmi"
+						includePageParams="false" propagation="none" />
+				</rich:panelMenuItem>
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					id="sketcharea_2domains" mode="server"
+					rendered="#{s:hasRole('Admin') or s:hasRole('Indexer') or s:hasRole('Guest') or s:hasRole('Final user')}">
+					<s:link view="/cwbsketchdiffdom.xhtml" value="Confronto due domini"
 						includePageParams="false" propagation="none" />
 				</rich:panelMenuItem>
 			</rich:panelMenuGroup>
@@ -93,8 +109,8 @@
 					<s:link view="/resourcesAdmin.xhtml"
 						value="Amministrazione Risorse" propagation="none" />
 				</rich:panelMenuItem>
-				<rich:panelMenuItem actionListener="#{menuBean.select}" rendered="false"
-					id="indexing_area" mode="server">
+				<rich:panelMenuItem actionListener="#{menuBean.select}"
+					rendered="false" id="indexing_area" mode="server">
 					<s:link view="/indexAdmin.xhtml" value="Amministrazione Indici"
 						propagation="none" />
 				</rich:panelMenuItem>

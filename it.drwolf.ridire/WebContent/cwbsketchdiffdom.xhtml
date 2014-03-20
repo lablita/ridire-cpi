@@ -5,36 +5,61 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:p="http://primefaces.prime.com.tr/ui"
 	xmlns:a4j="http://richfaces.org/a4j"
 	xmlns:rich="http://richfaces.org/rich"
 	template="layout/template_tagset.xhtml">
 
 	<ui:define name="title">
-  Differenza sketch tra due lemmi
+ Differenza sketch tra due domini
 </ui:define>
 
 	<ui:define name="body">
-		<h1>Differenza sketch tra due lemmi</h1>
+		<h1>Differenza sketch tra due domini</h1>
 		<h:form>
-			<s:div id="lemmi">
-				<h:panelGrid columns="4">
-					<h:outputText value="Primo lemma: " />
-					<h:inputText value="#{sketchDifferenceManager.firstLemma}" />
-					<h:outputText value="PoS: " />
-					<h:selectOneMenu value="#{sketchDifferenceManager.pos}">
+		<h:panelGrid columns="4">
+			<h:outputText value="Lemma: " />
+						<h:inputText value="#{sketchDifferenceManager.firstLemma}" />
+						<h:outputText value="PoS: " />
+			<h:selectOneMenu value="#{sketchDifferenceManager.pos}">
 						<f:selectItem itemValue="nome" />
 						<f:selectItem itemValue="verbo" />
 						<f:selectItem itemValue="aggettivo" />
 						<f:selectItem itemValue="avverbio" />
 						<a4j:support event="onchange" reRender="sketchChooser" />
 					</h:selectOneMenu>
-					<h:outputText value="Secondo lemma: " />
-					<h:inputText value="#{sketchDifferenceManager.secondLemma}" />
-				</h:panelGrid>
+					</h:panelGrid>
+			<h:panelGrid columns="2">
+			<h:panelGroup>
+			<fieldset>
+			<legend>Primo dominio</legend>
+			<s:div id="domini1">
+				<h:selectOneRadio value="#{sketchDifferenceManager.firstDomain}" styleClass="domainSelection"
+					layout="pageDirection">
+						<f:selectItem itemLabel="Tutti" itemValue="Tutti"/>
+						<f:selectItems value="#{localResourcesManager.getAllSemanticMetadata()}" />
+						<f:selectItems value="#{localResourcesManager.getAllFunctionalMetadata()}" />
+				</h:selectOneRadio>
 			</s:div>
+			</fieldset>
+			</h:panelGroup>
+			<h:panelGroup>
+			<fieldset>
+			<legend>Secondo dominio</legend>
+			<s:div id="domini2">
+				<h:selectOneRadio value="#{sketchDifferenceManager.secondDomain}" styleClass="domainSelection"
+					layout="pageDirection">
+						<f:selectItem itemLabel="Tutti" itemValue="Tutti"/>
+						<f:selectItems value="#{localResourcesManager.getAllSemanticMetadata()}" />
+						<f:selectItems value="#{localResourcesManager.getAllFunctionalMetadata()}" />
+				</h:selectOneRadio>
+			</s:div>
+			</fieldset>
+			</h:panelGroup>
+			</h:panelGrid>
 			<h:commandButton
-				action="#{sketchDifferenceManager.getSketchesDifferences()}"
+				action="#{sketchDifferenceManager.getSketchesDifferencesForDomains()}"
 				value="Mostra differenze" />
 			<br />
 			<h:outputText rendered="#{sketchDifferenceManager.noResults}"
@@ -42,9 +67,9 @@
 			<table>
 				<tr>
 					<td valign="top" width="105px;"><div
-							style="position: fixed; width: 100px; border: 1px solid black; display: #{(not empty sketchDifferenceManager.firstLemma and not empty sketchDifferenceManager.secondLemma )?  '':  'none'};">
+							style="position: fixed; width: 100px; border: 1px solid black; display: #{(not empty sketchDifferenceManager.firstLemma)?  '':  'none'}">
 							<div style="text-align: center; font-weight: bold;" width="95px;">
-								<h:outputText value="#{sketchDifferenceManager.firstLemma}" />
+								<h:outputText value="#{sketchDifferenceManager.firstDomain}" />
 							</div>
 							<div style="background-color: #00FF00; text-align: center;">
 								<h:outputText value="-6.0" />
@@ -68,14 +93,14 @@
 								<h:outputText value="6.0" />
 							</div>
 							<div style="text-align: center; font-weight: bold;">
-								<h:outputText value="#{sketchDifferenceManager.secondLemma}" />
+								<h:outputText value="#{sketchDifferenceManager.secondDomain}" />
 							</div>
 						</div></td>
 					<td valign="top"><a4j:repeat
 							value="#{sketchDifferenceManager.sketchDiffFirst}"
 							var="sketchDiff">
 							<table class="rich-table dr-table"
-								style="float: left; width: 15%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE' )?'none':''};">
+								style="float: left; width: 15%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE')?'none':''}">
 								<thead class="dr-table-thead">
 									<tr class="dr-table-header rich-table-header">
 										<th class="dr-table-headercell rich-table-headercell">#{sketchDiff.sketchName}</th>
@@ -87,51 +112,48 @@
 									<a4j:repeat value="#{sketchDiff.rows}" var="r">
 										<tr class="dr-table-row rich-table-row">
 											<td class="dr-table-cell rich-table-cell"
-												style="background-color: #{r.color};">
-													<h:outputText value="#{r.item}" />
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
-												class="dr-table-cell rich-table-cell">
-												<s:link
-													view="/cwbconcordances.xhtml" disabled="false"
-													style="color: black;"
-													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency1}" />
-													<f:param name="fromSketch" value="true" />
-													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.firstLemma}" />
-													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
-													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link>
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
+												style="background-color: #{r.color}"><h:outputText
+													value="#{r.item}" /></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><s:link
 													view="/cwbconcordances.xhtml" disabled="false"
 													style="color: black;"
 													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency2}" />
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency1}" />
 													<f:param name="fromSketch" value="true" />
 													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.secondLemma}" />
+														value="#{sketchDifferenceManager.firstLemma}" />
 													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
 													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link></td>
-											<td style="text-align: right; background-color: #{r.color};"
+														value="#{sketchDifferenceManager.firstDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
+												class="dr-table-cell rich-table-cell"><s:link
+													view="/cwbconcordances.xhtml" disabled="false"
+													style="color: black;"
+													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency2}" />
+													<f:param name="fromSketch" value="true" />
+													<f:param name="sketchTermHead"
+														value="#{sketchDifferenceManager.firstLemma}" />
+													<f:param name="sketchTermCollocate" value="#{r.item}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchDomain"
+														value="#{sketchDifferenceManager.secondDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score1}">
 													<f:convertNumber maxFractionDigits="2" />
 												</h:outputText></td>
-											<td style="text-align: right; background-color: #{r.color};"
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score2}">
 													<f:convertNumber maxFractionDigits="2" />
@@ -141,7 +163,7 @@
 								</tbody>
 							</table>
 							<div
-								style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{sketchDiff.sketchName.startsWith('NONE' )?'':'none'};" />
+								style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{sketchDiff.sketchName.startsWith('NONE')?'':'none'}" />
 						</a4j:repeat>
 						<div
 							style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
@@ -149,7 +171,7 @@
 							rendered="#{not empty sketchDifferenceManager.sketchDiffSecond}"
 							var="sketchDiff">
 							<table class="rich-table dr-table"
-								style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE' )?'none':''};">
+								style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE')?'none':''}">
 								<thead class="dr-table-thead">
 									<tr class="dr-table-header rich-table-header">
 										<th class="dr-table-headercell rich-table-headercell">#{sketchDiff.sketchName}</th>
@@ -161,51 +183,48 @@
 									<a4j:repeat value="#{sketchDiff.rows}" var="r">
 										<tr class="dr-table-row rich-table-row">
 											<td class="dr-table-cell rich-table-cell"
-												style="background-color: #{r.color};">
-													<h:outputText value="#{r.item}" />
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
-												class="dr-table-cell rich-table-cell">
-												<s:link
-													view="/cwbconcordances.xhtml" disabled="false"
-													style="color: black;"
-													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency1}" />
-													<f:param name="fromSketch" value="true" />
-													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.firstLemma}" />
-													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
-													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link>
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
+												style="background-color: #{r.color}"><h:outputText
+													value="#{r.item}" /></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><s:link
 													view="/cwbconcordances.xhtml" disabled="false"
 													style="color: black;"
 													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency2}" />
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency1}" />
 													<f:param name="fromSketch" value="true" />
 													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.secondLemma}" />
+														value="#{sketchDifferenceManager.firstLemma}" />
 													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
 													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link></td>
-											<td style="text-align: right; background-color: #{r.color};"
+														value="#{sketchDifferenceManager.firstDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
+												class="dr-table-cell rich-table-cell"><s:link
+													view="/cwbconcordances.xhtml" disabled="false"
+													style="color: black;"
+													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency2}" />
+													<f:param name="fromSketch" value="true" />
+													<f:param name="sketchTermHead"
+														value="#{sketchDifferenceManager.firstLemma}" />
+													<f:param name="sketchTermCollocate" value="#{r.item}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchDomain"
+														value="#{sketchDifferenceManager.secondDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score1}">
 													<f:convertNumber maxFractionDigits="2" />
 												</h:outputText></td>
-											<td style="text-align: right; background-color: #{r.color};"
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score2}">
 													<f:convertNumber maxFractionDigits="2" />
@@ -214,7 +233,8 @@
 									</a4j:repeat>
 								</tbody>
 							</table>
-							<div style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{sketchDiff.sketchName.startsWith('NONE') ?'block':'none'};" />
+							<div
+								style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{sketchDiff.sketchName.startsWith('NONE')?'block':'none'}" />
 						</ui:repeat>
 						<div
 							style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px;" />
@@ -222,7 +242,7 @@
 							rendered="#{not empty sketchDifferenceManager.sketchDiffThird}"
 							var="sketchDiff">
 							<table class="rich-table dr-table"
-								style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE' )?'none':''};">
+								style="float: left; width: 20%; margin-right: 5px; margin-bottom: 5px; display: #{sketchDiff.sketchName.startsWith('NONE')?'none':''}">
 								<thead class="dr-table-thead">
 									<tr class="dr-table-header rich-table-header">
 										<th class="dr-table-headercell rich-table-headercell">#{sketchDiff.sketchName}</th>
@@ -234,51 +254,48 @@
 									<a4j:repeat value="#{sketchDiff.rows}" var="r">
 										<tr class="dr-table-row rich-table-row">
 											<td class="dr-table-cell rich-table-cell"
-												style="background-color: #{r.color};">
-													<h:outputText value="#{r.item}" />
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
-												class="dr-table-cell rich-table-cell">
-												<s:link
-													view="/cwbconcordances.xhtml" disabled="false"
-													style="color: black;"
-													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency1}" />
-													<f:param name="fromSketch" value="true" />
-													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.firstLemma}" />
-													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
-													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link>
-													</td>
-											<td style="text-align: right; background-color: #{r.color};"
+												style="background-color: #{r.color}"><h:outputText
+													value="#{r.item}" /></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><s:link
 													view="/cwbconcordances.xhtml" disabled="false"
 													style="color: black;"
 													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
-												<h:outputText  styleClass="blackLink" 
-													value="#{r.frequency2}" />
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency1}" />
 													<f:param name="fromSketch" value="true" />
 													<f:param name="sketchTermHead"
-														value="#{sketchDifferenceManager.secondLemma}" />
+														value="#{sketchDifferenceManager.firstLemma}" />
 													<f:param name="sketchTermCollocate" value="#{r.item}" />
-													<f:param name="sketchName"
-														value="#{sketchDiff.sketchName}" />
-													<f:param name="sketchPoS" value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
 													<f:param name="sketchDomain"
-														value="#{sketchDifferenceManager.domain}" />
-														</s:link></td>
-											<td style="text-align: right; background-color: #{r.color};"
+														value="#{sketchDifferenceManager.firstDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
+												class="dr-table-cell rich-table-cell"><s:link
+													view="/cwbconcordances.xhtml" disabled="false"
+													style="color: black;"
+													action="#{cwbConcordancer.setResultsFromSketchExtracted(false)}">
+													<h:outputText styleClass="blackLink"
+														value="#{r.frequency2}" />
+													<f:param name="fromSketch" value="true" />
+													<f:param name="sketchTermHead"
+														value="#{sketchDifferenceManager.firstLemma}" />
+													<f:param name="sketchTermCollocate" value="#{r.item}" />
+													<f:param name="sketchName" value="#{sketchDiff.sketchName}" />
+													<f:param name="sketchPoS"
+														value="#{sketchDifferenceManager.pos}" />
+													<f:param name="sketchDomain"
+														value="#{sketchDifferenceManager.secondDomain}" />
+												</s:link></td>
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score1}">
 													<f:convertNumber maxFractionDigits="2" />
 												</h:outputText></td>
-											<td style="text-align: right; background-color: #{r.color};"
+											<td style="text-align: right; background-color: #{r.color}"
 												class="dr-table-cell rich-table-cell"><h:outputText
 													value="#{r.score2}">
 													<f:convertNumber maxFractionDigits="2" />
@@ -287,7 +304,8 @@
 									</a4j:repeat>
 								</tbody>
 							</table>
-							<div style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{((sketchDiff.position % 4 eq 0) or sketchDiff.sketchName.startsWith('NONE'))?'':'none'};" />
+							<div
+								style="clear: both; height: 0px; font-size: 0px; margin: 0; line-height: 0px; display: #{((sketchDiff.position% 4 eq 0) or sketchDiff.sketchName.startsWith('NONE'))?'':'none'}" />
 						</ui:repeat></td>
 				</tr>
 			</table>
