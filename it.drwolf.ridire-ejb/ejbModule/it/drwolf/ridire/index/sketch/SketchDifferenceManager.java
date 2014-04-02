@@ -395,6 +395,7 @@ public class SketchDifferenceManager {
 				this.indexReader1.close();
 				this.indexReader1 = newReader;
 			}
+			this.setDomain(this.getFirstDomain());
 			this.getSketchesFromIndex(this.indexReader1, this.getFirstLemma(),
 					true);
 			List<SketchTable> firstLemmaSketchTablesFirst = new ArrayList<SketchTable>(

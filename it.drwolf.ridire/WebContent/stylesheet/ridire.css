@@ -204,4 +204,7 @@ input[type="reset"] {
 .verticalAlignTopTable td {
 	vertical-align: top;
 }
+
+.verticalAlignTopTable {
+	vertical-align: top;
 }
