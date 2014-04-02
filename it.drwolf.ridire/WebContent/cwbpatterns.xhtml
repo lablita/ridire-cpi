@@ -148,7 +148,7 @@
 				cwbPatternSearcher.resultsSize}</strong>&#160;di&#160;<strong>#{cwbPatternSearcher.resultsSize}</strong>
 		</s:fragment>
 
-		<rich:dataTable var="item" value="#{cwbPatternSearcher.resultsSimple}"
+		<rich:dataTable var="item" value="#{cwbPatternSearcher.resultsSimple}"  style="margin-bottom: 2em;"
 			rendered="#{not cwbPatternSearcher.resultsGrouping}">
 			<rich:column style="white-space: nowrap; text-align: right;">
 				<f:facet name="header">
@@ -189,7 +189,7 @@
 		</rich:dataTable>
 		<rich:dataTable var="group"
 			value="#{cwbPatternSearcher.resultsSimple}"
-			rendered="#{cwbPatternSearcher.resultsGrouping}">
+			rendered="#{cwbPatternSearcher.resultsGrouping}"  style="margin-bottom: 2em;">
 			<rich:column>
 				<f:facet name="header">
 					<h:outputText value="Num." />
@@ -287,8 +287,7 @@
 			<s:div style="overflow: auto;">
 				<pre>ADJ		adjective
 ADJPRO		pronominal adjective
-ADV		adverb (excluding -mente forms)
-ADV:mente	adveb ending in -mente
+ADV		adverb<ui:remove>(excluding -mente forms)ADV:mente	adveb ending in -mente</ui:remove>
 ART		article
 CHE		che
 CLI		clitic

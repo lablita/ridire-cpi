@@ -301,7 +301,7 @@ public class VRTFilesBuilder {
 					}
 					String nl = tokens[0] + "\t";
 					nl += tokens[1].replaceAll(":", "") + "\t";
-					nl += this.getEasyPos(tokens[1]) + "\t";
+					nl += this.getEasyPos(tokens[1]).replaceAll(":", "") + "\t";
 					nl += tokens[2];
 					newLines.add(nl);
 				}

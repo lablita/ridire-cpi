@@ -217,7 +217,7 @@ public class CWBConcordancer {
 				if (this.getPos() != null && this.getPos().trim().length() > 0) {
 					params.add("pos=\""
 							+ this.getPos().trim().replaceAll("\"", "\\\"")
-									.replaceFirst(":", "") + "\"");
+									.replaceAll(":", "") + "\"");
 				}
 				if (params.size() > 0) {
 					realQuery = "C=[" + StringUtils.join(params, " & ") + "]";

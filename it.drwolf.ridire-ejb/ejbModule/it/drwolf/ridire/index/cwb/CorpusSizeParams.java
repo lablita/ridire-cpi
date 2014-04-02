@@ -36,15 +36,39 @@ import org.jboss.seam.annotations.Scope;
 public class CorpusSizeParams {
 	private Map<String, Number> corporaSize = new HashMap<String, Number>();
 	private List<String> availablePoSs = new ArrayList<String>();
-	private List<String> availableEasyposs = new ArrayList<String>();
+	private List<String> availableEasyposs = new ArrayList<String>() {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -8966088492523974606L;
+
+		{
+			this.add("Tutti");
+			this.add("ADJ");
+			this.add("ADJPRO");
+			this.add("ADV");
+			this.add("ART");
+			this.add("CHE");
+			this.add("CL");
+			this.add("CON");
+			this.add("NEG");
+			this.add("NOCAT");
+			this.add("NOUN");
+			this.add("NPR");
+			this.add("NUM");
+			this.add("PREP");
+			this.add("PRON");
+			this.add("PUN");
+			this.add("SENT");
+			this.add("VERB");
+			this.add("WH");
+		}
+	};
 
 	@In
 	private EntityManager entityManager;
 
 	public List<String> getAvailableEasyposs() {
-		Collections.sort(this.availableEasyposs);
-		this.availableEasyposs.remove("Tutti");
-		this.availableEasyposs.add(0, "Tutti");
 		return this.availableEasyposs;
 	}
 
@@ -65,37 +89,31 @@ public class CorpusSizeParams {
 	@SuppressWarnings("unchecked")
 	public void init() {
 		try {
-			this.corporaSize.put(
-					"lemma_all",
-					((Number) this.entityManager.createNativeQuery(
+			this.corporaSize.put("lemma_all", ((Number) this.entityManager
+					.createNativeQuery(
 							"select sum(freq) as somma from freq_lemma_all")
-							.getSingleResult()).longValue());
-			this.corporaSize.put(
-					"forma_all",
-					((Number) this.entityManager.createNativeQuery(
+					.getSingleResult()).longValue());
+			this.corporaSize.put("forma_all", ((Number) this.entityManager
+					.createNativeQuery(
 							"select sum(freq) as somma from freq_forma_all")
-							.getSingleResult()).longValue());
-			this.corporaSize.put(
-					"PoS_all",
-					((Number) this.entityManager.createNativeQuery(
+					.getSingleResult()).longValue());
+			this.corporaSize.put("PoS_all", ((Number) this.entityManager
+					.createNativeQuery(
 							"select sum(freq) as somma from freq_PoS_all")
-							.getSingleResult()).longValue());
+					.getSingleResult()).longValue());
 			List<SemanticMetadatum> resultList = this.entityManager
 					.createQuery("from SemanticMetadatum sm").getResultList();
 			for (SemanticMetadatum sm : resultList) {
 				String smDes = sm.getDescription().replaceAll("\\s", "_");
-				this.corporaSize.put(
-						"lemma_" + smDes,
+				this.corporaSize.put("lemma_" + smDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_lemma_"
 										+ smDes).getSingleResult());
-				this.corporaSize.put(
-						"forma_" + smDes,
+				this.corporaSize.put("forma_" + smDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_forma_"
 										+ smDes).getSingleResult());
-				this.corporaSize.put(
-						"PoS_" + smDes,
+				this.corporaSize.put("PoS_" + smDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_PoS_"
 										+ smDes).getSingleResult());
@@ -104,18 +122,15 @@ public class CorpusSizeParams {
 					.createQuery("from FunctionalMetadatum fm").getResultList();
 			for (FunctionalMetadatum fm : resultList2) {
 				String fmDes = fm.getDescription().replaceAll("\\s", "_");
-				this.corporaSize.put(
-						"lemma_" + fmDes,
+				this.corporaSize.put("lemma_" + fmDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_lemma_"
 										+ fmDes).getSingleResult());
-				this.corporaSize.put(
-						"lemma_" + fmDes,
+				this.corporaSize.put("lemma_" + fmDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_forma_"
 										+ fmDes).getSingleResult());
-				this.corporaSize.put(
-						"lemma_" + fmDes,
+				this.corporaSize.put("lemma_" + fmDes,
 						(Number) this.entityManager.createNativeQuery(
 								"select sum(freq) as somma from freq_PoS_"
 										+ fmDes).getSingleResult());
@@ -125,8 +140,6 @@ public class CorpusSizeParams {
 							.createNativeQuery(
 									"select item from freq_PoS_all where item not like 'VER%' and item not like 'AUX%'")
 							.getResultList());
-			this.availableEasyposs.addAll(this.entityManager.createNativeQuery(
-					"select item from freq_easypos_all").getResultList());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

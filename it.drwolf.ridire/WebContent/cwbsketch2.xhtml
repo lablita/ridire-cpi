@@ -17,40 +17,55 @@
 	<ui:define name="body">
 		<h1>Sketch</h1>
 		<h:form>
-			<s:div id="lemmi">
-				<h:panelGrid columns="4">
-					<h:outputText value="Lemma: " />
-					<h:inputText value="#{sketchRetriever.lemma}" />
-					<h:outputText value="PoS: " />
-					<h:selectOneMenu value="#{sketchRetriever.pos}">
-						<f:selectItem itemValue="nome" />
-						<f:selectItem itemValue="verbo" />
-						<f:selectItem itemValue="aggettivo" />
-						<f:selectItem itemValue="avverbio" />
-						<a4j:support event="onchange" reRender="sketchChooser" />
-					</h:selectOneMenu>
-				</h:panelGrid>
-			</s:div>
-			<h:panelGrid columns="2">
-				<h:outputText value="Scegli sketch: " />
-				<h:selectOneMenu value="#{sketchRetriever.sketchToExtract}"
-					id="sketchChooser">
-					<f:selectItems var="sk" itemLabel="#{sk}"
-						value="#{sketchRetriever.sketchesSI}" />
-				</h:selectOneMenu>
+			<h:panelGrid columns="2"
+				columnClasses="verticalAlignTopTable,verticalAlignTopTable">
+				<h:panelGroup>
+					<s:div id="lemmi">
+						<h:panelGrid columns="4">
+							<h:outputText value="Lemma: " />
+							<h:inputText value="#{sketchRetriever.lemma}" />
+							<h:outputText value="PoS: " />
+							<h:selectOneMenu value="#{sketchRetriever.pos}">
+								<f:selectItem itemValue="nome" />
+								<f:selectItem itemValue="verbo" />
+								<f:selectItem itemValue="aggettivo" />
+								<f:selectItem itemValue="avverbio" />
+								<a4j:support event="onchange" reRender="sketchChooser" />
+							</h:selectOneMenu>
+						</h:panelGrid>
+					</s:div>
+					<h:panelGrid columns="2">
+						<h:outputText value="Scegli sketch: " />
+						<h:selectOneMenu value="#{sketchRetriever.sketchToExtract}"
+							id="sketchChooser">
+							<f:selectItems var="sk" itemLabel="#{sk}"
+								value="#{sketchRetriever.sketchesSI}" />
+						</h:selectOneMenu>
+						<h:commandButton
+							action="#{sketchRetriever.getSketchesFromIndex1()}"
+							value="Calcola sketch" />
+						<h:commandButton rendered="#{s:hasRole('Admin')}"
+							action="#{sketchRetriever.getSketchesFromIndex2()}"
+							value="Calcola sketch 2" />
+						<br />
+					</h:panelGrid>
+				</h:panelGroup>
+				<h:panelGroup>
+					<fieldset>
+						<legend>Dominio</legend>
+						<s:div id="domini1">
+							<h:selectOneRadio value="#{sketchRetriever.domain}"
+								styleClass="domainSelection" layout="pageDirection">
+								<f:selectItem itemLabel="Tutti" itemValue="Tutti" />
+								<f:selectItems
+									value="#{localResourcesManager.getAllSemanticMetadata()}" />
+								<f:selectItems
+									value="#{localResourcesManager.getAllFunctionalMetadata()}" />
+							</h:selectOneRadio>
+						</s:div>
+					</fieldset>
+				</h:panelGroup>
 			</h:panelGrid>
-			<h:panelGrid columns="2" style="margin-top: 10px;">
-				<h:outputText value="Scegli un dominio:" />
-				<h:selectOneMenu value="#{sketchRetriever.domain}">
-					<f:selectItems value="#{localResourcesManager.getAllMetadata()}"
-						var="d" itemLabel="#{d}" />
-				</h:selectOneMenu>
-			</h:panelGrid>
-			<h:commandButton action="#{sketchRetriever.getSketchesFromIndex1()}"
-				value="Calcola sketch" />
-			<h:commandButton rendered="#{s:hasRole('Admin')}" action="#{sketchRetriever.getSketchesFromIndex2()}"
-				value="Calcola sketch 2" />
-			<br />
 			<h:outputText rendered="#{sketchRetriever.noResults}"
 				value="Nessun risultato (i lemmi con frequenza minore di 500 non sono stati computati)." />
 			<a4j:repeat value="#{sketchRetriever.sketchTablesFirst}"

@@ -1,43 +1,45 @@
 <!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:s="http://jboss.com/products/seam/taglib"
-    xmlns:ui="http://java.sun.com/jsf/facelets"
-    xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:h="http://java.sun.com/jsf/html"
-    xmlns:rich="http://richfaces.org/rich"
-    template="layout/template.xhtml">
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:rich="http://richfaces.org/rich" template="layout/template.xhtml">
 
-<ui:define name="body">
+	<ui:define name="body">
+		<a href="https://github.com/lablita/ridire-cpi"><img
+			style="position: absolute; top: 0; right: 0; border: 0;"
+			src="https://github-camo.global.ssl.fastly.net/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67"
+			alt="Fork me on GitHub"
+			data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" ></img></a>
+		<h:form id="login">
 
-    <h:form id="login">
-		
-        <rich:panel>
-            <f:facet name="header">Entra</f:facet>
+			<rich:panel>
+				<f:facet name="header">Entra</f:facet>
 
-            <p>Per favore, autenticati qui</p>
+				<p>Per favore, autenticati qui</p>
 
-            <div class="dialog">
-                <h:panelGrid columns="2" rowClasses="prop" columnClasses="name,value">
-                    <h:outputLabel for="username">Username</h:outputLabel>
-                    <h:inputText id="username"
-                              value="#{credentials.username}"/>
-                    <h:outputLabel for="password">Password</h:outputLabel>
-                    <h:inputSecret id="password"
-                                value="#{credentials.password}"/>
-                    <h:outputLabel for="rememberMe">Ricordati di me</h:outputLabel>
-                    <h:selectBooleanCheckbox id="rememberMe"
-                                          value="#{identity.rememberMe}"/>
-                </h:panelGrid>
-            </div>
+				<div class="dialog">
+					<h:panelGrid columns="2" rowClasses="prop"
+						columnClasses="name,value">
+						<h:outputLabel for="username">Username</h:outputLabel>
+						<h:inputText id="username" value="#{credentials.username}" />
+						<h:outputLabel for="password">Password</h:outputLabel>
+						<h:inputSecret id="password" value="#{credentials.password}" />
+						<h:outputLabel for="rememberMe">Ricordati di me</h:outputLabel>
+						<h:selectBooleanCheckbox id="rememberMe"
+							value="#{identity.rememberMe}" />
+					</h:panelGrid>
+				</div>
 
-        </rich:panel>
+			</rich:panel>
 
-        <div class="actionButtons">
-            <h:commandButton value="Entra" action="#{identity.login}"/>
-        </div>
+			<div class="actionButtons">
+				<h:commandButton value="Entra" action="#{identity.login}" />
+			</div>
 
-    </h:form>
+		</h:form>
 
- </ui:define>
+	</ui:define>
 </ui:composition>

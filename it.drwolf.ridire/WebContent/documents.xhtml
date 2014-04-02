@@ -1,0 +1,54 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+   Documenti
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+
+		<h1>Documenti</h1>
+		<h3>
+			Documenti di progetto
+			<ul style="list-style-type: none;">
+				<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+							<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+							<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+			</ul>
+		</h3>
+		<h3>
+			Documenti amministrativi
+			<ul style="list-style-type: none;">
+				<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+							<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+			</ul>
+		</h3>
+		<h3>
+			Altri
+			<ul style="list-style-type: none;">
+				<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+							<li><h:outputLink value="documents/ContinuousDeliveryFinal_2.pdf"><h:graphicImage value="/img/arrow_270.png" alt="Scarica"
+						title="Scarica" />Documento di prova</h:outputLink></li>
+			</ul>
+		</h3>
+	</ui:define>
+</ui:composition>
+
