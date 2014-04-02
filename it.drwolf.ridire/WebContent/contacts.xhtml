@@ -1,0 +1,49 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+   Contatti
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+
+		<h1>Contatti</h1>
+		<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+			sed mauris scelerisque, vehicula nibh sed, vestibulum lacus. Nulla
+			non ultricies nisi. Duis egestas viverra libero sit amet aliquam.
+			Mauris sed neque lorem. Donec eu eros vel est porttitor scelerisque
+			sed sed lectus. Vivamus a tincidunt turpis, non cursus lorem.
+			Pellentesque eget eros pretium, placerat tellus eu, semper enim.
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		<p>Sed fringilla scelerisque velit quis iaculis. Phasellus iaculis
+			tortor nunc, sit amet rhoncus velit tincidunt eu. Ut condimentum leo
+			mi, vel porta est consectetur at. Sed tempor dolor sit amet dignissim
+			bibendum. Aenean rutrum est eros, non fermentum nulla dapibus ac.
+			Curabitur vel orci elit. Sed at urna euismod, malesuada lorem quis,
+			rhoncus augue. Praesent consequat non turpis ut cursus. Praesent id
+			nulla auctor risus suscipit lobortis. Fusce eu diam leo. Quisque
+			sollicitudin felis vitae arcu ullamcorper elementum. Cras ac erat
+			egestas, posuere enim bibendum, lobortis sem. Sed ornare odio
+			dignissim eros lacinia posuere id vel eros. Fusce sit amet dictum
+			justo, facilisis ornare quam.</p>
+		<p>Sed eu est dui. Sed mattis magna non lobortis rhoncus. Duis
+			dignissim lorem ullamcorper, adipiscing velit eu, consectetur risus.
+			Cras vitae massa quis nibh ornare sollicitudin. Suspendisse id
+			egestas justo. Suspendisse nunc diam, aliquet a iaculis eu, aliquam
+			at justo. Suspendisse leo est, sagittis semper odio sed, placerat
+			interdum mi. Donec placerat justo vel nisi facilisis pretium.</p>
+	</ui:define>
+</ui:composition>
+
