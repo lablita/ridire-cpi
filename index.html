@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Ridire-cpi by lablita</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Ridire-cpi</h1>
+        <h2>Dynamic Italian Language Resources. Creation, deployment and maintenance of a web-based infrastructure aimed at consolidating the teaching of Italian worldwide.</h2>
+        <a href="https://github.com/lablita/ridire-cpi" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="ridire-installation-manual" class="anchor" href="#ridire-installation-manual"><span class="octicon octicon-link"></span></a>RIDIRE Installation Manual</h1>
+
+<p><a href="http://www.ridire.it">http://www.ridire.it</a></p>
+
+<p><a href="http://lablita.dit.unifi.it/projects/RIDIRE">http://lablita.dit.unifi.it/projects/RIDIRE</a></p>
+
+<h2>
+<a name="java" class="anchor" href="#java"><span class="octicon octicon-link"></span></a>Java</h2>
+
+<p>Install Java version &gt;=1.5</p>
+
+<p>Adjust <code>JAVA_HOME</code> environment variable accordingly</p>
+
+<h2>
+<a name="jboss" class="anchor" href="#jboss"><span class="octicon octicon-link"></span></a>JBoss</h2>
+
+<p><a href="http://www.jboss.org/jbossas/downloads">http://www.jboss.org/jbossas/downloads</a></p>
+
+<p>Install JBoss version=5.1.0GA</p>
+
+<p>Make sure default listening port (8080) it’s not already used. If so,
+change
+<code>JBOSS_INSTALL/server/default/conf/bindingservice.beans/META-INF/bindings-jboss-beans.xml</code></p>
+
+<p>from these</p>
+
+<div class="highlight highlight-xml"><pre>  ....
+  <span class="nt">&lt;constructor&gt;</span>
+  <span class="c">&lt;!-- The name of the set of bindings to use for this server --&gt;</span>  
+  <span class="nt">&lt;parameter&gt;</span>${jboss.service.binding.set:ports-default}<span class="nt">&lt;/parameter&gt;</span>
+  <span class="c">&lt;!-- The binding sets --&gt;</span>  
+  <span class="nt">&lt;parameter&gt;</span>
+  ....
+</pre></div>
+
+<p>to these</p>
+
+<div class="highlight highlight-xml"><pre>  ....
+  <span class="nt">&lt;constructor&gt;</span>
+  <span class="c">&lt;!-- The name of the set of bindings to use for this server --&gt;</span>  
+  <span class="nt">&lt;parameter&gt;</span>${jboss.service.binding.set:ports-01}<span class="nt">&lt;/parameter&gt;</span>
+  <span class="c">&lt;!-- The binding sets --&gt;</span> 
+  <span class="nt">&lt;parameter&gt;</span>
+  ....
+</pre></div>
+
+<p>This change will shift all ports by 100. So the HTTP listening port will
+be 8180.</p>
+
+<p>Make also sure the system has a high limit on maximum open file (e.g.
+ubuntu’s default 1024 is often too small).</p>
+
+<p>If you are not a JBoss expert, go to
+<code>JBOSS_INSTALL/server/default/deploy</code> and remove the directory
+<code>admin-console.war</code>, to avoid a well-known security issue.</p>
+
+<h4>
+<a name="temporary-directory" class="anchor" href="#temporary-directory"><span class="octicon octicon-link"></span></a>Temporary directory</h4>
+
+<p>RIDIRE will need of a quite big amount of space for temporary files.
+Sometimes /tmp (the default temporary directory) is bound to a small
+partition. If so, create a dedicated temporary folder (something like
+<code>~/ridire_tmp/</code>) and modify <code>JBOSS_INSTALL/bin/run.conf</code> adding
+<code>-Djava.io.tmpdir=/home/drwolf/ridire_tmp</code> at the end of <code>JAVA_OPTS</code>.</p>
+
+<h2>
+<a name="mysql" class="anchor" href="#mysql"><span class="octicon octicon-link"></span></a>MySQL</h2>
+
+<p>Install MySQL version &gt; 5.0</p>
+
+<p>Create a database and assign all privileges on it to a user.</p>
+
+<pre><code>mysql&gt; create database ridire default character set utf8 default collate utf8_bin;
+
+mysql&gt; grant all privileges on ridire.* to 'ridire'@'IPADDRESS' identified by 'secret';
+</code></pre>
+
+<h2>
+<a name="ridire-ear" class="anchor" href="#ridire-ear"><span class="octicon octicon-link"></span></a>RIDIRE EAR</h2>
+
+<p>Move to <code>JBOSS_INSTALL/server/default/deploy</code> and unpack
+it.drwolf.ridire-ear.zip file</p>
+
+<p>Copy <code>it.drwolf.ridire-ds.xml</code> in <code>JBOSS\_INSTALL/server/default/deploy</code>
+(not in the folder created by unzipping the package).</p>
+
+<p>Change <code>ds.xml</code> file accordingly to the parameters you have set for the
+DB.</p>
+
+<h2>
+<a name="not-shipped-libraries" class="anchor" href="#not-shipped-libraries"><span class="octicon octicon-link"></span></a>Not shipped libraries</h2>
+
+<p>Some of the programming libraries needed by RIDIRE cannot be shipped in
+the same package for licences reasons. You have to download them by
+yourself and place in
+<code>JBOSS_INSTALL/server/default/deploy/it.drwolf.ridire-ear.ear/lib/</code></p>
+
+<ol>
+<li> MySQL JDBC connector
+<a href="http://dev.mysql.com/downloads/connector/j/">http://dev.mysql.com/downloads/connector/j/</a>
+</li>
+<li> iText
+<a href="http://sourceforge.net/projects/itext/">http://sourceforge.net/projects/itext/</a>
+</li>
+</ol><h2>
+<a name="first-run" class="anchor" href="#first-run"><span class="octicon octicon-link"></span></a>First run</h2>
+
+<p>Move to <code>JBOSS_INSTALL/bin</code></p>
+
+<p>Run</p>
+
+<p><code>$ ./run.sh -b 0.0.0.0</code></p>
+
+<p>The option <code>-b</code> makes JBoss accept connection from every IP, not just
+localhost (this could be a security issue, be aware).</p>
+
+<p>The first run, beside checking if the first installation is correct,
+creates needed tables with default parameters on the DB.</p>
+
+<p>Web interface is reachable at
+<a href="http://server_ip:8080/it.drwolf.ridire/">http://SERVER_IP:8080/it.drwolf.ridire/</a></p>
+
+<p>If you see RIDIRE’s logo, the first run went fine.</p>
+
+<p>The default user administrator has the following parameters:</p>
+
+<pre><code>username: admin
+password: changeme
+</code></pre>
+
+<p>You may want to change it modifying the corresponding record in User
+table.</p>
+
+<h2>
+<a name="parameters" class="anchor" href="#parameters"><span class="octicon octicon-link"></span></a>Parameters</h2>
+
+<p>Parameters are set in Parameter and CommandParameter tables. They are
+just key-value records; key name should have a quite explanatory name,
+anyway they will be discussed later.</p>
+
+<p>To make RIDIRE aware of any change in parameters, JBoss must be
+restarted.</p>
+
+<h2>
+<a name="stopping-and-restarting" class="anchor" href="#stopping-and-restarting"><span class="octicon octicon-link"></span></a>Stopping and restarting</h2>
+
+<p>The correct way to stop JBoss5 is:</p>
+
+<pre><code>$ JBOSS_INSTALL/bin/shutdown.sh -S
+</code></pre>
+
+<p>This command works if JBoss was installed on the default port (<code>8080</code>).
+Otherwise you have to pass other parameters to the shutdown script. E.g.
+if JBoss’ ports are shifted by 100, the right command is</p>
+
+<pre><code>$ JBOSS_INSTALL/bin/shutdown.sh -s jnp://localhost:1199
+</code></pre>
+
+<h2>
+<a name="heritrix" class="anchor" href="#heritrix"><span class="octicon octicon-link"></span></a>HERITRIX</h2>
+
+<p>To install the crawler, unpack the bundle heritrix-RIDIRE.tar.gz, which
+is a snapshot of Heritrix v. 3.1.1, with already configured profiles and
+a custom module.</p>
+
+<p>Take note of the folder where you’ve unpacked the bundle and change the
+following parameters accordingly:</p>
+
+<p>in <code>CommandParameter</code> table:</p>
+
+<ul>
+<li> <code>heritrix.dir</code>
+</li>
+</ul><p>in <code>Parameter</code> table:</p>
+
+<ul>
+<li><code>jobs.dir</code></li>
+<li><code>localresoruces.dir</code></li>
+</ul><p>Now the crawler is configured, but it’s not very useful, because the
+pipeline is not installed. Without the pipeline, downloaded resources
+won’t be processed and transformed in plain text and linguistic
+information won’t br extracted.</p>
+
+<h2>
+<a name="pipeline" class="anchor" href="#pipeline"><span class="octicon octicon-link"></span></a>Pipeline</h2>
+
+<h4>
+<a name="transformation-to-html" class="anchor" href="#transformation-to-html"><span class="octicon octicon-link"></span></a>Transformation to HTML</h4>
+
+<p>DOC, RTF, TXT conversion implementations are embedded in the
+application. No configuration needed.</p>
+
+<p>PDF conversion needs the following configuration steps:</p>
+
+<ol>
+<li> <strong>pdftohtml</strong> - you need to install pdftohtml version 0.40
+<a href="http://pdftohtml.sourceforge.net/">http://pdftohtml.sourceforge.net/</a>, based on Xpdf version 3.01.
+Notice that pdftohtml version that is shipped in ubuntu’s package is
+not compatible. Change pdftohtml.bin CommandParameter accordingly.</li>
+<li> <strong>PdfCleaner</strong> - place <code>PdfCleaner.jar</code> in a folder of your choice. Change
+<code>pdfcleaner.jar</code> CommandParameter accordingly.</li>
+</ol><h4>
+<a name="html-cleaner" class="anchor" href="#html-cleaner"><span class="octicon octicon-link"></span></a>HTML cleaner</h4>
+
+<p>Place <code>ridirecleaner.jar</code> in a folder of your choice. Change
+CommandParameter <code>ridirecleaner.jar</code> accordingly.</p>
+
+<p>To use <strong>Readability</strong> you must get an API key from
+<a href="http://www.readability.com">www.readability.com</a>/developers/api. Read
+carefully <a href="http://www.readability.com/developers/terms">http://www.readability.com/developers/terms</a></p>
+
+<p>To configure Readability cleaning, you need to adjust the following
+Parameters:</p>
+
+<ol>
+<li> <code>readability.host</code> that must match the URL of RIDIRE application;</li>
+<li> <code>readability.key</code> with the provided key</li>
+</ol><p><strong>Alchemy</strong> is an external web service too. You must obtain an API key
+(<a href="http://www.alchemyapi.com">http://www.alchemyapi.com</a>). Free API key
+have a limit of 1000 calls per day. You may request a key for academic
+use or a commercial one (see website for details).</p>
+
+<p>You must write the key in the <code>alchemy.key</code> Parameter.</p>
+
+<p>Change <code>temp.dir</code> Parameter according to your system’s temporary directory
+of to the one you have chosen.</p>
+
+<h4>
+<a name="language-detection" class="anchor" href="#language-detection"><span class="octicon octicon-link"></span></a>Language detection</h4>
+
+<p>It’s embedded in the application. No configuration needed.</p>
+
+<h4>
+<a name="treetagger" class="anchor" href="#treetagger"><span class="octicon octicon-link"></span></a>Treetagger</h4>
+
+<p>Download and install TreeTagger following instruction on the web site
+<a href="http://www.cis.uni-muenchen.de/%7Eschmid/tools/TreeTagger/">http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/</a></p>
+
+<p>Use Marco
+Baroni's <a href="http://www.cis.uni-muenchen.de/%7Eschmid/tools/TreeTagger/data/italian-par2-linux-3.1.bin.gz">Italian parameter file</a></p>
+
+<p>Modify the following CommandParameters on db:</p>
+
+<ol>
+<li> <code>treetagger.bin</code>
+</li>
+<li> <code>treetagger.parfile</code>
+</li>
+<li> <code>treetaggerutf8.bin</code>
+</li>
+</ol><p>After installing the pipeline RIDIRE is ready to crawl and process resources.</p>
+
+<p>PoS tagging is disabled in default installation. Set <code>pos.enabled</code> Parameter to true to enable it.</p>
+
+<h2>
+<a name="corpusworkbench-cwb" class="anchor" href="#corpusworkbench-cwb"><span class="octicon octicon-link"></span></a>CorpusWorkbench (CWB)</h2>
+
+<p>RIDIRE exploits CWB to index resources and search for concordances and collocates.</p>
+
+<p>Follow installation instruction here:
+<a href="http://cwb.sourceforge.net/download.php#cwb">http://cwb.sourceforge.net/download.php#cwb</a></p>
+
+<p>CWB installation needs to be customized a little in order to cope with some tabulation problem.
+After unpacking CWB package, find directory <code>CWB_DIR/cwb/trunk/cqp</code> and inside that directory, the file <code>output.c</code>.
+With your text editor change line 920:</p>
+
+<pre><code>&lt; fprintf(rd-&gt;stream, "\t");
+---
+&gt; fprintf(rd-&gt;stream, "@@##");
+</code></pre>
+
+<p>After installing, update the following Parameters</p>
+
+<ol>
+<li> <code>cqp.executable</code>
+</li>
+<li> <code>cqp.registry</code>
+</li>
+<li> <code>cwb.decode.executable</code>
+</li>
+<li> <code>cwbscan.executable</code>
+</li>
+</ol><h4>
+<a name="creating-a-corpus" class="anchor" href="#creating-a-corpus"><span class="octicon octicon-link"></span></a>Creating a corpus</h4>
+
+<p>Before building a corpus you must prepare resource files in order to be
+managed by CWB.</p>
+
+<p>You can:</p>
+
+<ol>
+<li><p>use a list of job names</p></li>
+<li><p>use all validated jobs</p></li>
+</ol><p>This choice can be done here: <a href="http://SERVER_IP:8080/it.drwolf.ridire/cwb.seam">http://SERVER_IP:8080/it.drwolf.ridire/cwb.seam</a></p>
+
+<p>Whichever choice you make, you must provide a destination directory. If you choose 2., you must provide the list of the jobs you want to put in
+the corpus.</p>
+
+<p>This operation creates VRT files. For performance reasons, an <em>inverted</em> corpus is also needed.</p>
+
+<p>The inverted corpus is made of the same resources with inverted order.
+To make these new VRT files, you must provide the directory path of the previous step and the path of a different folder where inverted VRT
+files will be placed and click on ‘Inverti VRT’ button.</p>
+
+<p>Actual indexing is performed on the command line.</p>
+
+<p>Choose a corpus name (from now on: <code>CORPUSNAME</code>).</p>
+
+<pre><code>$ cwb-encode -d CWBDATADIR -F VRTDIR -R REGISTRYDIR/CORPUSNAME -c utf8 -xsB -P pos -P easypos -P lemma -S text:0+id+url+functional+semantic+jobname
+$ cwb-make -r REGISTRYDIR/ -V CORPUSNAME
+</code></pre>
+
+<p>Repeat these steps for the inverted files, placing a <code>INV</code> suffix on the <code>CORPUSNAME</code></p>
+
+<pre><code>$ cwb-encode -d CWBDATADIRINV -F VRTDIRINV -R REGISTRYDIR/CORPUSNAMEINV -c utf8 -xsB -P pos -P easypos -P lemma -S text:0+id+url+functional+semantic+jobname
+$ cwb-make -r REGISTRYDIR/ -V CORPUSNAMEINV
+</code></pre>
+
+<p>Remember that for <code>cwb-make</code> the <code>-V</code> parameter must be uppercase.</p>
+
+<p>Now you can modify cqp.corpusname Parameter (just with <code>CORPUSNAME</code> in uppercase format).</p>
+
+<h3>
+<a name="frequency-lists" class="anchor" href="#frequency-lists"><span class="octicon octicon-link"></span></a>Frequency lists</h3>
+
+<p>In order to extract collocates you must precompute frequency lists.</p>
+
+<p>This is a quite time consuming operation for large corpora.</p>
+
+<p>Go to <a href="http://SERVER_IP:8080/it.drwolf.ridire/cwbfrequencyList.seam">http://SERVER_IP:8080/it.drwolf.ridire/cwbfrequencyList.seam</a> and click 'Crea Liste di Frequenza' button.</p>
+
+<p>This operation updates a bunch of frequency list tables on the database.</p>
+
+<p>After the computation is complete it’s possible to extract collocates
+and compute sketches.</p>
+
+<h3>
+<a name="sketches" class="anchor" href="#sketches"><span class="octicon octicon-link"></span></a>Sketches</h3>
+
+<p>First choose a directory where the sketches index will be stored and
+change sketch.index.location Parameter accordingly.</p>
+
+<p>Then you have to choose for which lemmas you want to compute sketches.
+Be aware that sketch computation is a very time consuming process that
+can take weeks on corpora with tenths of millions of terms. Moreover
+terms with low frequency are likely to produce not interesting sketches.
+Keeping this in mind you must create 4 text files to be put in a
+‘working directory’ on the server, that tell the system which lemmas
+have to be treated; each of these files must contain a single lemma per
+line:</p>
+
+<ol>
+<li> nome.txt</li>
+<li> aggettivo.txt</li>
+<li> avverbio.txt</li>
+<li> verbo.txt</li>
+</ol><p>To compute these files you can use, for example, CWB’s cwb-scan-corpus
+program.</p>
+
+<p>E.g.:</p>
+
+<pre><code>$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/NOUN/ | sort -nr -k 1 | cut -f2 &gt; nome.txt
+
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADJ/ | sort -nr -k 1 | cut -f2 &gt; aggettivo.txt
+
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADV.*/ | sort -nr -k 1 | cut -f2 &gt; avverbio.txt
+
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/VER.*/ | sort -nr -k 1 | cut -f2\&gt; verbo.txt
+</code></pre>
+
+<p>The commands above put all nouns in the file, even single occurrences;
+maybe you should cut the file for the considerations already explained.</p>
+
+<p>Go to <a href="http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam">http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam</a></p>
+
+<p>write the working dir complete path and a number for process parameter greater than 1 and lesser than 10.</p>
+
+<p>Process is a number that tells the system how many threads can be launched contemporary. Multiple threads can exploit multicore or mulitprocessor architecture on some systems. You can safely write 10 even if you are not sure how many cores you have.</p>
+
+<p>Click on ‘Genera sketch’ to start the process.</p>
+
+<p>You will have to check once in awhile if the process is terminated by analysing JBoss logs;</p>
+
+<pre><code>$ tail -f JBOSS_INSTALL/server/default/server.log
+</code></pre>
+
+<p>It may be a good idea to suspend mapping process during this phase, in
+order to provide more resources to the sketch creation:</p>
+
+<p>go to <a href="http://SERVER_IP:8080/it.drwolf.ridire/resourcesAdmin.seam">http://SERVER_IP:8080/it.drwolf.ridire/resourcesAdmin.seam</a> and click on ‘Sospendi mapping’.</p>
+
+<p>When the process is terminated go back to <a href="http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam">http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam</a> and click on ‘Chiudi indice’ to optimize and close sketches Lucene index (now you can resume mapping, by clicking on ‘Riprendi mapping’ on resourcesAdmin page).</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/lablita/ridire-cpi/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/lablita/ridire-cpi/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/lablita/ridire-cpi"></a> is maintained by <a href="https://github.com/lablita">lablita</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
