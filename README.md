@@ -26,28 +26,28 @@ change
 
 from these
 
-<pre><code>
+```xml
   ....
-  &lt;constructor&gt;  
-  &lt;!-- The name of the set of bindings to use for this server --&gt;  
-  &lt;parameter&gt;${jboss.service.binding.set:ports-default}&lt;/parameter&gt;
-  &lt;!-- The binding sets --&gt;  
-  &lt;parameter&gt;
+  <constructor>
+  <!-- The name of the set of bindings to use for this server -->  
+  <parameter>${jboss.service.binding.set:ports-default}</parameter>
+  <!-- The binding sets -->  
+  <parameter>
   ....
-</code></pre>
+```
 
 
 to these
 
-<pre><code>
+```xml
   ....
-  &lt;constructor&gt;  
-  &lt;!-- The name of the set of bindings to use for this server --&gt;  
-  &lt;parameter&gt;${jboss.service.binding.set:ports-01}&lt;/parameter&gt;
-  &lt;!-- The binding sets --&gt;  
-  &lt;parameter&gt;
+  <constructor>
+  <!-- The name of the set of bindings to use for this server -->  
+  <parameter>${jboss.service.binding.set:ports-01}</parameter>
+  <!-- The binding sets --> 
+  <parameter>
   ....
-</code></pre>
+```
 
 
 This change will shift all ports by 100. So the HTTP listening port will
@@ -74,11 +74,11 @@ MySQL
 Install MySQL version \> 5.0
 
 Create a database and assign all privileges on it to a user.
-<pre><code>
+```
 mysql> create database ridire default character set utf8 default collate utf8_bin;
 
 mysql> grant all privileges on ridire.* to 'ridire'@'IPADDRESS' identified by 'secret';
-</code></pre>
+```
 
 RIDIRE EAR
 ----------
@@ -108,13 +108,13 @@ yourself and place in
 First run
 ---------
 
-Move to JBOSS\_INSTALL/bin
+Move to `JBOSS_INSTALL/bin`
 
 Run
 
-$ ./run.sh -b 0.0.0.0
+`$ ./run.sh -b 0.0.0.0`
 
-The option -b makes JBoss accept connection from every IP, not just
+The option `-b` makes JBoss accept connection from every IP, not just
 localhost (this could be a security issue, be aware).
 
 The first run, beside checking if the first installation is correct,
@@ -126,11 +126,10 @@ Web interface is reachable at
 If you see RIDIRE’s logo, the first run went fine.
 
 The default user administrator has the following parameters:
-
+```
 username: admin
-
 password: changeme
-
+```
 You may want to change it modifying the corresponding record in User
 table.
 
@@ -148,15 +147,15 @@ Stopping and restarting
 -----------------------
 
 The correct way to stop JBoss5 is:
-
-$ JBOSS\_INSTALL/bin/shutdown.sh -S
-
-This command works if JBoss was installed on the default port (8080).
+```
+$ JBOSS_INSTALL/bin/shutdown.sh -S
+```
+This command works if JBoss was installed on the default port (`8080`).
 Otherwise you have to pass other parameters to the shutdown script. E.g.
 if JBoss’ ports are shifted by 100, the right command is
-
-$ JBOSS\_INSTALL/bin/shutdown.sh -s jnp://localhost:1199
-
+```
+$ JBOSS_INSTALL/bin/shutdown.sh -s jnp://localhost:1199
+```
 HERITRIX
 --------
 
@@ -167,14 +166,14 @@ a custom module.
 Take note of the folder where you’ve unpacked the bundle and change the
 following parameters accordingly:
 
-1.  in CommandParameter table:
+in `CommandParameter` table:
 
-1.  heritrix.dir
+-  `heritrix.dir`
 
-2.  in Parameter table:
+in `Parameter` table:
 
-1.  jobs.dir
-2.  localresoruces.dir
+- `jobs.dir`
+- `localresoruces.dir`
 
 Now the crawler is configured, but it’s not very useful, because the
 pipeline is not installed. Without the pipeline, downloaded resources
@@ -193,36 +192,36 @@ application. No configuration needed.
 
 PDF conversion needs the following configuration steps:
 
-1.  pdftohtml - you need to install pdftohtml version 0.40
+1.  **pdftohtml** - you need to install pdftohtml version 0.40
     http://pdftohtml.sourceforge.net/, based on Xpdf version 3.01.
     Notice that pdftohtml version that is shipped in ubuntu’s package is
     not compatible. Change pdftohtml.bin CommandParameter accordingly.
-2.  PdfCleaner - place PdfCleaner.jar in a folder of your choice. Change
-    pdfcleaner.jar CommnadParameter accordingly.
+2.  **PdfCleaner** - place `PdfCleaner.jar` in a folder of your choice. Change
+    `pdfcleaner.jar` CommandParameter accordingly.
 
 #### HTML cleaner
 
-Place ridirecleaner.jar in a folder of your choice. Change
-CommandParameter ridirecleaner.jar accordingly.
+Place `ridirecleaner.jar` in a folder of your choice. Change
+CommandParameter `ridirecleaner.jar` accordingly.
 
-To use Readability you must get an API key from
+To use **Readability** you must get an API key from
 [www.readability.com](http://www.readability.com)/developers/api. Read
 carefully http://www.readability.com/developers/terms
 
 To configure Readability cleaning, you need to adjust the following
 Parameters:
 
-1.  readability.host that must match the URL of RIDIRE application;
-2.  readability.key with the provided key
+1.  `readability.host` that must match the URL of RIDIRE application;
+2.  `readability.key` with the provided key
 
-Alchemy is an external web service too. You must obtain an API key
+**Alchemy** is an external web service too. You must obtain an API key
 ([http://www.alchemyapi.com](http://www.alchemyapi.com)). Free API key
 have a limit of 1000 calls per day. You may request a key for academic
 use or a commercial one (see website for details).
 
-You must write the key in the alchemy.key Parameter.
+You must write the key in the `alchemy.key` Parameter.
 
-Change temp.dir Parameter according to your system’s temporary directory
+Change `temp.dir` Parameter according to your system’s temporary directory
 of to the one you have chosen.
 
 #### Language detection
@@ -235,37 +234,44 @@ Download and install TreeTagger following instruction on the web site
 [http://www.cis.uni-muenchen.de/\~schmid/tools/TreeTagger/](http://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/)
 
 Use Marco
-Baroni's[](http://www.cis.uni-muenchen.de/%7Eschmid/tools/TreeTagger/data/italian-par2-linux-3.1.bin.gz)[Italian
-parameter
-file](http://www.cis.uni-muenchen.de/%7Eschmid/tools/TreeTagger/data/italian-par2-linux-3.1.bin.gz)
+Baroni's [Italian parameter file](http://www.cis.uni-muenchen.de/%7Eschmid/tools/TreeTagger/data/italian-par2-linux-3.1.bin.gz)
 
-Modify the followin CommandParameters on db:
+Modify the following CommandParameters on db:
 
-1.  treetagger.bin
-2.  treetagger.parfile
-3.  treetaggerutf8.bin
+1.  `treetagger.bin`
+2.  `treetagger.parfile`
+3.  `treetaggerutf8.bin`
 
-After installing the pipeline RIDIRE is ready to crawl and process
-resources.
+After installing the pipeline RIDIRE is ready to crawl and process resources.
 
-PoS tagging is disabled in default installation. Set pos.enabled
-Parameter to true to enable it.
+PoS tagging is disabled in default installation. Set `pos.enabled` Parameter to true to enable it.
 
 CorpusWorkbench (CWB)
 ---------------------
 
-RIDIRE exploits CWB to index resources and search for concordances and
-collocates.
+RIDIRE exploits CWB to index resources and search for concordances and collocates.
+
 
 Follow installation instruction here:
-[http://cwb.sourceforge.net/download.php\#cwb](http://cwb.sourceforge.net/download.php#cwb)
+<http://cwb.sourceforge.net/download.php#cwb>
+
+CWB installation needs to be customized a little in order to cope with some tabulation problem.
+After unpacking CWB package, find directory `CWB_DIR/cwb/trunk/cqp` and inside that directory, the file `output.c`.
+With your text editor change line 920:
+
+```
+< fprintf(rd->stream, "\t");
+---
+> fprintf(rd->stream, "@@##");
+```
+
 
 After installing, update the following Parameters
 
-1.  cqp.executable
-2.  cqp.registry
-3.  cwb.decode.executable
-4.  cwbscan.executable
+1.  `cqp.executable`
+2.  `cqp.registry`
+3.  `cwb.decode.executable`
+4.  `cwbscan.executable`
 
 #### Creating a corpus
 
@@ -274,48 +280,37 @@ managed by CWB.
 
 You can:
 
-\1. use a list of job names
+1. use a list of job names
 
-\2. use all validated jobs
+2. use all validated jobs
 
-This choice can be done here:
+This choice can be done here: <http://SERVER_IP:8080/it.drwolf.ridire/cwb.seam>
 
-[http://SERVER\_IP:8080/it.drwolf.ridire/cwb.seam](http://www.google.com/url?q=http%3A%2F%2Fserver_ip%3A8080%2Fit.drwolf.ridire%2Fcwb.seam&sa=D&sntz=1&usg=AFQjCNHezS2jX0QTuDIjMlBGld0RSSMrhQ).
-
-Whichever choice you make, you must provide a destination directory. If
-you choose 2. you must provide the list of the jobs you want to put in
+Whichever choice you make, you must provide a destination directory. If you choose 2., you must provide the list of the jobs you want to put in
 the corpus.
 
-This operation creates VRT files. For performance reasons, an “inverted”
-corpus is also needed.
+This operation creates VRT files. For performance reasons, an *inverted* corpus is also needed.
 
 The inverted corpus is made of the same resources with inverted order.
-To make these new VRT files, you must provide the directory path of the
-previous step and the path of a different folder where inverted VRT
+To make these new VRT files, you must provide the directory path of the previous step and the path of a different folder where inverted VRT
 files will be placed and click on ‘Inverti VRT’ button.
 
 Actual indexing is performed on the command line.
 
-Choose a corpus name (from now on: CORPUSNAME).
-
-$ cwb-encode -d CWBDATADIR -F VRTDIR -R REGISTRYDIR/CORPUSNAME -c utf8
--xsB -P pos -P easypos -P lemma -S
-text:0+id+url+functional+semantic+jobname
-
+Choose a corpus name (from now on: `CORPUSNAME`).
+```
+$ cwb-encode -d CWBDATADIR -F VRTDIR -R REGISTRYDIR/CORPUSNAME -c utf8 -xsB -P pos -P easypos -P lemma -S text:0+id+url+functional+semantic+jobname
 $ cwb-make -r REGISTRYDIR/ -V CORPUSNAME
+```
 
-Repeat these steps for the inverted files, placing a “INV” suffix on the
-CORPUSNAME
-
-$ cwb-encode -d CWBDATADIRINV -F VRTDIRINV -R REGISTRYDIR/CORPUSNAMEINV
--c utf8 -xsB -P pos -P easypos -P lemma -S
-text:0+id+url+functional+semantic+jobname\
+Repeat these steps for the inverted files, placing a `INV` suffix on the `CORPUSNAME`
+```
+$ cwb-encode -d CWBDATADIRINV -F VRTDIRINV -R REGISTRYDIR/CORPUSNAMEINV -c utf8 -xsB -P pos -P easypos -P lemma -S text:0+id+url+functional+semantic+jobname
 $ cwb-make -r REGISTRYDIR/ -V CORPUSNAMEINV
+```
+Remember that for `cwb-make` the `-V` parameter must be uppercase.
 
-Rember that for cwb-make the -V parameter must be uppercase.
-
-Now you can modify cqp.corpusname Parameter (just with CORPUSNAME in
-uppercase format).
+Now you can modify cqp.corpusname Parameter (just with `CORPUSNAME` in uppercase format).
 
 ### Frequency lists
 
@@ -323,9 +318,7 @@ In order to extract collocates you must precompute frequency lists.
 
 This is a quite time consuming operation for large corpora.
 
-Go to
-[http://SERVER\_IP:8080/it.drwolf.ridire/cwbfrequencyList.seam](http://server_ip:8080/it.drwolf.ridire/cwb.seam)
-and click ‘Crea Liste di Frequenza’ button.
+Go to <http://SERVER_IP:8080/it.drwolf.ridire/cwbfrequencyList.seam> and click 'Crea Liste di Frequenza' button.
 
 This operation updates a bunch of frequency list tables on the database.
 
@@ -355,49 +348,33 @@ To compute these files you can use, for example, CWB’s cwb-scan-corpus
 program.
 
 E.g.:
+```
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/NOUN/ | sort -nr -k 1 | cut -f2 > nome.txt
 
-$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/NOUN/ | sort
--nr -k 1 | cut -f2 \> nome.txt
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADJ/ | sort -nr -k 1 | cut -f2 > aggettivo.txt
 
-$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADJ/ | sort
--nr -k 1 | cut -f2 \> aggettivo.txt
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADV.*/ | sort -nr -k 1 | cut -f2 > avverbio.txt
 
-$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/ADV.\*/ | sort
--nr -k 1 | cut -f2 \> avverbio.txt
-
-$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/VER\*/ | sort
--nr -k 1 | cut -f2 \> verbo.txt
-
-The commands above puts all nouns in the file, even single occurrences;
+$cwb-scan-corpus -r REGISTRYDIR/ -C CORPUSNAME lemma pos=/VER.*/ | sort -nr -k 1 | cut -f2\> verbo.txt
+```
+The commands above put all nouns in the file, even single occurrences;
 maybe you should cut the file for the considerations already explained.
 
-Go to
-[http://SERVER\_IP:8080/it.drwolf.ridire/sketchcreation.seam](http://server_ip:8080/it.drwolf.ridire/cwb.seam)
+Go to <http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam>
 
-write the working dir complete path and a number for process parameter
-greater than 1 and lesser than 10.
+write the working dir complete path and a number for process parameter greater than 1 and lesser than 10.
 
-Process is a number that tells the system how many threads can be
-launched contemporary. Multiple threads can exploit multicore or
-mulitprocessor architecture on some systems. You can safely write 10
-even if you are not sure how many cores you have.
+Process is a number that tells the system how many threads can be launched contemporary. Multiple threads can exploit multicore or mulitprocessor architecture on some systems. You can safely write 10 even if you are not sure how many cores you have.
 
 Click on ‘Genera sketch’ to start the process.
 
-You will have to check once in awhile if the process is terminated by
-analysing JBoss logs;
-
-$ tail -f JBOSS\_INSTALL/server/default/server.log
-
+You will have to check once in awhile if the process is terminated by analysing JBoss logs;
+```
+$ tail -f JBOSS_INSTALL/server/default/server.log
+```
 It may be a good idea to suspend mapping process during this phase, in
 order to provide more resources to the sketch creation:
 
-go to
-[http://SERVER\_IP:8080/it.drwolf.ridire/](http://server_ip:8080/it.drwolf.ridire/cwb.seam)resourcesAdmin.seam
-and click on ‘Sospendi mapping’.
+go to <http://SERVER_IP:8080/it.drwolf.ridire/resourcesAdmin.seam> and click on ‘Sospendi mapping’.
 
-When the process is terminated go back to
-[http://SERVER\_IP:8080/it.drwolf.ridire/sketchcreation.seam](http://server_ip:8080/it.drwolf.ridire/cwb.seam)
-and click on ‘Chiudi indice’ to optimize and close sketches Lucene index
-(now you can resume mapping, bi clicking on ‘Riprendi mapping’ on
-resourcesAdmin page).
+When the process is terminated go back to <http://SERVER_IP:8080/it.drwolf.ridire/sketchcreation.seam> and click on ‘Chiudi indice’ to optimize and close sketches Lucene index (now you can resume mapping, by clicking on ‘Riprendi mapping’ on resourcesAdmin page).
