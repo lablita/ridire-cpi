@@ -47,6 +47,7 @@ public class CorpusSizeParams {
 			this.add("ADJ");
 			this.add("ADJPRO");
 			this.add("ADV");
+			this.add("ADV:mente");
 			this.add("ART");
 			this.add("CHE");
 			this.add("CL");
