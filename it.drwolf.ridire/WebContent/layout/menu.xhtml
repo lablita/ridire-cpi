@@ -128,7 +128,7 @@
 				</rich:panelMenuItem>
 			</rich:panelMenuGroup>
 			<rich:panelMenuGroup label="Utenti" id="anonUsers"
-				rendered="#{not s:hasRole('Admin')}"
+				rendered="#{not s:hasRole('Admin') and identity.loggedIn}"
 				value="#{menuState.menu['anonUsers']}">
 				<rich:panelMenuItem actionListener="#{menuBean.select}"
 					id="anonUsersItem" mode="server">

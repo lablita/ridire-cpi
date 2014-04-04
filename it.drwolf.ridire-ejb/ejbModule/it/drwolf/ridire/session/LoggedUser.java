@@ -38,7 +38,7 @@ public class LoggedUser {
 
 	private UUID randomID;
 	private Date logTime = null;
-	@In(required = true)
+	@In(required = true, create = true)
 	private LoggedUsersPool loggedUsersPool;
 
 	@Destroy
