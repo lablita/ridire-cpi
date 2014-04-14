@@ -141,16 +141,16 @@ public class TmpResourcesFilter extends AbstractFilter {
 			Map<String, String[]> pMap = req.getParameterMap();
 			final Map<String, String[]> additionalParams = new HashMap<String, String[]>();
 			for (String key : pMap.keySet()) {
-				if (key.equals("forma") || key.equals("lemma")
-						|| key.equals("pos") || key.equals("phrase")
-						|| key.startsWith("pattern")) {
-					String[] values = pMap.get(key);
-					if (values != null && values.length == 1) {
-						byte[] bytes = values[0].getBytes("ISO-8859-1");
-						additionalParams.put(key, new String[] { new String(
-								bytes, "UTF-8") });
-					}
+				// if (key.equals("forma") || key.equals("lemma")
+				// || key.equals("pos") || key.equals("phrase")
+				// || key.startsWith("pattern")) {
+				String[] values = pMap.get(key);
+				if (values != null && values.length == 1) {
+					byte[] bytes = values[0].getBytes("ISO-8859-1");
+					additionalParams.put(key, new String[] { new String(bytes,
+							"UTF-8") });
 				}
+				// }
 			}
 			HttpServletRequest httpServletRequest = new PrettyFacesWrappedRequest(
 					(HttpServletRequest) req, additionalParams);

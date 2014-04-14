@@ -63,7 +63,7 @@ public class SketchRetriever {
 	private String lemma;
 	private String pos;
 
-	private String domain;
+	private String domain = "Tutti";
 
 	private List<SelectItem> sketchesSI = new ArrayList<SelectItem>();
 
@@ -275,14 +275,14 @@ public class SketchRetriever {
 		if (this.getFunctionalMetadatum() >= 0) {
 			FunctionalMetadatum fm = this.entityManager.find(
 					FunctionalMetadatum.class, this.getFunctionalMetadatum());
-			TermQuery funcQuery = new TermQuery(new Term("functional",
-					fm.getDescription()));
+			TermQuery funcQuery = new TermQuery(new Term("functional", fm
+					.getDescription()));
 			bq.add(funcQuery, Occur.MUST);
 		} else if (this.getSemanticMetadatum() >= 0) {
 			SemanticMetadatum sm = this.entityManager.find(
 					SemanticMetadatum.class, this.getSemanticMetadatum());
-			TermQuery semQuery = new TermQuery(new Term("semantic",
-					sm.getDescription()));
+			TermQuery semQuery = new TermQuery(new Term("semantic", sm
+					.getDescription()));
 			bq.add(semQuery, Occur.MUST);
 		}
 		if (this.getSemanticMetadatum() < 0
@@ -297,8 +297,8 @@ public class SketchRetriever {
 						"pp_"));
 				bq.add(prefixQuery, Occur.MUST);
 			} else {
-				TermQuery sq = new TermQuery(new Term("sketch",
-						this.getSketchToExtract()));
+				TermQuery sq = new TermQuery(new Term("sketch", this
+						.getSketchToExtract()));
 				bq.add(sq, Occur.MUST);
 			}
 		}
@@ -347,8 +347,8 @@ public class SketchRetriever {
 							sketchName = "preADV_V";
 						}
 					}
-					if (!SketchList.isSketchNameGoodFor(sketchName,
-							this.getPos())) {
+					if (!SketchList.isSketchNameGoodFor(sketchName, this
+							.getPos())) {
 						continue;
 					}
 					int index = orderList.indexOf(sketchName);
@@ -491,18 +491,16 @@ public class SketchRetriever {
 	public void setDomain(String domain) {
 		this.domain = domain;
 		if (domain != null) {
-			List<FunctionalMetadatum> fs = this.entityManager
-					.createQuery(
-							"from FunctionalMetadatum f where f.description=:d")
+			List<FunctionalMetadatum> fs = this.entityManager.createQuery(
+					"from FunctionalMetadatum f where f.description=:d")
 					.setParameter("d", domain).getResultList();
 			if (fs.size() == 1) {
 				this.setFunctionalMetadatum(fs.get(0).getId());
 				this.setSemanticMetadatum(-1);
 				return;
 			}
-			List<SemanticMetadatum> ss = this.entityManager
-					.createQuery(
-							"from SemanticMetadatum s where s.description=:d")
+			List<SemanticMetadatum> ss = this.entityManager.createQuery(
+					"from SemanticMetadatum s where s.description=:d")
 					.setParameter("d", domain).getResultList();
 			if (ss.size() == 1) {
 				this.setSemanticMetadatum(ss.get(0).getId());
