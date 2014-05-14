@@ -26,30 +26,32 @@
 
 		<h1>Pattern</h1>
 		<h:form id="patternForm">
-			<table cellspacing="4">
-				<tr>
-					<a4j:repeat var="pd" value="#{cwbPatternSearcher.patternDatas}"
-						rowKeyVar="rowIdx">
-						<td><a4j:include viewId="/layout/pattern.xhtml">
-								<ui:param name="pdata" value="#{pd}" />
-								<ui:param name="count" value="#{rowIdx+1}" />
-								<ui:param name="rId"
-									value="#{rowIdx-cwbPatternSearcher.patternDatas.size()}" />
-							</a4j:include></td>
-					</a4j:repeat>
-					<td><a4j:commandLink value=" "
-							action="#{cwbPatternSearcher.addPatternData}"
-							reRender="patternForm">
-							<h:graphicImage value="/img/plus-white.png" alt="Aggiungi"
-								title="Rimuovi" />
-						</a4j:commandLink> <br /> <a4j:commandLink value=" "
-							action="#{cwbPatternSearcher.removePatternData}"
-							reRender="patternForm">
-							<h:graphicImage value="/img/minus-white.png" alt="Rimuovi"
-								title="Rimuovi" />
-						</a4j:commandLink></td>
-				</tr>
-			</table>
+			<a4j:repeat var="pd" value="#{cwbPatternSearcher.patternDatas}"
+				rowKeyVar="rowIdx">
+				<div style="float: left; width: 200px;">
+				<a4j:include viewId="/layout/pattern.xhtml">
+					<ui:param name="pdata" value="#{pd}" />
+					<ui:param name="count" value="#{rowIdx+1}" />
+					<ui:param name="rId"
+						value="#{rowIdx-cwbPatternSearcher.patternDatas.size()}" />
+				</a4j:include>
+				</div>
+			</a4j:repeat>
+			<div style="float: left;">
+			<a4j:commandLink value=" "
+				action="#{cwbPatternSearcher.addPatternData}" reRender="patternForm">
+				<h:graphicImage value="/img/plus-white.png" alt="Aggiungi"
+					title="Rimuovi" />
+			</a4j:commandLink>
+			<br />
+			<a4j:commandLink value=" "
+				action="#{cwbPatternSearcher.removePatternData}"
+				reRender="patternForm">
+				<h:graphicImage value="/img/minus-white.png" alt="Rimuovi"
+					title="Rimuovi" />
+			</a4j:commandLink>
+			</div>
+			<br style="clear: both;" />
 			<h:panelGrid columns="2" style="margin-top: 10px;">
 			Tutti i domini:
 			<h:selectOneRadio value="#{cwbPatternSearcher.allDomains}">
@@ -148,7 +150,8 @@
 				cwbPatternSearcher.resultsSize}</strong>&#160;di&#160;<strong>#{cwbPatternSearcher.resultsSize}</strong>
 		</s:fragment>
 
-		<rich:dataTable var="item" value="#{cwbPatternSearcher.resultsSimple}"  style="margin-bottom: 2em;"
+		<rich:dataTable var="item" value="#{cwbPatternSearcher.resultsSimple}"
+			style="margin-bottom: 2em;"
 			rendered="#{not cwbPatternSearcher.resultsGrouping}">
 			<rich:column style="white-space: nowrap; text-align: right;">
 				<f:facet name="header">
@@ -189,7 +192,8 @@
 		</rich:dataTable>
 		<rich:dataTable var="group"
 			value="#{cwbPatternSearcher.resultsSimple}"
-			rendered="#{cwbPatternSearcher.resultsGrouping}"  style="margin-bottom: 2em;">
+			rendered="#{cwbPatternSearcher.resultsGrouping}"
+			style="margin-bottom: 2em;">
 			<rich:column>
 				<f:facet name="header">
 					<h:outputText value="Num." />
