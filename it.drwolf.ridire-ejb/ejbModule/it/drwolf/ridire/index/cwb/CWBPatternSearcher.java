@@ -209,6 +209,10 @@ public class CWBPatternSearcher {
 						text = text.replaceAll(":", "");
 					} else if (pd.getTextType().equals("POS")) {
 						realQuery += "[easypos=\"";
+					} else if (pd.getTextType().equals("PHRASE")) {
+						realQuery += "[word=\"";
+						String[] phraseTokens = StringUtils.split(text, " ");
+						text = StringUtils.join(phraseTokens, "\"][word=\"");
 					} else {
 						realQuery += "[lemma=\"";
 					}
@@ -301,10 +305,8 @@ public class CWBPatternSearcher {
 			if (this.cwbSketchExtractor.getSketchQueries().size() > 1) {
 				for (int i = 1; i < this.cwbSketchExtractor.getSketchQueries()
 						.size(); i++) {
-					realQuery += this.cwbSketchExtractor
-							.getSketchQueries()
-							.get(i)
-							.replaceAll("A1=", "A" + i + "=")
+					realQuery += this.cwbSketchExtractor.getSketchQueries()
+							.get(i).replaceAll("A1=", "A" + i + "=")
 							.replaceAll(
 									"@\\[",
 									"@[lemma=\"" + this.getSketchTerm()
@@ -316,11 +318,8 @@ public class CWBPatternSearcher {
 					realQuery += "C=union A" + i + " A" + (i + 1) + ";\n";
 				}
 			} else {
-				realQuery += this.cwbSketchExtractor
-						.getSketchQueries()
-						.get(0)
-						.replaceAll("A1=", "C=")
-						.replaceAll("@\\[",
+				realQuery += this.cwbSketchExtractor.getSketchQueries().get(0)
+						.replaceAll("A1=", "C=").replaceAll("@\\[",
 								"@[lemma=\"" + this.getSketchTerm() + "\" & ")
 						+ ";\n";
 			}
@@ -602,15 +601,15 @@ public class CWBPatternSearcher {
 
 	private Integer getCQPQueryResultsSize(File queryFile, String cqpSizeQuery)
 			throws ExecuteException, IOException {
-		EnvironmentUtils.addVariableToEnvironment(
-				EnvironmentUtils.getProcEnvironment(), "LC_ALL=C");
+		EnvironmentUtils.addVariableToEnvironment(EnvironmentUtils
+				.getProcEnvironment(), "LC_ALL=C");
 		Executor executor = new DefaultExecutor();
 		File tempSize = File.createTempFile("ridireSZ", ".size");
 		File tempSh = File.createTempFile("ridireSH", ".sh");
 		CommandLine commandLine = new CommandLine(this.cqpExecutable);
 		commandLine.addArgument("-f").addArgument(queryFile.getAbsolutePath())
-				.addArgument("-D").addArgument(this.cqpCorpusName)
-				.addArgument("-r").addArgument(this.cqpRegistry);
+				.addArgument("-D").addArgument(this.cqpCorpusName).addArgument(
+						"-r").addArgument(this.cqpRegistry);
 		String commLineString = commandLine.toString() + " > "
 				+ tempSize.getAbsolutePath();
 		FileUtils.writeStringToFile(tempSh, commLineString);
