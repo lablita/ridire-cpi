@@ -50,7 +50,7 @@ public class CorpusSizeParams {
 			this.add("ADV:mente");
 			this.add("ART");
 			this.add("CHE");
-			this.add("CL");
+			this.add("CLI");
 			this.add("CON");
 			this.add("NEG");
 			this.add("NOCAT");
