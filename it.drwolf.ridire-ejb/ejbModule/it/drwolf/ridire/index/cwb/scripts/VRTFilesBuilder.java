@@ -280,7 +280,7 @@ public class VRTFilesBuilder {
 		}
 	}
 
-	private void createVRTFile(String posFileName, StrTokenizer strTokenizer,
+	public void createVRTFile(String posFileName, StrTokenizer strTokenizer,
 			CrawledResource cr, File destDir) {
 		File posFile = new File(posFileName);
 		if (posFile.exists() && posFile.canRead()) {
@@ -572,6 +572,22 @@ public class VRTFilesBuilder {
 		System.out.println("Retagging done.");
 	}
 
+	public void reverseFile(File destDir, File f) throws IOException {
+		List<String> lines = FileUtils.readLines(f);
+		List<String> newLines = new ArrayList<String>();
+		newLines.add(lines.remove(0));
+		newLines.add(lines.remove(0));
+		String tail = lines.remove(lines.size() - 1);
+		Collections.reverse(lines);
+		for (String l : lines) {
+			newLines.add(l);
+		}
+		newLines.add(tail);
+		File vrtFile = new File(destDir, FilenameUtils.getBaseName(f.getName())
+				+ ".vrt");
+		FileUtils.writeLines(vrtFile, newLines);
+	}
+
 	@Asynchronous
 	public void reverseVRTFiles(VRTFilesBuilderData vrtFilesBuilderData) {
 		String origDir = vrtFilesBuilderData.getOrigDir();
@@ -583,22 +599,8 @@ public class VRTFilesBuilder {
 		int i = 0;
 		for (File f : files) {
 			++i;
-			List<String> lines = null;
 			try {
-				lines = FileUtils.readLines(f);
-				List<String> newLines = new ArrayList<String>();
-				newLines.add(lines.remove(0));
-				newLines.add(lines.remove(0));
-				String tail = lines.remove(lines.size() - 1);
-				Collections.reverse(lines);
-				for (String l : lines) {
-					newLines.add(l);
-				}
-				newLines.add(tail);
-				File vrtFile = new File(destDir, FilenameUtils.getBaseName(f
-						.getName())
-						+ ".vrt");
-				FileUtils.writeLines(vrtFile, newLines);
+				this.reverseFile(destDir, f);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
