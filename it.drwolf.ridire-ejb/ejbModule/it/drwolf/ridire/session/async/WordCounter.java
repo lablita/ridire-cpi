@@ -169,7 +169,7 @@ public class WordCounter {
 		}
 	}
 
-	private Integer countWordsFromPoSTagResource(File posTagResourceFile)
+	public Integer countWordsFromPoSTagResource(File posTagResourceFile)
 			throws IOException {
 		List<String> lines = FileUtils.readLines(posTagResourceFile);
 		Integer count = 0;

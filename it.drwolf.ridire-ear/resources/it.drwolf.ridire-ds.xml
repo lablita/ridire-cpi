@@ -8,7 +8,7 @@
 
 	<local-tx-datasource>
 		<jndi-name>it.drwolf.ridireDatasource</jndi-name>
-		<connection-url><![CDATA[jdbc:mysql://localhost:3306/ridire4?autoReconnect=true]]></connection-url>
+		<connection-url><![CDATA[jdbc:mysql://localhost:3306/ridire2?autoReconnect=true]]></connection-url>
 		<driver-class>com.mysql.jdbc.Driver</driver-class>
 		<min-pool-size>20</min-pool-size>
 		<max-pool-size>250</max-pool-size>
