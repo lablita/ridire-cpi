@@ -144,19 +144,19 @@ public class RIDIREReTagger {
 	public String retagFile(File f) throws ExecuteException, IOException {
 		Map<String, File> map = new HashMap<String, File>();
 		map.put("FILEIN", f);
-		File fileOut = new File(f.getPath() + ".iso");
+		File fileOut = new File(f.getAbsolutePath() + ".iso");
 		map.put("FILEOUT", fileOut);
-		File posOld = new File(f.getPath() + ".iso.pos");
+		File posOld = new File(f.getAbsolutePath() + ".iso.pos");
 		map.put("POSOLD", posOld);
-		File posNew = new File(f.getPath() + ".pos");
+		File posNew = new File(f.getAbsolutePath() + ".pos");
 		map.put("POSNEW", posNew);
 		// first convert from utf8 to iso8859-1
 		CommandLine commandLine = CommandLine.parse("iconv");
-		commandLine.setSubstitutionMap(map);
 		commandLine.addArgument("-s").addArgument("-f").addArgument("utf8")
 				.addArgument("-t").addArgument("iso8859-1//TRANSLIT")
-				.addArgument("-o").addArgument("${FILEOUT}")
-				.addArgument("${FILEIN}");
+				.addArgument("-o").addArgument("${FILEOUT}", false)
+				.addArgument("${FILEIN}", false);
+		commandLine.setSubstitutionMap(map);
 		DefaultExecutor executor = new DefaultExecutor();
 		ExecuteWatchdog watchdog = new ExecuteWatchdog(
 				RIDIREReTagger.TREETAGGER_TIMEOUT);
@@ -166,7 +166,7 @@ public class RIDIREReTagger {
 			// tag using latin1 and Baroni's tagset
 			commandLine = CommandLine.parse(this.treeTaggerBin);
 			commandLine.setSubstitutionMap(map);
-			commandLine.addArgument("${FILEOUT}");
+			commandLine.addArgument("\"${FILEOUT}\"", false);
 			executor = new DefaultExecutor();
 			executor.setExitValue(0);
 			watchdog = new ExecuteWatchdog(RIDIREReTagger.TREETAGGER_TIMEOUT);
@@ -174,20 +174,23 @@ public class RIDIREReTagger {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
 			ExecuteStreamHandler executeStreamHandler = new PumpStreamHandler(
 					baos, null, null);
+			executeStreamHandler.start();
 			executor.setStreamHandler(executeStreamHandler);
 			int exitValue2 = executor.execute(commandLine);
 			if (exitValue2 == 0) {
 				FileUtils.deleteQuietly(new File(f.getPath() + ".iso"));
 				File posTagFile = new File(f.getPath() + ".iso.pos");
+				// System.out.println(baos.toString());
 				FileUtils.writeByteArrayToFile(posTagFile, baos.toByteArray());
 			}
+			executeStreamHandler.stop();
 			// reconvert to utf8
 			commandLine = CommandLine.parse("iconv");
 			commandLine.setSubstitutionMap(map);
-			commandLine.addArgument("-s").addArgument("-f")
-					.addArgument("iso8859-1").addArgument("-t")
-					.addArgument("utf8").addArgument("-o")
-					.addArgument("${POSNEW}").addArgument("${POSOLD}");
+			commandLine.addArgument("-s").addArgument("-f").addArgument(
+					"iso8859-1").addArgument("-t").addArgument("utf8")
+					.addArgument("-o").addArgument("${POSNEW}", false)
+					.addArgument("${POSOLD}", false);
 			executor = new DefaultExecutor();
 			watchdog = new ExecuteWatchdog(RIDIREReTagger.TREETAGGER_TIMEOUT);
 			executor.setWatchdog(watchdog);
