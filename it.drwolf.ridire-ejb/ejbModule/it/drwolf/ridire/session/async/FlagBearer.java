@@ -39,7 +39,7 @@ public class FlagBearer {
 	private String emailAddress;
 	private String hostname;
 	private String jobName;
-	private boolean mappingSuspended = false;
+	private boolean mappingSuspended = true;
 	private List<Integer> jobUnderCleaning = new ArrayList<Integer>();
 	private boolean mergingStopped = true;
 	private boolean perlemmaFLStopped = true;
@@ -120,9 +120,9 @@ public class FlagBearer {
 	}
 
 	public boolean isIndexingEnabled() {
-		return this.entityManager
-				.find(Parameter.class, Parameter.INDEXING_ENABLED.getKey())
-				.getValue().equals("true") ? true : false;
+		return this.entityManager.find(Parameter.class,
+				Parameter.INDEXING_ENABLED.getKey()).getValue().equals("true") ? true
+				: false;
 	}
 
 	public boolean isJobMapperRunning() {

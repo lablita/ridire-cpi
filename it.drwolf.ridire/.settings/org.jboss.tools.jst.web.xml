@@ -192,8 +192,6 @@
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/jbossjta-integration.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-hibernate3.jar"
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/hibernate3.jar" model-entity="FileSystemJar"/>
- <file-system NAME="lib-mysql-connector-java-5.1.5-bin.jar"
-  location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/mysql-connector-java-5.1.5-bin.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-commons-collections.jar"
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/commons-collections.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-scheduler-plugin-example.jar"
@@ -212,8 +210,6 @@
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/autonumber-plugin.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-cglib.jar"
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/cglib.jar" model-entity="FileSystemJar"/>
- <file-system NAME="lib-mysql-connector-java-5.1.6-bin.jar"
-  location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/mysql-connector-java-5.1.6-bin.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-jboss-jsr88.jar"
   location="/home/drwolf/jboss-4.2.3.GA/server/default/lib/jboss-jsr88.jar" model-entity="FileSystemJar"/>
  <file-system NAME="lib-jbossmq.jar"

@@ -336,17 +336,17 @@ public class SketchRetriever {
 					}
 					// HACK: change table names
 					String sketchName = sketch.trim();
-					if (this.sketch1) {
-						if (sketchName.equals("AofN")) {
-							sketchName = "NofA";
-						} else if (sketchName.equals("NofA")) {
-							sketchName = "AofN";
-						} else if (sketchName.equals("preADV_V")) {
-							sketchName = "postV_ADV";
-						} else if (sketchName.equals("postV_ADV")) {
-							sketchName = "preADV_V";
-						}
-					}
+					// if (this.sketch1) {
+					// if (sketchName.equals("AofN")) {
+					// sketchName = "NofA";
+					// } else if (sketchName.equals("NofA")) {
+					// sketchName = "AofN";
+					// } else if (sketchName.equals("preADV_V")) {
+					// sketchName = "postV_ADV";
+					// } else if (sketchName.equals("postV_ADV")) {
+					// sketchName = "preADV_V";
+					// }
+					// }
 					if (!SketchList.isSketchNameGoodFor(sketchName, this
 							.getPos())) {
 						continue;
