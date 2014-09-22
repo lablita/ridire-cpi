@@ -15,12 +15,11 @@
  ******************************************************************************/
 package it.drwolf.ridire.utility;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -31,8 +30,8 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
-import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 
@@ -49,6 +48,23 @@ public class RIDIREReTagger {
 
 	}
 
+	private class TreeTaggerLog extends LogOutputStream {
+		private List<String> lines = new ArrayList<String>();
+
+		public List<String> getLines() {
+			return this.lines;
+		}
+
+		@Override
+		protected void processLine(String line, int arg1) {
+			if (line != null) {
+				// System.out.println(line);
+				this.getLines().add(line);
+			}
+		}
+
+	}
+
 	private static final long TREETAGGER_TIMEOUT = 240000; // 4 mins
 
 	/**
@@ -60,9 +76,10 @@ public class RIDIREReTagger {
 	}
 
 	private Options options;
-	private String dirName;
 
+	private String dirName;
 	private String treeTaggerBin;
+
 	private boolean onlyDirsWithSpaces;
 
 	public RIDIREReTagger(String[] args) {
@@ -142,21 +159,17 @@ public class RIDIREReTagger {
 	}
 
 	public String retagFile(File f) throws ExecuteException, IOException {
-		Map<String, File> map = new HashMap<String, File>();
-		map.put("FILEIN", f);
-		File fileOut = new File(f.getAbsolutePath() + ".iso");
-		map.put("FILEOUT", fileOut);
-		File posOld = new File(f.getAbsolutePath() + ".iso.pos");
-		map.put("POSOLD", posOld);
-		File posNew = new File(f.getAbsolutePath() + ".pos");
-		map.put("POSNEW", posNew);
+		// Map<String, File> map = new HashMap<String, File>();
+		String fileIN = f.getAbsolutePath();
+		String fileOut = f.getAbsolutePath() + ".iso";
+		String posOld = f.getAbsolutePath() + ".iso.pos";
+		String posNew = f.getAbsolutePath() + ".pos";
 		// first convert from utf8 to iso8859-1
 		CommandLine commandLine = CommandLine.parse("iconv");
-		commandLine.addArgument("-s").addArgument("-f").addArgument("utf8")
-				.addArgument("-t").addArgument("iso8859-1//TRANSLIT")
-				.addArgument("-o").addArgument("${FILEOUT}", false)
-				.addArgument("${FILEIN}", false);
-		commandLine.setSubstitutionMap(map);
+		commandLine.addArgument("-c").addArgument("-s").addArgument("-f")
+				.addArgument("utf8").addArgument("-t").addArgument(
+						"iso8859-1//TRANSLIT").addArgument("-o").addArgument(
+						fileOut, false).addArgument(fileIN, false);
 		DefaultExecutor executor = new DefaultExecutor();
 		ExecuteWatchdog watchdog = new ExecuteWatchdog(
 				RIDIREReTagger.TREETAGGER_TIMEOUT);
@@ -165,39 +178,34 @@ public class RIDIREReTagger {
 		if (exitValue == 0) {
 			// tag using latin1 and Baroni's tagset
 			commandLine = CommandLine.parse(this.treeTaggerBin);
-			commandLine.setSubstitutionMap(map);
-			commandLine.addArgument("\"${FILEOUT}\"", false);
+			commandLine.addArgument(fileOut, false);
 			executor = new DefaultExecutor();
 			executor.setExitValue(0);
 			watchdog = new ExecuteWatchdog(RIDIREReTagger.TREETAGGER_TIMEOUT);
 			executor.setWatchdog(watchdog);
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-			ExecuteStreamHandler executeStreamHandler = new PumpStreamHandler(
-					baos, null, null);
-			executeStreamHandler.start();
+			TreeTaggerLog treeTaggerLog = new TreeTaggerLog();
+			PumpStreamHandler executeStreamHandler = new PumpStreamHandler(
+					treeTaggerLog, null);
 			executor.setStreamHandler(executeStreamHandler);
 			int exitValue2 = executor.execute(commandLine);
 			if (exitValue2 == 0) {
-				FileUtils.deleteQuietly(new File(f.getPath() + ".iso"));
-				File posTagFile = new File(f.getPath() + ".iso.pos");
-				// System.out.println(baos.toString());
-				FileUtils.writeByteArrayToFile(posTagFile, baos.toByteArray());
+				// FileUtils.deleteQuietly(new File(fileOut));
+				File posTagFile = new File(posOld);
+				FileUtils.writeLines(posTagFile, treeTaggerLog.getLines());
 			}
-			executeStreamHandler.stop();
 			// reconvert to utf8
 			commandLine = CommandLine.parse("iconv");
-			commandLine.setSubstitutionMap(map);
 			commandLine.addArgument("-s").addArgument("-f").addArgument(
-					"iso8859-1").addArgument("-t").addArgument("utf8")
-					.addArgument("-o").addArgument("${POSNEW}", false)
-					.addArgument("${POSOLD}", false);
+					"iso8859-1").addArgument("-t")
+					.addArgument("utf8//TRANSLIT").addArgument("-o")
+					.addArgument(posNew, false).addArgument(posOld, false);
 			executor = new DefaultExecutor();
 			watchdog = new ExecuteWatchdog(RIDIREReTagger.TREETAGGER_TIMEOUT);
 			executor.setWatchdog(watchdog);
 			int exitValue3 = executor.execute(commandLine);
 			if (exitValue3 == 0) {
-				FileUtils.deleteQuietly(new File(f.getPath() + ".iso.pos"));
-				return new File(f.getPath() + ".pos").getCanonicalPath();
+				// FileUtils.deleteQuietly(new File(f.getPath() + ".iso.pos"));
+				return new File(posNew).getCanonicalPath();
 			}
 		}
 		return null;
@@ -206,5 +214,4 @@ public class RIDIREReTagger {
 	public void setTreetaggerBin(String treeTaggerBin) {
 		this.treeTaggerBin = treeTaggerBin;
 	}
-
 }
