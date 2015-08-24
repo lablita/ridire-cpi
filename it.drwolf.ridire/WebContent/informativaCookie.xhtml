@@ -1,0 +1,145 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                             "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:s="http://jboss.com/products/seam/taglib"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a4j="http://richfaces.org/a4j"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:p="http://primefaces.prime.com.tr/ui"
+	xmlns:h="http://java.sun.com/jsf/html"
+	template="layout/template_tagset.xhtml">
+
+	<ui:define name="title">
+   Contatti
+</ui:define>
+
+	<ui:define name="body">
+		<p:ajaxStatus onstart="statusDialog.show();"
+			onsuccess="statusDialog.hide();" />
+
+
+		<h1>Informativa sull'uso dei cookie</h1>
+		<p>
+			Il sito web <em>RIDIRE</em> utilizza cookie e tecnologie simili per
+			garantire il corretto funzionamento delle procedure e migliorare
+			l'esperienza di uso delle applicazioni online. Il presente documento
+			fornisce informazioni dettagliate sull'uso dei cookie e di tecnologie
+			similari, su come sono utilizzati da RIDIRE e su come gestirli.
+		</p>
+
+		<h3>Definizioni</h3>
+		<p>I cookie sono brevi frammenti di testo (lettere e/o numeri) che
+			permettono al server web di memorizzare sul client (il browser)
+			informazioni da riutilizzare nel corso della medesima visita al sito
+			(cookie di sessione) o in seguito, anche a distanza di giorni (cookie
+			persistenti). I cookie vengono memorizzati, in base alle preferenze
+			dell'utente, dal singolo browser sullo specifico dispositivo
+			utilizzato (computer, tablet, smartphone).</p>
+		<p>Tecnologie similari, come, ad esempio, web beacon, GIF
+			trasparenti e tutte le forme di storage locale introdotte con HTML5,
+			sono utilizzabili per raccogliere informazioni sul comportamento
+			dell'utente e sull'utilizzo dei servizi.</p>
+		<p>Nel seguito di questo documento faremo riferimento ai cookie e
+			a tutte le tecnologie similari utilizzando semplicemente il termine
+			“cookie”.</p>
+		<h3>Tipologie di cookie</h3>
+In base alle caratteristiche e all'utilizzo dei cookie possiamo distinguere diverse categorie:
+<ul>
+			<li>Cookie strettamente necessari. Si tratta di cookie
+				indispensabili per il corretto funzionamento dei sito RIDIRE e sono
+				utilizzati per gestire il login e l'accesso alle funzioni riservate
+				del sito. La durata del cookie è di 30 minuti ed è volto a
+				riconoscere, per tale periodo, il computer del visitatore -
+				attraverso un codice alfa-numerico generato alla prima sessione di
+				accesso - in modo da non dover effettuare nuovamente la procedura di
+				login. La loro disattivazione compromette l'utilizzo dei servizi
+				accessibili da login. La parte pubblica del sito RIDIRE resta
+				normalmente utilizzabile.</li>
+			<li>Cookie di analisi e prestazioni. Sono cookie utilizzati per
+				raccogliere e analizzare il traffico e l'utilizzo del sito in modo
+				anonimo. Questi cookie, pur senza identificare l'utente, consentono,
+				per esempio, di rilevare se il medesimo utente torna a collegarsi in
+				momenti diversi. Permettono inoltre di monitorare il sistema e
+				migliorarne le prestazioni e l'usabilità. Il sito RIDIRE non
+				utilizza cookie di questo tipo.</li>
+			<li>Cookie di profilazione. Si tratta di cookie permanenti
+				utilizzati per identificare (in modo anonimo e non) le preferenze
+				dell'utente e migliorare la sua esperienza di navigazione. Il sito
+				RIDIRE non utilizza cookie di questo tipo.</li>
+		</ul>
+		<h3>Cookie di terze parti</h3>
+		<p>Visitando un sito web si possono ricevere cookie sia dal sito
+			visitato (“proprietari”), sia da siti gestiti da altre organizzazioni
+			(“terze parti”). Un esempio notevole è rappresentato dalla presenza
+			dei “social plugin” per Facebook, Twitter, Google+ e LinkedIn. Si
+			tratta di parti della pagina visitata generate direttamente dai
+			suddetti siti ed integrati nella pagina del sito ospitante.
+			L'utilizzo più comune dei social plugin è finalizzato alla
+			condivisione dei contenuti sui social network. La presenza di questi
+			plugin comporta la trasmissione di cookie da e verso tutti i siti
+			gestiti da terze parti. La gestione delle informazioni raccolte da
+			“terze parti” è disciplinata dalle relative informative cui si prega
+			di fare riferimento. Per garantire una maggiore trasparenza e
+			comodità, si riportano qui di seguito gli indirizzi web delle diverse
+			informative e delle modalità per la gestione dei cookie.</p>
+Facebook informativa: <a href="https://www.facebook.com/help/cookies/"
+			target="_blank">https://www.facebook.com/help/cookies/</a>
+Facebook (configurazione): accedere al proprio account. Sezione privacy.
+Twitter informative: <a
+			href="https://support.twitter.com/articles/20170514" target="_blank">https://support.twitter.com/articles/20170514</a>
+Twitter (configurazione): <a
+			href="https://twitter.com/settings/security" target="_blank">https://twitter.com/settings/security</a>
+Linkedin informativa: <a
+			href="https://www.linkedin.com/legal/cookie-policy" target="_blank">https://www.linkedin.com/legal/cookie-policy</a>
+Linkedin (configurazione): <a href="https://www.linkedin.com/settings/"
+			target="_blank">https://www.linkedin.com/settings/</a>
+Google+ informativa: <a
+			href="http://www.google.it/intl/it/policies/technologies/cookies/"
+			target="_blank">http://www.google.it/intl/it/policies/technologies/cookies/</a>
+Google+ (configurazione): <a
+			href="http://www.google.it/intl/it/policies/technologies/managing/"
+			target="_blank">http://www.google.it/intl/it/policies/technologies/managing/</a>
+
+		<h3>Durata dei cookie</h3>
+		<p>Il cookie (cookie di sessione) viene disattivato all'esecuzione
+			del comando di logout o dopo 30 minuti di inattività dell'utente.</p>
+		<h3>Gestione dei cookie</h3>
+		<p>L'utente può decidere se accettare o meno i cookie utilizzando
+			le impostazioni del proprio browser.</p>
+		<p>Attenzione: la disabilitazione totale o parziale dei cookie
+			tecnici può compromettere l'utilizzo delle funzionalità del sito
+			riservate agli utenti registrati. Al contrario, la fruibilità dei
+			contenuti pubblici è possibile anche disabilitando completamente i
+			cookie.</p>
+		<p>La disabilitazione dei cookie “terze parti” non pregiudica in
+			alcun modo la navigabilità.</p>
+		<p>L'impostazione può essere definita in modo specifico per i
+			diversi siti e applicazioni web. Inoltre i migliori browser
+			consentono di definire impostazioni diverse per i cookie
+			“proprietari” e per quelli di “terze parti”.</p>
+		<p>A titolo di esempio, in Firefox, attraverso il menu
+			Strumenti->Opzioni ->Privacy, è possibile accedere ad un pannello di
+			controllo dove è possibile definire se accettare o meno i diversi
+			tipi di cookie e procedere alla loro rimozione.</p>
+Chrome: <a href="https://support.google.com/chrome/answer/95647?hl=it"
+			target="_blank">https://support.google.com/chrome/answer/95647?hl=it</a>
+		<br />
+Firefox: <a
+			href="https://support.mozilla.org/it/kb/Gestione%20dei%20cookie"
+			target="_blank">https://support.mozilla.org/it/kb/Gestione%20dei%20cookie</a>
+		<br />
+Internet Explorer: <a
+			href="http://windows.microsoft.com/it-it/windows7/how-to-manage-cookies-in-internet-explorer-9"
+			target="_blank">http://windows.microsoft.com/it-it/windows7/how-to-manage-cookies-in-internet-explorer-9</a>
+		<br />
+Opera: <a href="http://help.opera.com/Windows/10.00/it/cookies.html"
+			target="_blank">http://help.opera.com/Windows/10.00/it/cookies.html</a>
+		<br />
+Safari: <a href="http://support.apple.com/kb/HT1677?viewlocale=it_IT"
+			target="_blank">http://support.apple.com/kb/HT1677?viewlocale=it_IT</a>
+		<br />
+		<p></p>
+	</ui:define>
+</ui:composition>
+
